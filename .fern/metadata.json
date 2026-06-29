@@ -1,0 +1,12 @@
+{
+  "cliVersion": "5.50.5",
+  "generatorName": "fernapi/fern-java-sdk",
+  "generatorVersion": "4.10.15",
+  "generatorConfig": {
+    "group-id": "ai.vobiz",
+    "artifact-id": "vobiz-java"
+  },
+  "originGitCommit": "e8a4ebb9425a3225753a525b2fd4e400cdc04676",
+  "originGitCommitIsDirty": true,
+  "invokedBy": "manual"
+}
