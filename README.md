@@ -1,68 +1,31 @@
-# Vobiz Java SDK
+# Vobiz Java Library
 
-The official Java SDK for [Vobiz](https://vobiz.ai), an AI-first voice and telephony API platform for builders. Integrate powerful voice capabilities into your Java applications to make and control calls, manage SIP trunks, provision phone numbers, handle conferences, and manage call recordings.
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=Vobiz%2FJava)
 
-## Quick Links
+The Vobiz Java library provides convenient access to the Vobiz APIs from Java.
 
-- **Documentation:** [docs.vobiz.ai](https://docs.vobiz.ai)
-- **Dashboard:** [console.vobiz.ai](https://console.vobiz.ai)
-- **Full API Reference:** [`./reference.md`](./reference.md)
+## Table of Contents
 
-## Features
+- [Reference](#reference)
+- [Usage](#usage)
+- [Environments](#environments)
+- [Base Url](#base-url)
+- [Exception Handling](#exception-handling)
+- [Advanced](#advanced)
+  - [Custom Client](#custom-client)
+  - [Retries](#retries)
+  - [Timeouts](#timeouts)
+  - [Custom Headers](#custom-headers)
+  - [Access Raw Response Data](#access-raw-response-data)
+- [Contributing](#contributing)
 
-- **Call Management:** Initiate outbound calls, retrieve call detail records (CDRs), and hang up active calls.
-- **SIP Trunking:** Configure and manage SIP trunks, credentials, and IP access control lists.
-- **Phone Numbers:** List inventory, purchase numbers, and assign them to trunks or sub-accounts.
-- **Conferences:** Create rooms, manage members (mute, deafen, kick), and record conferences.
-- **Recordings & Audio:** Start/stop call recordings, play audio/TTS, and stream raw audio via WebSockets.
-- **Partner API:** Manage customer sub-accounts, transfer balances, and handle KYC sessions.
+## Reference
 
-## Requirements
+A full reference for this library is available [here](./reference.md).
 
-- Java 8 or higher.
-- A build tool such as Gradle or Maven.
+## Usage
 
-## Installation
-
-The SDK is published to Maven Central under the coordinates `ai.vobiz:vobiz-java`.
-
-### Gradle
-```groovy
-implementation 'ai.vobiz:vobiz-java:1.0.0'
-```
-
-### Maven
-```xml
-<dependency>
-    <groupId>ai.vobiz</groupId>
-    <artifactId>vobiz-java</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-## Authentication
-
-Vobiz authenticates requests using your **Auth ID** and **Auth Token**. These credentials are sent as `X-Auth-ID` and `X-Auth-Token` HTTP headers with every API request. You can find these in your [Vobiz Dashboard](https://console.vobiz.ai).
-
-To initialize the `VobizApiClient`, pass your Auth ID to `.apiKey()` and your Auth Token to `.authToken()`:
-
-```java
-import com.vobiz.api.VobizApiClient;
-
-// It is highly recommended to load credentials from environment variables
-String authId = System.getenv("VOBIZ_AUTH_ID");
-String authToken = System.getenv("VOBIZ_AUTH_TOKEN");
-
-VobizApiClient client = VobizApiClient
-    .builder()
-    .apiKey(authId)
-    .authToken(authToken)
-    .build();
-```
-
-## Quickstart
-
-The following example demonstrates how to make an outbound call. Replace placeholder values like `MA_XXXXXX` and phone numbers with your actual credentials and desired call parameters.
+Instantiate and use the client with the following:
 
 ```java
 package com.example.usage;
@@ -72,231 +35,187 @@ import com.vobiz.api.resources.calls.requests.MakeCallRequest;
 
 public class Example {
     public static void main(String[] args) {
-        String authId = System.getenv("VOBIZ_AUTH_ID");
-        String authToken = System.getenv("VOBIZ_AUTH_TOKEN");
-
         VobizApiClient client = VobizApiClient
             .builder()
-            .apiKey(authId)
-            .authToken(authToken)
+            .apiKey("<value>")
+            .authToken("<X-Auth-Token>")
             .build();
 
-        try {
-            // Replace "MA_XXXXXX" with your actual account Auth ID
-            client.calls().makeCall(
-                "MA_XXXXXX",
-                MakeCallRequest
-                    .builder()
-                    .from("14155551234") // Your Vobiz-enabled phone number or SIP URI
-                    .to("+919876543210") // Destination phone number in E.164 format
-                    .answerUrl("https://example.com/answer") // Webhook URL for call events
-                    .answerMethod("POST")
-                    .build()
-            );
-            System.out.println("Call initiated successfully!");
-        } catch (Exception e) {
-            System.err.println("Failed to make call: " + e.getMessage());
-            e.printStackTrace();
-        }
+        client.calls().makeCall(
+            "MA_XXXXXX",
+            MakeCallRequest
+                .builder()
+                .from("14155551234")
+                .to("+919876543210")
+                .answerUrl("https://example.com/answer")
+                .answerMethod("POST")
+                .build()
+        );
     }
 }
 ```
 
-## Common Operations
+## Environments
 
-### List Call Recordings
-Retrieve a paginated list of call recordings on your account.
+This SDK allows you to configure different environments for API requests.
 
 ```java
 import com.vobiz.api.VobizApiClient;
-import com.vobiz.api.resources.recordings.requests.ListRecordingsRequest;
-import com.vobiz.api.resources.recordings.types.ListRecordingsResponse;
+import com.vobiz.api.core.Environment;
 
-public class ListRecordingsExample {
-    public static void main(String[] args) {
-        VobizApiClient client = VobizApiClient.builder()
-            .apiKey(System.getenv("VOBIZ_AUTH_ID"))
-            .authToken(System.getenv("VOBIZ_AUTH_TOKEN"))
-            .build();
-
-        try {
-            ListRecordingsResponse recordings = client.recordings().listRecordings(
-                "MA_XXXXXX",
-                ListRecordingsRequest
-                    .builder()
-                    .limit(10)
-                    .offset(0)
-                    .build()
-            );
-            
-            recordings.getData().forEach(recording -> {
-                System.out.println("Recording ID: " + recording.getRecordingId());
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Purchase a Phone Number from Inventory
-Browse and purchase available phone numbers from the Vobiz global inventory.
-
-```java
-import com.vobiz.api.VobizApiClient;
-import com.vobiz.api.resources.phonenumbers.requests.PurchaseFromInventoryRequest;
-
-public class PurchaseNumberExample {
-    public static void main(String[] args) {
-        VobizApiClient client = VobizApiClient.builder()
-            .apiKey(System.getenv("VOBIZ_AUTH_ID"))
-            .authToken(System.getenv("VOBIZ_AUTH_TOKEN"))
-            .build();
-
-        try {
-            Object purchaseResult = client.phoneNumbers().purchaseFromInventory(
-                "MA_XXXXXX",
-                PurchaseFromInventoryRequest
-                    .builder()
-                    .e164("+919876543210")
-                    .currency("USD")
-                    .build()
-            );
-            System.out.println("Number purchased successfully: " + purchaseResult);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Create a Sub-Account (Partner Flow)
-Create and configure a customer sub-account under your master account.
-
-```java
-import com.vobiz.api.VobizApiClient;
-import com.vobiz.api.resources.subaccounts.requests.CreateSubaccountRequest;
-import com.vobiz.api.resources.subaccounts.requests.CreateSubaccountRequestKycMode;
-import com.vobiz.api.resources.subaccounts.requests.CreateSubaccountRequestBusinessType;
-import com.vobiz.api.resources.subaccounts.types.CreateSubaccountResponse;
-
-public class CreateSubaccountExample {
-    public static void main(String[] args) {
-        VobizApiClient client = VobizApiClient.builder()
-            .apiKey(System.getenv("VOBIZ_AUTH_ID"))
-            .authToken(System.getenv("VOBIZ_AUTH_TOKEN"))
-            .build();
-
-        try {
-            CreateSubaccountResponse subAccount = client.subAccounts().createSubaccount(
-                "MA_XXXXXX",
-                CreateSubaccountRequest
-                    .builder()
-                    .name("Customer Co")
-                    .email("customer@example.com")
-                    .password("Customer@12345")
-                    .kycMode(CreateSubaccountRequestKycMode.CUSTOMER_USE)
-                    .businessType(CreateSubaccountRequestBusinessType.PRIVATE_LIMITED)
-                    .build()
-            );
-            System.out.println("Sub-account created with ID: " + subAccount.getAuthId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Stream Raw Call Audio to WebSockets
-Start streaming real-time call audio from an active call leg to your WebSocket server.
-
-```java
-import com.vobiz.api.VobizApiClient;
-import com.vobiz.api.resources.audiostreams.requests.StartStreamRequest;
-import com.vobiz.api.resources.audiostreams.requests.StartStreamRequestAudioTrack;
-
-public class AudioStreamExample {
-    public static void main(String[] args) {
-        VobizApiClient client = VobizApiClient.builder()
-            .apiKey(System.getenv("VOBIZ_AUTH_ID"))
-            .authToken(System.getenv("VOBIZ_AUTH_TOKEN"))
-            .build();
-
-        try {
-            Object streamResult = client.audioStreams().startStream(
-                "MA_XXXXXX",
-                "call_uuid_here",
-                StartStreamRequest
-                    .builder()
-                    .serviceUrl("wss://your-server.com/ws")
-                    .bidirectional(true)
-                    .audioTrack(StartStreamRequestAudioTrack.BOTH)
-                    .build()
-            );
-            System.out.println("Audio stream started: " + streamResult);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-## Configuration
-
-The SDK client is instantiated using the builder pattern. Authentication credentials are required for initialization:
-
-```java
-VobizApiClient client = VobizApiClient.builder()
-    .apiKey("YOUR_AUTH_ID")
-    .authToken("YOUR_AUTH_TOKEN")
+VobizApiClient client = VobizApiClient
+    .builder()
+    .environment(Environment.Production)
     .build();
 ```
 
-## Error Handling
+## Base Url
 
-The SDK throws standard Java `Exception`s (or specific runtime exceptions depending on the underlying HTTP client) when an API request fails. This can happen due to invalid credentials, malformed requests, or server errors. Always wrap your API calls in `try-catch` blocks to handle these gracefully.
+You can set a custom base URL when constructing the client.
 
 ```java
-try {
-    client.calls().makeCall("MA_XXXXXX", request);
-} catch (Exception e) {
-    System.err.println("API Error: " + e.getMessage());
-    // Perform fallback logic or logging here
+import com.vobiz.api.VobizApiClient;
+
+VobizApiClient client = VobizApiClient
+    .builder()
+    .url("https://example.com")
+    .build();
+```
+
+## Exception Handling
+
+When the API returns a non-success status code (4xx or 5xx response), an API exception will be thrown.
+
+```java
+import com.vobiz.api.core.VobizApiApiException;
+
+try{
+    client.calls().makeCall(...);
+} catch (VobizApiApiException e){
+    // Do something with the API exception...
 }
 ```
 
-## Pagination
+## Advanced
 
-Endpoints that return lists of resources (such as `listCdrs`, `listNumbers`, `listRecordings`, and `listTransactions`) support pagination. Depending on the endpoint, you can control the page size and offset using `.limit()` and `.offset()`, or `.page()` and `.perPage()` in the respective request builder.
+### Custom Client
+
+This SDK is built to work with any instance of `OkHttpClient`. By default, if no client is provided, the SDK will construct one.
+However, you can pass your own client like so:
 
 ```java
-ListRecordingsResponse recordings = client.recordings().listRecordings(
-    "MA_XXXXXX",
-    ListRecordingsRequest
+import com.vobiz.api.VobizApiClient;
+import okhttp3.OkHttpClient;
+
+OkHttpClient customClient = ...;
+
+VobizApiClient client = VobizApiClient
+    .builder()
+    .httpClient(customClient)
+    .build();
+```
+
+### Retries
+
+The SDK is instrumented with automatic retries with exponential backoff. A request will be retried as long
+as the request is deemed retryable and the number of retry attempts has not grown larger than the configured
+retry limit (default: 2). Before defaulting to exponential backoff, the SDK will first attempt to respect
+the `Retry-After` header (as either in seconds or as an HTTP date), and then the `X-RateLimit-Reset` header
+(as a Unix timestamp in epoch seconds); failing both of those, it will fall back to exponential backoff.
+
+Which status codes are retried depends on the `retry-status-codes` generator configuration:
+
+**`legacy`** (current default): retries on
+- [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) (Timeout)
+- [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) (Too Many Requests)
+- [5XX](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses) (All server errors, including 500)
+
+**`recommended`**: retries on
+- [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) (Timeout)
+- [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) (Too Many Requests)
+- [502](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502) (Bad Gateway)
+- [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503) (Service Unavailable)
+- [504](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/504) (Gateway Timeout)
+
+Use the `maxRetries` client option to configure this behavior.
+
+```java
+import com.vobiz.api.VobizApiClient;
+
+VobizApiClient client = VobizApiClient
+    .builder()
+    .maxRetries(1)
+    .build();
+```
+
+### Timeouts
+
+The SDK defaults to a 60 second timeout. You can configure this with a timeout option at the client or request level.
+```java
+import com.vobiz.api.VobizApiClient;
+import com.vobiz.api.core.RequestOptions;
+
+// Client level
+VobizApiClient client = VobizApiClient
+    .builder()
+    .timeout(60)
+    .build();
+
+// Request level
+client.calls().makeCall(
+    ...,
+    RequestOptions
         .builder()
-        .limit(20)
-        .offset(40)
+        .timeout(60)
         .build()
 );
 ```
 
-## Other Vobiz SDKs
+### Custom Headers
 
-Vobiz provides official SDKs for several popular programming languages:
+The SDK allows you to add custom headers to requests. You can configure headers at the client level or at the request level.
 
-| Language | Repository |
-| :--- | :--- |
-| Node.js / TypeScript | [Vobiz-Node-SDK](https://github.com/vobiz-ai/Vobiz-Node-SDK) |
-| Python | [Vobiz-Python-SDK](https://github.com/vobiz-ai/Vobiz-Python-SDK) |
-| Go | [Vobiz-Go-SDK](https://github.com/vobiz-ai/Vobiz-Go-SDK) |
-| Ruby | [Vobiz-Ruby-SDK](https://github.com/vobiz-ai/Vobiz-Ruby-SDK) |
-| C# / .NET | [Vobiz-Csharp-sdk](https://github.com/vobiz-ai/Vobiz-Csharp-sdk) |
-| PHP | [Vobiz-PHP-SDK](https://github.com/vobiz-ai/Vobiz-PHP-SDK) |
+```java
+import com.vobiz.api.VobizApiClient;
+import com.vobiz.api.core.RequestOptions;
 
-## Support
+// Client level
+VobizApiClient client = VobizApiClient
+    .builder()
+    .addHeader("X-Custom-Header", "custom-value")
+    .addHeader("X-Request-Id", "abc-123")
+    .build();
+;
 
-If you encounter any issues or have questions, please check the [Vobiz Documentation](https://docs.vobiz.ai) or reach out via the support widget in your [Vobiz Dashboard](https://console.vobiz.ai).
+// Request level
+client.calls().makeCall(
+    ...,
+    RequestOptions
+        .builder()
+        .addHeader("X-Request-Header", "request-value")
+        .build()
+);
+```
 
-## License
+### Access Raw Response Data
 
-This SDK is distributed under the MIT License.
+The SDK provides access to raw response data, including headers, through the `withRawResponse()` method.
+The `withRawResponse()` method returns a raw client that wraps all responses with `body()` and `headers()` methods.
+(A normal client's `response` is identical to a raw client's `response.body()`.)
+
+```java
+VobizApiHttpResponse response = client.calls().withRawResponse().makeCall(...);
+
+System.out.println(response.body());
+System.out.println(response.headers().get("X-My-Header"));
+```
+
+## Contributing
+
+While we value open-source contributions to this SDK, this library is generated programmatically.
+Additions made directly to this library would have to be moved over to our generation code,
+otherwise they would be overwritten upon the next generated release. Feel free to open a PR as
+a proof of concept, but know that we will not be able to merge it as-is. We suggest opening
+an issue first to discuss with us!
+
+On the other hand, contributions to the README are always very welcome!
