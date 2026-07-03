@@ -39,6 +39,20 @@ public final class ListCdrsRequest {
 
   private final Optional<Integer> minDuration;
 
+  private final Optional<String> sipCallId;
+
+  private final Optional<String> bridgeUuid;
+
+  private final Optional<String> hangupCause;
+
+  private final Optional<String> hangupDisposition;
+
+  private final Optional<String> context;
+
+  private final Optional<String> campaignId;
+
+  private final Optional<String> search;
+
   private final Optional<Integer> page;
 
   private final Optional<Integer> perPage;
@@ -48,13 +62,23 @@ public final class ListCdrsRequest {
   private ListCdrsRequest(Optional<String> fromNumber, Optional<String> toNumber,
       Optional<String> startDate, Optional<String> endDate,
       Optional<ListCdrsRequestCallDirection> callDirection, Optional<Integer> minDuration,
-      Optional<Integer> page, Optional<Integer> perPage, Map<String, Object> additionalProperties) {
+      Optional<String> sipCallId, Optional<String> bridgeUuid, Optional<String> hangupCause,
+      Optional<String> hangupDisposition, Optional<String> context, Optional<String> campaignId,
+      Optional<String> search, Optional<Integer> page, Optional<Integer> perPage,
+      Map<String, Object> additionalProperties) {
     this.fromNumber = fromNumber;
     this.toNumber = toNumber;
     this.startDate = startDate;
     this.endDate = endDate;
     this.callDirection = callDirection;
     this.minDuration = minDuration;
+    this.sipCallId = sipCallId;
+    this.bridgeUuid = bridgeUuid;
+    this.hangupCause = hangupCause;
+    this.hangupDisposition = hangupDisposition;
+    this.context = context;
+    this.campaignId = campaignId;
+    this.search = search;
     this.page = page;
     this.perPage = perPage;
     this.additionalProperties = additionalProperties;
@@ -109,6 +133,62 @@ public final class ListCdrsRequest {
   }
 
   /**
+   * @return Filter by the SIP Call-ID of the call (matches the cdr's sip_call_id field).
+   */
+  @JsonProperty("sip_call_id")
+  public Optional<String> getSipCallId() {
+    return sipCallId;
+  }
+
+  /**
+   * @return Filter by the UUID of the bridged leg (matches the cdr's bridge_uuid field).
+   */
+  @JsonProperty("bridge_uuid")
+  public Optional<String> getBridgeUuid() {
+    return bridgeUuid;
+  }
+
+  /**
+   * @return Filter by telephony hangup cause, e.g. NORMAL_CLEARING.
+   */
+  @JsonProperty("hangup_cause")
+  public Optional<String> getHangupCause() {
+    return hangupCause;
+  }
+
+  /**
+   * @return Filter by how the leg was released, e.g. send_refuse.
+   */
+  @JsonProperty("hangup_disposition")
+  public Optional<String> getHangupDisposition() {
+    return hangupDisposition;
+  }
+
+  /**
+   * @return Filter by the call context, e.g. sip-trunking.
+   */
+  @JsonProperty("context")
+  public Optional<String> getContext() {
+    return context;
+  }
+
+  /**
+   * @return Filter by the campaign identifier associated with the call.
+   */
+  @JsonProperty("campaign_id")
+  public Optional<String> getCampaignId() {
+    return campaignId;
+  }
+
+  /**
+   * @return Free-text search across CDR fields (numbers, IDs, etc.).
+   */
+  @JsonProperty("search")
+  public Optional<String> getSearch() {
+    return search;
+  }
+
+  /**
    * @return Page number for paginated results.
    */
   @JsonProperty("page")
@@ -136,12 +216,12 @@ public final class ListCdrsRequest {
   }
 
   private boolean equalTo(ListCdrsRequest other) {
-    return fromNumber.equals(other.fromNumber) && toNumber.equals(other.toNumber) && startDate.equals(other.startDate) && endDate.equals(other.endDate) && callDirection.equals(other.callDirection) && minDuration.equals(other.minDuration) && page.equals(other.page) && perPage.equals(other.perPage);
+    return fromNumber.equals(other.fromNumber) && toNumber.equals(other.toNumber) && startDate.equals(other.startDate) && endDate.equals(other.endDate) && callDirection.equals(other.callDirection) && minDuration.equals(other.minDuration) && sipCallId.equals(other.sipCallId) && bridgeUuid.equals(other.bridgeUuid) && hangupCause.equals(other.hangupCause) && hangupDisposition.equals(other.hangupDisposition) && context.equals(other.context) && campaignId.equals(other.campaignId) && search.equals(other.search) && page.equals(other.page) && perPage.equals(other.perPage);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.fromNumber, this.toNumber, this.startDate, this.endDate, this.callDirection, this.minDuration, this.page, this.perPage);
+    return Objects.hash(this.fromNumber, this.toNumber, this.startDate, this.endDate, this.callDirection, this.minDuration, this.sipCallId, this.bridgeUuid, this.hangupCause, this.hangupDisposition, this.context, this.campaignId, this.search, this.page, this.perPage);
   }
 
   @java.lang.Override
@@ -169,6 +249,20 @@ public final class ListCdrsRequest {
 
     private Optional<Integer> minDuration = Optional.empty();
 
+    private Optional<String> sipCallId = Optional.empty();
+
+    private Optional<String> bridgeUuid = Optional.empty();
+
+    private Optional<String> hangupCause = Optional.empty();
+
+    private Optional<String> hangupDisposition = Optional.empty();
+
+    private Optional<String> context = Optional.empty();
+
+    private Optional<String> campaignId = Optional.empty();
+
+    private Optional<String> search = Optional.empty();
+
     private Optional<Integer> page = Optional.empty();
 
     private Optional<Integer> perPage = Optional.empty();
@@ -186,6 +280,13 @@ public final class ListCdrsRequest {
       endDate(other.getEndDate());
       callDirection(other.getCallDirection());
       minDuration(other.getMinDuration());
+      sipCallId(other.getSipCallId());
+      bridgeUuid(other.getBridgeUuid());
+      hangupCause(other.getHangupCause());
+      hangupDisposition(other.getHangupDisposition());
+      context(other.getContext());
+      campaignId(other.getCampaignId());
+      search(other.getSearch());
       page(other.getPage());
       perPage(other.getPerPage());
       return this;
@@ -294,6 +395,125 @@ public final class ListCdrsRequest {
     }
 
     /**
+     * <p>Filter by the SIP Call-ID of the call (matches the cdr's sip_call_id field).</p>
+     */
+    @JsonSetter(
+        value = "sip_call_id",
+        nulls = Nulls.SKIP
+    )
+    public Builder sipCallId(Optional<String> sipCallId) {
+      this.sipCallId = sipCallId;
+      return this;
+    }
+
+    public Builder sipCallId(String sipCallId) {
+      this.sipCallId = Optional.ofNullable(sipCallId);
+      return this;
+    }
+
+    /**
+     * <p>Filter by the UUID of the bridged leg (matches the cdr's bridge_uuid field).</p>
+     */
+    @JsonSetter(
+        value = "bridge_uuid",
+        nulls = Nulls.SKIP
+    )
+    public Builder bridgeUuid(Optional<String> bridgeUuid) {
+      this.bridgeUuid = bridgeUuid;
+      return this;
+    }
+
+    public Builder bridgeUuid(String bridgeUuid) {
+      this.bridgeUuid = Optional.ofNullable(bridgeUuid);
+      return this;
+    }
+
+    /**
+     * <p>Filter by telephony hangup cause, e.g. NORMAL_CLEARING.</p>
+     */
+    @JsonSetter(
+        value = "hangup_cause",
+        nulls = Nulls.SKIP
+    )
+    public Builder hangupCause(Optional<String> hangupCause) {
+      this.hangupCause = hangupCause;
+      return this;
+    }
+
+    public Builder hangupCause(String hangupCause) {
+      this.hangupCause = Optional.ofNullable(hangupCause);
+      return this;
+    }
+
+    /**
+     * <p>Filter by how the leg was released, e.g. send_refuse.</p>
+     */
+    @JsonSetter(
+        value = "hangup_disposition",
+        nulls = Nulls.SKIP
+    )
+    public Builder hangupDisposition(Optional<String> hangupDisposition) {
+      this.hangupDisposition = hangupDisposition;
+      return this;
+    }
+
+    public Builder hangupDisposition(String hangupDisposition) {
+      this.hangupDisposition = Optional.ofNullable(hangupDisposition);
+      return this;
+    }
+
+    /**
+     * <p>Filter by the call context, e.g. sip-trunking.</p>
+     */
+    @JsonSetter(
+        value = "context",
+        nulls = Nulls.SKIP
+    )
+    public Builder context(Optional<String> context) {
+      this.context = context;
+      return this;
+    }
+
+    public Builder context(String context) {
+      this.context = Optional.ofNullable(context);
+      return this;
+    }
+
+    /**
+     * <p>Filter by the campaign identifier associated with the call.</p>
+     */
+    @JsonSetter(
+        value = "campaign_id",
+        nulls = Nulls.SKIP
+    )
+    public Builder campaignId(Optional<String> campaignId) {
+      this.campaignId = campaignId;
+      return this;
+    }
+
+    public Builder campaignId(String campaignId) {
+      this.campaignId = Optional.ofNullable(campaignId);
+      return this;
+    }
+
+    /**
+     * <p>Free-text search across CDR fields (numbers, IDs, etc.).</p>
+     */
+    @JsonSetter(
+        value = "search",
+        nulls = Nulls.SKIP
+    )
+    public Builder search(Optional<String> search) {
+      this.search = search;
+      return this;
+    }
+
+    public Builder search(String search) {
+      this.search = Optional.ofNullable(search);
+      return this;
+    }
+
+    /**
      * <p>Page number for paginated results.</p>
      */
     @JsonSetter(
@@ -328,7 +548,7 @@ public final class ListCdrsRequest {
     }
 
     public ListCdrsRequest build() {
-      return new ListCdrsRequest(fromNumber, toNumber, startDate, endDate, callDirection, minDuration, page, perPage, additionalProperties);
+      return new ListCdrsRequest(fromNumber, toNumber, startDate, endDate, callDirection, minDuration, sipCallId, bridgeUuid, hangupCause, hangupDisposition, context, campaignId, search, page, perPage, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

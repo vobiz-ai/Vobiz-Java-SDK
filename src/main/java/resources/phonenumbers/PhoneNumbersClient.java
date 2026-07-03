@@ -10,12 +10,14 @@ import java.lang.Object;
 import java.lang.String;
 import resources.phonenumbers.requests.AssignDidToSubaccountRequest;
 import resources.phonenumbers.requests.AssignNumberToTrunkRequest;
+import resources.phonenumbers.requests.GetNumberHealthRequest;
 import resources.phonenumbers.requests.ListInventoryNumbersRequest;
 import resources.phonenumbers.requests.ListNumbersRequest;
 import resources.phonenumbers.requests.PurchaseFromInventoryRequest;
 import resources.phonenumbers.requests.UnassignDidFromSubaccountRequest;
 import resources.phonenumbers.requests.UnassignNumberFromTrunkRequest;
 import resources.phonenumbers.requests.UnrentNumberRequest;
+import resources.phonenumbers.types.GetNumberHealthResponse;
 import resources.phonenumbers.types.ListInventoryNumbersResponse;
 import resources.phonenumbers.types.ListNumbersResponse;
 
@@ -215,6 +217,49 @@ public class PhoneNumbersClient {
   public void unassignNumberFromTrunk(String authId, String phoneNumber,
       UnassignNumberFromTrunkRequest request, RequestOptions requestOptions) {
     this.rawClient.unassignNumberFromTrunk(authId, phoneNumber, request, requestOptions).body();
+  }
+
+  /**
+   * Returns the health &amp; analytics dashboard for one of your numbers: current
+   * status, spam flag, and call metrics over the selected window (total and
+   * answered calls, answer rate, minutes, average duration) plus a per-period
+   * time series of snapshots.
+   */
+  public GetNumberHealthResponse getNumberHealth(String authId, String e164) {
+    return this.rawClient.getNumberHealth(authId, e164).body();
+  }
+
+  /**
+   * Returns the health &amp; analytics dashboard for one of your numbers: current
+   * status, spam flag, and call metrics over the selected window (total and
+   * answered calls, answer rate, minutes, average duration) plus a per-period
+   * time series of snapshots.
+   */
+  public GetNumberHealthResponse getNumberHealth(String authId, String e164,
+      RequestOptions requestOptions) {
+    return this.rawClient.getNumberHealth(authId, e164, requestOptions).body();
+  }
+
+  /**
+   * Returns the health &amp; analytics dashboard for one of your numbers: current
+   * status, spam flag, and call metrics over the selected window (total and
+   * answered calls, answer rate, minutes, average duration) plus a per-period
+   * time series of snapshots.
+   */
+  public GetNumberHealthResponse getNumberHealth(String authId, String e164,
+      GetNumberHealthRequest request) {
+    return this.rawClient.getNumberHealth(authId, e164, request).body();
+  }
+
+  /**
+   * Returns the health &amp; analytics dashboard for one of your numbers: current
+   * status, spam flag, and call metrics over the selected window (total and
+   * answered calls, answer rate, minutes, average duration) plus a per-period
+   * time series of snapshots.
+   */
+  public GetNumberHealthResponse getNumberHealth(String authId, String e164,
+      GetNumberHealthRequest request, RequestOptions requestOptions) {
+    return this.rawClient.getNumberHealth(authId, e164, request, requestOptions).body();
   }
 
   /**

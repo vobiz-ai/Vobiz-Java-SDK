@@ -31,12 +31,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import resources.phonenumbers.requests.AssignDidToSubaccountRequest;
 import resources.phonenumbers.requests.AssignNumberToTrunkRequest;
+import resources.phonenumbers.requests.GetNumberHealthRequest;
 import resources.phonenumbers.requests.ListInventoryNumbersRequest;
 import resources.phonenumbers.requests.ListNumbersRequest;
 import resources.phonenumbers.requests.PurchaseFromInventoryRequest;
 import resources.phonenumbers.requests.UnassignDidFromSubaccountRequest;
 import resources.phonenumbers.requests.UnassignNumberFromTrunkRequest;
 import resources.phonenumbers.requests.UnrentNumberRequest;
+import resources.phonenumbers.types.GetNumberHealthResponse;
 import resources.phonenumbers.types.ListInventoryNumbersResponse;
 import resources.phonenumbers.types.ListNumbersResponse;
 import types.Error;
@@ -485,53 +487,79 @@ public class RawPhoneNumbersClient {
               }
 
               /**
-               * Assign a parent-pool DID to a sub-account.
+               * Returns the health &amp; analytics dashboard for one of your numbers: current
+               * status, spam flag, and call metrics over the selected window (total and
+               * answered calls, answer rate, minutes, average duration) plus a per-period
+               * time series of snapshots.
                */
-              public VobizApiHttpResponse<Void> assignDidToSubaccount(String authId, String e164,
-                  AssignDidToSubaccountRequest request) {
-                return assignDidToSubaccount(authId,e164,request,null);
+              public VobizApiHttpResponse<GetNumberHealthResponse> getNumberHealth(String authId,
+                  String e164) {
+                return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build());
               }
 
               /**
-               * Assign a parent-pool DID to a sub-account.
+               * Returns the health &amp; analytics dashboard for one of your numbers: current
+               * status, spam flag, and call metrics over the selected window (total and
+               * answered calls, answer rate, minutes, average duration) plus a per-period
+               * time series of snapshots.
                */
-              public VobizApiHttpResponse<Void> assignDidToSubaccount(String authId, String e164,
-                  AssignDidToSubaccountRequest request, RequestOptions requestOptions) {
+              public VobizApiHttpResponse<GetNumberHealthResponse> getNumberHealth(String authId,
+                  String e164, RequestOptions requestOptions) {
+                return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build(),requestOptions);
+              }
+
+              /**
+               * Returns the health &amp; analytics dashboard for one of your numbers: current
+               * status, spam flag, and call metrics over the selected window (total and
+               * answered calls, answer rate, minutes, average duration) plus a per-period
+               * time series of snapshots.
+               */
+              public VobizApiHttpResponse<GetNumberHealthResponse> getNumberHealth(String authId,
+                  String e164, GetNumberHealthRequest request) {
+                return getNumberHealth(authId,e164,request,null);
+              }
+
+              /**
+               * Returns the health &amp; analytics dashboard for one of your numbers: current
+               * status, spam flag, and call metrics over the selected window (total and
+               * answered calls, answer rate, minutes, average duration) plus a per-period
+               * time series of snapshots.
+               */
+              public VobizApiHttpResponse<GetNumberHealthResponse> getNumberHealth(String authId,
+                  String e164, GetNumberHealthRequest request, RequestOptions requestOptions) {
                 HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
                   .addPathSegments("api/v1/account")
                   .addPathSegment(authId)
                   .addPathSegments("numbers")
                   .addPathSegment(e164)
-                  .addPathSegments("assign-subaccount");if (requestOptions != null) {
+                  .addPathSegments("health");if (request.getGranularity().isPresent()) {
+                    QueryStringMapper.addQueryParameter(httpUrl, "granularity", request.getGranularity().get(), false);
+                  }
+                  if (request.getDays().isPresent()) {
+                    QueryStringMapper.addQueryParameter(httpUrl, "days", request.getDays().get(), false);
+                  }
+                  if (requestOptions != null) {
                     requestOptions.getQueryParameters().forEach((_key, _value) -> {
                       httpUrl.addQueryParameter(_key, _value);
                     } );
                   }
-                  RequestBody body;
-                  try {
-                    body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-                  }
-                  catch(JsonProcessingException e) {
-                    throw new VobizApiException("Failed to serialize request", e);
-                  }
-                  Request okhttpRequest = new Request.Builder()
+                  Request.Builder _requestBuilder = new Request.Builder()
                     .url(httpUrl.build())
-                    .method("POST", body)
+                    .method("GET", null)
                     .headers(Headers.of(clientOptions.headers(requestOptions)))
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Accept", "application/json")
-                    .build();
+                    .addHeader("Accept", "application/json");
+                  Request okhttpRequest = _requestBuilder.build();
                   OkHttpClient client = clientOptions.httpClient();
                   if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                     client = clientOptions.httpClientWithTimeout(requestOptions);
                   }
                   try (Response response = client.newCall(okhttpRequest).execute()) {
                     ResponseBody responseBody = response.body();
-                    if (response.isSuccessful()) {
-                      return new VobizApiHttpResponse<>(null, response);
-                    }
                     String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                    if (response.isSuccessful()) {
+                      return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNumberHealthResponse.class), response);
+                    }
                     try {
                       if (response.code() == 404) {
                         throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
@@ -549,87 +577,43 @@ public class RawPhoneNumbersClient {
                 }
 
                 /**
-                 * Move the DID back to the parent pool.
-                 * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                 * 15 days, the request is rejected with <code>409</code> and a
-                 * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                 * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                 * move back immediately.</p>
-                 * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                 * bypass writes a <code>did_assignment_audit</code> row and requires an
-                 * admin-role account.</p>
+                 * Assign a parent-pool DID to a sub-account.
                  */
-                public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
-                    String e164) {
-                  return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build());
+                public VobizApiHttpResponse<Void> assignDidToSubaccount(String authId, String e164,
+                    AssignDidToSubaccountRequest request) {
+                  return assignDidToSubaccount(authId,e164,request,null);
                 }
 
                 /**
-                 * Move the DID back to the parent pool.
-                 * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                 * 15 days, the request is rejected with <code>409</code> and a
-                 * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                 * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                 * move back immediately.</p>
-                 * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                 * bypass writes a <code>did_assignment_audit</code> row and requires an
-                 * admin-role account.</p>
+                 * Assign a parent-pool DID to a sub-account.
                  */
-                public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
-                    String e164, RequestOptions requestOptions) {
-                  return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build(),requestOptions);
-                }
-
-                /**
-                 * Move the DID back to the parent pool.
-                 * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                 * 15 days, the request is rejected with <code>409</code> and a
-                 * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                 * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                 * move back immediately.</p>
-                 * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                 * bypass writes a <code>did_assignment_audit</code> row and requires an
-                 * admin-role account.</p>
-                 */
-                public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
-                    String e164, UnassignDidFromSubaccountRequest request) {
-                  return unassignDidFromSubaccount(authId,e164,request,null);
-                }
-
-                /**
-                 * Move the DID back to the parent pool.
-                 * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                 * 15 days, the request is rejected with <code>409</code> and a
-                 * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                 * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                 * move back immediately.</p>
-                 * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                 * bypass writes a <code>did_assignment_audit</code> row and requires an
-                 * admin-role account.</p>
-                 */
-                public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
-                    String e164, UnassignDidFromSubaccountRequest request,
-                    RequestOptions requestOptions) {
+                public VobizApiHttpResponse<Void> assignDidToSubaccount(String authId, String e164,
+                    AssignDidToSubaccountRequest request, RequestOptions requestOptions) {
                   HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
                     .addPathSegments("api/v1/account")
                     .addPathSegment(authId)
                     .addPathSegments("numbers")
                     .addPathSegment(e164)
-                    .addPathSegments("assign-subaccount");if (request.getForce().isPresent()) {
-                      QueryStringMapper.addQueryParameter(httpUrl, "force", request.getForce().get(), false);
-                    }
-                    if (requestOptions != null) {
+                    .addPathSegments("assign-subaccount");if (requestOptions != null) {
                       requestOptions.getQueryParameters().forEach((_key, _value) -> {
                         httpUrl.addQueryParameter(_key, _value);
                       } );
                     }
-                    Request.Builder _requestBuilder = new Request.Builder()
+                    RequestBody body;
+                    try {
+                      body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                    }
+                    catch(JsonProcessingException e) {
+                      throw new VobizApiException("Failed to serialize request", e);
+                    }
+                    Request okhttpRequest = new Request.Builder()
                       .url(httpUrl.build())
-                      .method("DELETE", null)
+                      .method("POST", body)
                       .headers(Headers.of(clientOptions.headers(requestOptions)))
-                      .addHeader("Accept", "application/json");
-                    Request okhttpRequest = _requestBuilder.build();
+                      .addHeader("Content-Type", "application/json")
+                      .addHeader("Accept", "application/json")
+                      .build();
                     OkHttpClient client = clientOptions.httpClient();
                     if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                       client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -641,9 +625,8 @@ public class RawPhoneNumbersClient {
                       }
                       String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                       try {
-                        switch (response.code()) {
-                          case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response);
-                          case 409:throw new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                        if (response.code() == 404) {
+                          throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                         }
                       }
                       catch (JsonProcessingException ignored) {
@@ -656,4 +639,113 @@ public class RawPhoneNumbersClient {
                       throw new VobizApiException("Network error executing HTTP request", e);
                     }
                   }
-                }
+
+                  /**
+                   * Move the DID back to the parent pool.
+                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                   * 15 days, the request is rejected with <code>409</code> and a
+                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                   * move back immediately.</p>
+                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                   * bypass writes a <code>did_assignment_audit</code> row and requires an
+                   * admin-role account.</p>
+                   */
+                  public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
+                      String e164) {
+                    return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build());
+                  }
+
+                  /**
+                   * Move the DID back to the parent pool.
+                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                   * 15 days, the request is rejected with <code>409</code> and a
+                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                   * move back immediately.</p>
+                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                   * bypass writes a <code>did_assignment_audit</code> row and requires an
+                   * admin-role account.</p>
+                   */
+                  public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
+                      String e164, RequestOptions requestOptions) {
+                    return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build(),requestOptions);
+                  }
+
+                  /**
+                   * Move the DID back to the parent pool.
+                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                   * 15 days, the request is rejected with <code>409</code> and a
+                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                   * move back immediately.</p>
+                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                   * bypass writes a <code>did_assignment_audit</code> row and requires an
+                   * admin-role account.</p>
+                   */
+                  public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
+                      String e164, UnassignDidFromSubaccountRequest request) {
+                    return unassignDidFromSubaccount(authId,e164,request,null);
+                  }
+
+                  /**
+                   * Move the DID back to the parent pool.
+                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                   * 15 days, the request is rejected with <code>409</code> and a
+                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                   * move back immediately.</p>
+                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                   * bypass writes a <code>did_assignment_audit</code> row and requires an
+                   * admin-role account.</p>
+                   */
+                  public VobizApiHttpResponse<Void> unassignDidFromSubaccount(String authId,
+                      String e164, UnassignDidFromSubaccountRequest request,
+                      RequestOptions requestOptions) {
+                    HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+
+                      .addPathSegments("api/v1/account")
+                      .addPathSegment(authId)
+                      .addPathSegments("numbers")
+                      .addPathSegment(e164)
+                      .addPathSegments("assign-subaccount");if (request.getForce().isPresent()) {
+                        QueryStringMapper.addQueryParameter(httpUrl, "force", request.getForce().get(), false);
+                      }
+                      if (requestOptions != null) {
+                        requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                          httpUrl.addQueryParameter(_key, _value);
+                        } );
+                      }
+                      Request.Builder _requestBuilder = new Request.Builder()
+                        .url(httpUrl.build())
+                        .method("DELETE", null)
+                        .headers(Headers.of(clientOptions.headers(requestOptions)))
+                        .addHeader("Accept", "application/json");
+                      Request okhttpRequest = _requestBuilder.build();
+                      OkHttpClient client = clientOptions.httpClient();
+                      if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+                        client = clientOptions.httpClientWithTimeout(requestOptions);
+                      }
+                      try (Response response = client.newCall(okhttpRequest).execute()) {
+                        ResponseBody responseBody = response.body();
+                        if (response.isSuccessful()) {
+                          return new VobizApiHttpResponse<>(null, response);
+                        }
+                        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                        try {
+                          switch (response.code()) {
+                            case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response);
+                            case 409:throw new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                          }
+                        }
+                        catch (JsonProcessingException ignored) {
+                          // unable to map error response, throwing generic error
+                        }
+                        Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                        throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+                      }
+                      catch (IOException e) {
+                        throw new VobizApiException("Network error executing HTTP request", e);
+                      }
+                    }
+                  }

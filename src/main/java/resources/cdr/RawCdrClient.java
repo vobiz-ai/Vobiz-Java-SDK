@@ -94,6 +94,27 @@ public class RawCdrClient {
       if (request.getMinDuration().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "min_duration", request.getMinDuration().get(), false);
       }
+      if (request.getSipCallId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "sip_call_id", request.getSipCallId().get(), false);
+      }
+      if (request.getBridgeUuid().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "bridge_uuid", request.getBridgeUuid().get(), false);
+      }
+      if (request.getHangupCause().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "hangup_cause", request.getHangupCause().get(), false);
+      }
+      if (request.getHangupDisposition().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "hangup_disposition", request.getHangupDisposition().get(), false);
+      }
+      if (request.getContext().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "context", request.getContext().get(), false);
+      }
+      if (request.getCampaignId().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "campaign_id", request.getCampaignId().get(), false);
+      }
+      if (request.getSearch().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
+      }
       if (request.getPage().isPresent()) {
         QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
       }
@@ -183,6 +204,27 @@ public class RawCdrClient {
         }
         if (request.getMinDuration().isPresent()) {
           QueryStringMapper.addQueryParameter(httpUrl, "min_duration", request.getMinDuration().get(), false);
+        }
+        if (request.getSipCallId().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "sip_call_id", request.getSipCallId().get(), false);
+        }
+        if (request.getBridgeUuid().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "bridge_uuid", request.getBridgeUuid().get(), false);
+        }
+        if (request.getHangupCause().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "hangup_cause", request.getHangupCause().get(), false);
+        }
+        if (request.getHangupDisposition().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "hangup_disposition", request.getHangupDisposition().get(), false);
+        }
+        if (request.getContext().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "context", request.getContext().get(), false);
+        }
+        if (request.getCampaignId().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "campaign_id", request.getCampaignId().get(), false);
+        }
+        if (request.getSearch().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
         }
         if (request.getPage().isPresent()) {
           QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
@@ -342,6 +384,27 @@ public class RawCdrClient {
             }
             if (request.getMinDuration().isPresent()) {
               QueryStringMapper.addQueryParameter(httpUrl, "min_duration", request.getMinDuration().get(), false);
+            }
+            if (request.getSipCallId().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "sip_call_id", request.getSipCallId().get(), false);
+            }
+            if (request.getBridgeUuid().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "bridge_uuid", request.getBridgeUuid().get(), false);
+            }
+            if (request.getHangupCause().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "hangup_cause", request.getHangupCause().get(), false);
+            }
+            if (request.getHangupDisposition().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "hangup_disposition", request.getHangupDisposition().get(), false);
+            }
+            if (request.getContext().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "context", request.getContext().get(), false);
+            }
+            if (request.getCampaignId().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "campaign_id", request.getCampaignId().get(), false);
+            }
+            if (request.getSearch().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
             }
             if (requestOptions != null) {
               requestOptions.getQueryParameters().forEach((_key, _value) -> {

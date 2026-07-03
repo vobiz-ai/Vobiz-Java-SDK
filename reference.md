@@ -736,6 +736,11 @@ client.cdr().listCdrs(
         .startDate("2026-03-01")
         .endDate("2026-03-17")
         .minDuration(10)
+        .sipCallId("dD1qwu5VZ5iK3ed5u3uspjY5RKL")
+        .bridgeUuid("4b7ae653-f40d-42f1-b582-6b05dfcd0c0a")
+        .hangupCause("NORMAL_CLEARING")
+        .hangupDisposition("send_refuse")
+        .context("sip-trunking")
         .build()
 );
 ```
@@ -808,6 +813,62 @@ client.cdr().listCdrs(
 <dl>
 <dd>
 
+**sipCallId:** `Optional<String>` — Filter by the SIP Call-ID of the call (matches the cdr's sip_call_id field).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bridgeUuid:** `Optional<String>` — Filter by the UUID of the bridged leg (matches the cdr's bridge_uuid field).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupCause:** `Optional<String>` — Filter by telephony hangup cause, e.g. NORMAL_CLEARING.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupDisposition:** `Optional<String>` — Filter by how the leg was released, e.g. send_refuse.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**context:** `Optional<String>` — Filter by the call context, e.g. sip-trunking.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignId:** `Optional<String>` — Filter by the campaign identifier associated with the call.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Free-text search across CDR fields (numbers, IDs, etc.).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **page:** `Optional<Integer>` — Page number for paginated results.
     
 </dd>
@@ -865,6 +926,11 @@ client.cdr().searchCdrs(
         .startDate("2026-03-01")
         .endDate("2026-03-17")
         .minDuration(10)
+        .sipCallId("dD1qwu5VZ5iK3ed5u3uspjY5RKL")
+        .bridgeUuid("4b7ae653-f40d-42f1-b582-6b05dfcd0c0a")
+        .hangupCause("NORMAL_CLEARING")
+        .hangupDisposition("send_refuse")
+        .context("sip-trunking")
         .build()
 );
 ```
@@ -930,6 +996,62 @@ client.cdr().searchCdrs(
 <dd>
 
 **minDuration:** `Optional<Integer>` — Minimum call duration in seconds. Excludes calls shorter than this value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sipCallId:** `Optional<String>` — Filter by the SIP Call-ID of the call (matches the cdr's sip_call_id field).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bridgeUuid:** `Optional<String>` — Filter by the UUID of the bridged leg (matches the cdr's bridge_uuid field).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupCause:** `Optional<String>` — Filter by telephony hangup cause, e.g. NORMAL_CLEARING.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupDisposition:** `Optional<String>` — Filter by how the leg was released, e.g. send_refuse.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**context:** `Optional<String>` — Filter by the call context, e.g. sip-trunking.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignId:** `Optional<String>` — Filter by the campaign identifier associated with the call.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Free-text search across CDR fields (numbers, IDs, etc.).
     
 </dd>
 </dl>
@@ -3102,6 +3224,94 @@ client.phoneNumbers().unassignNumberFromTrunk(
 <dd>
 
 **phoneNumber:** `String` — The phone number to unassign, URL-encoded (use %2B instead of +).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.phoneNumbers.getNumberHealth(authId, e164) -> GetNumberHealthResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the health & analytics dashboard for one of your numbers: current
+status, spam flag, and call metrics over the selected window (total and
+answered calls, answer rate, minutes, average duration) plus a per-period
+time series of snapshots.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.phoneNumbers().getNumberHealth(
+    "MA_XXXXXX",
+    "%2B919876543210",
+    GetNumberHealthRequest
+        .builder()
+        .days(30)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Your account Auth ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**e164:** `String` — The number in E.164, URL-encoded (use %2B instead of +).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**granularity:** `Optional<GetNumberHealthRequestGranularity>` — Snapshot granularity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**days:** `Optional<Integer>` — Size of the window (in days) for the summary and snapshots.
     
 </dd>
 </dl>
