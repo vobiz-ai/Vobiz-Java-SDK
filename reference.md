@@ -3584,6 +3584,8 @@ client.trunks().createTrunk(
         .name("My Outbound Trunk")
         .trunkType("OUTBOUND")
         .maxConcurrentCalls(10)
+        .webhookUrl("https://your-app.example.com/trunk-webhook")
+        .webhookMethod(CreateTrunkRequestWebhookMethod.POST)
         .build()
 );
 ```
@@ -3625,6 +3627,26 @@ client.trunks().createTrunk(
 <dd>
 
 **maxConcurrentCalls:** `Integer` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookUrl:** `Optional<String>` 
+
+HTTPS URL to receive real-time call-event webhooks (`CallInitiated`
+and `Hangup`) for this trunk. Max 500 characters; private, localhost,
+and cloud-metadata IPs are blocked. See [Trunk Webhooks](/trunks/webhook).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookMethod:** `Optional<CreateTrunkRequestWebhookMethod>` — HTTP method for the webhook callback. Defaults to `POST`.
     
 </dd>
 </dl>
@@ -3788,6 +3810,22 @@ client.trunks().updateTrunk(
 <dd>
 
 **enabled:** `Boolean` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookUrl:** `Optional<String>` — HTTPS URL for real-time call-event webhooks (`CallInitiated`, `Hangup`). See [Trunk Webhooks](/trunks/webhook).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookMethod:** `Optional<UpdateTrunkRequestWebhookMethod>` — HTTP method for the webhook callback. Defaults to `POST`.
     
 </dd>
 </dl>

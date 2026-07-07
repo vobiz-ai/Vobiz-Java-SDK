@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
 import java.lang.Object;
@@ -17,7 +18,9 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import resources.trunks.types.UpdateTrunkRequestWebhookMethod;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -30,13 +33,20 @@ public final class UpdateTrunkRequest {
 
   private final boolean enabled;
 
+  private final Optional<String> webhookUrl;
+
+  private final Optional<UpdateTrunkRequestWebhookMethod> webhookMethod;
+
   private final Map<String, Object> additionalProperties;
 
   private UpdateTrunkRequest(String name, int maxConcurrentCalls, boolean enabled,
+      Optional<String> webhookUrl, Optional<UpdateTrunkRequestWebhookMethod> webhookMethod,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.maxConcurrentCalls = maxConcurrentCalls;
     this.enabled = enabled;
+    this.webhookUrl = webhookUrl;
+    this.webhookMethod = webhookMethod;
     this.additionalProperties = additionalProperties;
   }
 
@@ -55,6 +65,22 @@ public final class UpdateTrunkRequest {
     return enabled;
   }
 
+  /**
+   * @return HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.
+   */
+  @JsonProperty("webhook_url")
+  public Optional<String> getWebhookUrl() {
+    return webhookUrl;
+  }
+
+  /**
+   * @return HTTP method for the webhook callback. Defaults to <code>POST</code>.
+   */
+  @JsonProperty("webhook_method")
+  public Optional<UpdateTrunkRequestWebhookMethod> getWebhookMethod() {
+    return webhookMethod;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -67,12 +93,12 @@ public final class UpdateTrunkRequest {
   }
 
   private boolean equalTo(UpdateTrunkRequest other) {
-    return name.equals(other.name) && maxConcurrentCalls == other.maxConcurrentCalls && enabled == other.enabled;
+    return name.equals(other.name) && maxConcurrentCalls == other.maxConcurrentCalls && enabled == other.enabled && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.maxConcurrentCalls, this.enabled);
+    return Objects.hash(this.name, this.maxConcurrentCalls, this.enabled, this.webhookUrl, this.webhookMethod);
   }
 
   @java.lang.Override
@@ -104,6 +130,20 @@ public final class UpdateTrunkRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     */
+    _FinalStage webhookUrl(Optional<String> webhookUrl);
+
+    _FinalStage webhookUrl(String webhookUrl);
+
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     */
+    _FinalStage webhookMethod(Optional<UpdateTrunkRequestWebhookMethod> webhookMethod);
+
+    _FinalStage webhookMethod(UpdateTrunkRequestWebhookMethod webhookMethod);
   }
 
   @JsonIgnoreProperties(
@@ -116,6 +156,10 @@ public final class UpdateTrunkRequest {
 
     private boolean enabled;
 
+    private Optional<UpdateTrunkRequestWebhookMethod> webhookMethod = Optional.empty();
+
+    private Optional<String> webhookUrl = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -127,6 +171,8 @@ public final class UpdateTrunkRequest {
       name(other.getName());
       maxConcurrentCalls(other.getMaxConcurrentCalls());
       enabled(other.getEnabled());
+      webhookUrl(other.getWebhookUrl());
+      webhookMethod(other.getWebhookMethod());
       return this;
     }
 
@@ -151,9 +197,55 @@ public final class UpdateTrunkRequest {
       return this;
     }
 
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage webhookMethod(UpdateTrunkRequestWebhookMethod webhookMethod) {
+      this.webhookMethod = Optional.ofNullable(webhookMethod);
+      return this;
+    }
+
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "webhook_method",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage webhookMethod(Optional<UpdateTrunkRequestWebhookMethod> webhookMethod) {
+      this.webhookMethod = webhookMethod;
+      return this;
+    }
+
+    /**
+     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage webhookUrl(String webhookUrl) {
+      this.webhookUrl = Optional.ofNullable(webhookUrl);
+      return this;
+    }
+
+    /**
+     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "webhook_url",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage webhookUrl(Optional<String> webhookUrl) {
+      this.webhookUrl = webhookUrl;
+      return this;
+    }
+
     @java.lang.Override
     public UpdateTrunkRequest build() {
-      return new UpdateTrunkRequest(name, maxConcurrentCalls, enabled, additionalProperties);
+      return new UpdateTrunkRequest(name, maxConcurrentCalls, enabled, webhookUrl, webhookMethod, additionalProperties);
     }
 
     @java.lang.Override

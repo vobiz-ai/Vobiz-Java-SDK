@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
 import java.lang.Object;
@@ -17,7 +18,9 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import resources.trunks.types.CreateTrunkRequestWebhookMethod;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -30,13 +33,20 @@ public final class CreateTrunkRequest {
 
   private final int maxConcurrentCalls;
 
+  private final Optional<String> webhookUrl;
+
+  private final Optional<CreateTrunkRequestWebhookMethod> webhookMethod;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateTrunkRequest(String name, String trunkType, int maxConcurrentCalls,
+      Optional<String> webhookUrl, Optional<CreateTrunkRequestWebhookMethod> webhookMethod,
       Map<String, Object> additionalProperties) {
     this.name = name;
     this.trunkType = trunkType;
     this.maxConcurrentCalls = maxConcurrentCalls;
+    this.webhookUrl = webhookUrl;
+    this.webhookMethod = webhookMethod;
     this.additionalProperties = additionalProperties;
   }
 
@@ -55,6 +65,24 @@ public final class CreateTrunkRequest {
     return maxConcurrentCalls;
   }
 
+  /**
+   * @return HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
+   * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
+   * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.
+   */
+  @JsonProperty("webhook_url")
+  public Optional<String> getWebhookUrl() {
+    return webhookUrl;
+  }
+
+  /**
+   * @return HTTP method for the webhook callback. Defaults to <code>POST</code>.
+   */
+  @JsonProperty("webhook_method")
+  public Optional<CreateTrunkRequestWebhookMethod> getWebhookMethod() {
+    return webhookMethod;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -67,12 +95,12 @@ public final class CreateTrunkRequest {
   }
 
   private boolean equalTo(CreateTrunkRequest other) {
-    return name.equals(other.name) && trunkType.equals(other.trunkType) && maxConcurrentCalls == other.maxConcurrentCalls;
+    return name.equals(other.name) && trunkType.equals(other.trunkType) && maxConcurrentCalls == other.maxConcurrentCalls && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.trunkType, this.maxConcurrentCalls);
+    return Objects.hash(this.name, this.trunkType, this.maxConcurrentCalls, this.webhookUrl, this.webhookMethod);
   }
 
   @java.lang.Override
@@ -104,6 +132,22 @@ public final class CreateTrunkRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
+     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
+     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     */
+    _FinalStage webhookUrl(Optional<String> webhookUrl);
+
+    _FinalStage webhookUrl(String webhookUrl);
+
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     */
+    _FinalStage webhookMethod(Optional<CreateTrunkRequestWebhookMethod> webhookMethod);
+
+    _FinalStage webhookMethod(CreateTrunkRequestWebhookMethod webhookMethod);
   }
 
   @JsonIgnoreProperties(
@@ -116,6 +160,10 @@ public final class CreateTrunkRequest {
 
     private int maxConcurrentCalls;
 
+    private Optional<CreateTrunkRequestWebhookMethod> webhookMethod = Optional.empty();
+
+    private Optional<String> webhookUrl = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -127,6 +175,8 @@ public final class CreateTrunkRequest {
       name(other.getName());
       trunkType(other.getTrunkType());
       maxConcurrentCalls(other.getMaxConcurrentCalls());
+      webhookUrl(other.getWebhookUrl());
+      webhookMethod(other.getWebhookMethod());
       return this;
     }
 
@@ -151,9 +201,59 @@ public final class CreateTrunkRequest {
       return this;
     }
 
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage webhookMethod(CreateTrunkRequestWebhookMethod webhookMethod) {
+      this.webhookMethod = Optional.ofNullable(webhookMethod);
+      return this;
+    }
+
+    /**
+     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "webhook_method",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage webhookMethod(Optional<CreateTrunkRequestWebhookMethod> webhookMethod) {
+      this.webhookMethod = webhookMethod;
+      return this;
+    }
+
+    /**
+     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
+     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
+     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage webhookUrl(String webhookUrl) {
+      this.webhookUrl = Optional.ofNullable(webhookUrl);
+      return this;
+    }
+
+    /**
+     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
+     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
+     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "webhook_url",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage webhookUrl(Optional<String> webhookUrl) {
+      this.webhookUrl = webhookUrl;
+      return this;
+    }
+
     @java.lang.Override
     public CreateTrunkRequest build() {
-      return new CreateTrunkRequest(name, trunkType, maxConcurrentCalls, additionalProperties);
+      return new CreateTrunkRequest(name, trunkType, maxConcurrentCalls, webhookUrl, webhookMethod, additionalProperties);
     }
 
     @java.lang.Override
