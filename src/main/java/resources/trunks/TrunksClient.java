@@ -113,6 +113,21 @@ public class TrunksClient {
   /**
    * Update a SIP trunk's name, configuration, or status.
    */
+  public UpdateTrunkResponse updateTrunk(String authId, String trunkId) {
+    return this.rawClient.updateTrunk(authId, trunkId).body();
+  }
+
+  /**
+   * Update a SIP trunk's name, configuration, or status.
+   */
+  public UpdateTrunkResponse updateTrunk(String authId, String trunkId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateTrunk(authId, trunkId, requestOptions).body();
+  }
+
+  /**
+   * Update a SIP trunk's name, configuration, or status.
+   */
   public UpdateTrunkResponse updateTrunk(String authId, String trunkId,
       UpdateTrunkRequest request) {
     return this.rawClient.updateTrunk(authId, trunkId, request).body();

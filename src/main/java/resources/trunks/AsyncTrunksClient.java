@@ -117,6 +117,21 @@ public class AsyncTrunksClient {
   /**
    * Update a SIP trunk's name, configuration, or status.
    */
+  public CompletableFuture<UpdateTrunkResponse> updateTrunk(String authId, String trunkId) {
+    return this.rawClient.updateTrunk(authId, trunkId).thenApply(response -> response.body());
+  }
+
+  /**
+   * Update a SIP trunk's name, configuration, or status.
+   */
+  public CompletableFuture<UpdateTrunkResponse> updateTrunk(String authId, String trunkId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateTrunk(authId, trunkId, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Update a SIP trunk's name, configuration, or status.
+   */
   public CompletableFuture<UpdateTrunkResponse> updateTrunk(String authId, String trunkId,
       UpdateTrunkRequest request) {
     return this.rawClient.updateTrunk(authId, trunkId, request).thenApply(response -> response.body());

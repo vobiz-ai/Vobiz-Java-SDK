@@ -222,6 +222,22 @@ public class RawTrunksClient {
         /**
          * Update a SIP trunk's name, configuration, or status.
          */
+        public VobizApiHttpResponse<UpdateTrunkResponse> updateTrunk(String authId,
+            String trunkId) {
+          return updateTrunk(authId,trunkId,UpdateTrunkRequest.builder().build());
+        }
+
+        /**
+         * Update a SIP trunk's name, configuration, or status.
+         */
+        public VobizApiHttpResponse<UpdateTrunkResponse> updateTrunk(String authId, String trunkId,
+            RequestOptions requestOptions) {
+          return updateTrunk(authId,trunkId,UpdateTrunkRequest.builder().build(),requestOptions);
+        }
+
+        /**
+         * Update a SIP trunk's name, configuration, or status.
+         */
         public VobizApiHttpResponse<UpdateTrunkResponse> updateTrunk(String authId, String trunkId,
             UpdateTrunkRequest request) {
           return updateTrunk(authId,trunkId,request,null);

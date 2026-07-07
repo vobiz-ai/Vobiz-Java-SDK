@@ -13,13 +13,17 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Boolean;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
+import resources.trunks.types.UpdateTrunkRequestTransport;
+import resources.trunks.types.UpdateTrunkRequestTrunkDirection;
+import resources.trunks.types.UpdateTrunkRequestTrunkStatus;
 import resources.trunks.types.UpdateTrunkRequestWebhookMethod;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -27,58 +31,195 @@ import resources.trunks.types.UpdateTrunkRequestWebhookMethod;
     builder = UpdateTrunkRequest.Builder.class
 )
 public final class UpdateTrunkRequest {
-  private final String name;
+  private final Optional<String> name;
 
-  private final int maxConcurrentCalls;
+  private final Optional<UpdateTrunkRequestTrunkDirection> trunkDirection;
 
-  private final boolean enabled;
+  private final Optional<UpdateTrunkRequestTrunkStatus> trunkStatus;
+
+  private final Optional<Boolean> secure;
+
+  private final Optional<String> trunkDomain;
+
+  private final Optional<UpdateTrunkRequestTransport> transport;
+
+  private final Optional<String> inboundDestination;
+
+  private final Optional<String> description;
+
+  private final Optional<Integer> concurrentCallsLimit;
+
+  private final Optional<Integer> cpsLimit;
+
+  private final Optional<String> credentialUuid;
+
+  private final Optional<String> ipaclUuid;
+
+  private final Optional<String> primaryUriUuid;
+
+  private final Optional<String> fallbackUriUuid;
+
+  private final Optional<Boolean> recording;
+
+  private final Optional<Boolean> enableTranscription;
+
+  private final Optional<Boolean> piiRedaction;
+
+  private final Optional<String> piiEntityTypes;
 
   private final Optional<String> webhookUrl;
 
   private final Optional<UpdateTrunkRequestWebhookMethod> webhookMethod;
 
+  private final Optional<Boolean> recordingWebhookEnabled;
+
   private final Map<String, Object> additionalProperties;
 
-  private UpdateTrunkRequest(String name, int maxConcurrentCalls, boolean enabled,
-      Optional<String> webhookUrl, Optional<UpdateTrunkRequestWebhookMethod> webhookMethod,
-      Map<String, Object> additionalProperties) {
+  private UpdateTrunkRequest(Optional<String> name,
+      Optional<UpdateTrunkRequestTrunkDirection> trunkDirection,
+      Optional<UpdateTrunkRequestTrunkStatus> trunkStatus, Optional<Boolean> secure,
+      Optional<String> trunkDomain, Optional<UpdateTrunkRequestTransport> transport,
+      Optional<String> inboundDestination, Optional<String> description,
+      Optional<Integer> concurrentCallsLimit, Optional<Integer> cpsLimit,
+      Optional<String> credentialUuid, Optional<String> ipaclUuid, Optional<String> primaryUriUuid,
+      Optional<String> fallbackUriUuid, Optional<Boolean> recording,
+      Optional<Boolean> enableTranscription, Optional<Boolean> piiRedaction,
+      Optional<String> piiEntityTypes, Optional<String> webhookUrl,
+      Optional<UpdateTrunkRequestWebhookMethod> webhookMethod,
+      Optional<Boolean> recordingWebhookEnabled, Map<String, Object> additionalProperties) {
     this.name = name;
-    this.maxConcurrentCalls = maxConcurrentCalls;
-    this.enabled = enabled;
+    this.trunkDirection = trunkDirection;
+    this.trunkStatus = trunkStatus;
+    this.secure = secure;
+    this.trunkDomain = trunkDomain;
+    this.transport = transport;
+    this.inboundDestination = inboundDestination;
+    this.description = description;
+    this.concurrentCallsLimit = concurrentCallsLimit;
+    this.cpsLimit = cpsLimit;
+    this.credentialUuid = credentialUuid;
+    this.ipaclUuid = ipaclUuid;
+    this.primaryUriUuid = primaryUriUuid;
+    this.fallbackUriUuid = fallbackUriUuid;
+    this.recording = recording;
+    this.enableTranscription = enableTranscription;
+    this.piiRedaction = piiRedaction;
+    this.piiEntityTypes = piiEntityTypes;
     this.webhookUrl = webhookUrl;
     this.webhookMethod = webhookMethod;
+    this.recordingWebhookEnabled = recordingWebhookEnabled;
     this.additionalProperties = additionalProperties;
   }
 
   @JsonProperty("name")
-  public String getName() {
+  public Optional<String> getName() {
     return name;
   }
 
-  @JsonProperty("max_concurrent_calls")
-  public int getMaxConcurrentCalls() {
-    return maxConcurrentCalls;
+  /**
+   * @return Direction of the trunk — <code>inbound</code> or <code>outbound</code> only.
+   */
+  @JsonProperty("trunk_direction")
+  public Optional<UpdateTrunkRequestTrunkDirection> getTrunkDirection() {
+    return trunkDirection;
   }
 
-  @JsonProperty("enabled")
-  public boolean getEnabled() {
-    return enabled;
+  @JsonProperty("trunk_status")
+  public Optional<UpdateTrunkRequestTrunkStatus> getTrunkStatus() {
+    return trunkStatus;
+  }
+
+  @JsonProperty("secure")
+  public Optional<Boolean> getSecure() {
+    return secure;
+  }
+
+  @JsonProperty("trunk_domain")
+  public Optional<String> getTrunkDomain() {
+    return trunkDomain;
+  }
+
+  @JsonProperty("transport")
+  public Optional<UpdateTrunkRequestTransport> getTransport() {
+    return transport;
+  }
+
+  @JsonProperty("inbound_destination")
+  public Optional<String> getInboundDestination() {
+    return inboundDestination;
+  }
+
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  @JsonProperty("concurrent_calls_limit")
+  public Optional<Integer> getConcurrentCallsLimit() {
+    return concurrentCallsLimit;
+  }
+
+  @JsonProperty("cps_limit")
+  public Optional<Integer> getCpsLimit() {
+    return cpsLimit;
+  }
+
+  @JsonProperty("credential_uuid")
+  public Optional<String> getCredentialUuid() {
+    return credentialUuid;
+  }
+
+  @JsonProperty("ipacl_uuid")
+  public Optional<String> getIpaclUuid() {
+    return ipaclUuid;
+  }
+
+  @JsonProperty("primary_uri_uuid")
+  public Optional<String> getPrimaryUriUuid() {
+    return primaryUriUuid;
+  }
+
+  @JsonProperty("fallback_uri_uuid")
+  public Optional<String> getFallbackUriUuid() {
+    return fallbackUriUuid;
+  }
+
+  @JsonProperty("recording")
+  public Optional<Boolean> getRecording() {
+    return recording;
+  }
+
+  @JsonProperty("enable_transcription")
+  public Optional<Boolean> getEnableTranscription() {
+    return enableTranscription;
+  }
+
+  @JsonProperty("pii_redaction")
+  public Optional<Boolean> getPiiRedaction() {
+    return piiRedaction;
+  }
+
+  @JsonProperty("pii_entity_types")
+  public Optional<String> getPiiEntityTypes() {
+    return piiEntityTypes;
   }
 
   /**
-   * @return HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.
+   * @return Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>). Public http/https URL; SSRF-validated. See <a href="/trunks/webhook">Trunk Webhooks</a>.
    */
   @JsonProperty("webhook_url")
   public Optional<String> getWebhookUrl() {
     return webhookUrl;
   }
 
-  /**
-   * @return HTTP method for the webhook callback. Defaults to <code>POST</code>.
-   */
   @JsonProperty("webhook_method")
   public Optional<UpdateTrunkRequestWebhookMethod> getWebhookMethod() {
     return webhookMethod;
+  }
+
+  @JsonProperty("recording_webhook_enabled")
+  public Optional<Boolean> getRecordingWebhookEnabled() {
+    return recordingWebhookEnabled;
   }
 
   @java.lang.Override
@@ -93,12 +234,12 @@ public final class UpdateTrunkRequest {
   }
 
   private boolean equalTo(UpdateTrunkRequest other) {
-    return name.equals(other.name) && maxConcurrentCalls == other.maxConcurrentCalls && enabled == other.enabled && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod);
+    return name.equals(other.name) && trunkDirection.equals(other.trunkDirection) && trunkStatus.equals(other.trunkStatus) && secure.equals(other.secure) && trunkDomain.equals(other.trunkDomain) && transport.equals(other.transport) && inboundDestination.equals(other.inboundDestination) && description.equals(other.description) && concurrentCallsLimit.equals(other.concurrentCallsLimit) && cpsLimit.equals(other.cpsLimit) && credentialUuid.equals(other.credentialUuid) && ipaclUuid.equals(other.ipaclUuid) && primaryUriUuid.equals(other.primaryUriUuid) && fallbackUriUuid.equals(other.fallbackUriUuid) && recording.equals(other.recording) && enableTranscription.equals(other.enableTranscription) && piiRedaction.equals(other.piiRedaction) && piiEntityTypes.equals(other.piiEntityTypes) && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod) && recordingWebhookEnabled.equals(other.recordingWebhookEnabled);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.maxConcurrentCalls, this.enabled, this.webhookUrl, this.webhookMethod);
+    return Objects.hash(this.name, this.trunkDirection, this.trunkStatus, this.secure, this.trunkDomain, this.transport, this.inboundDestination, this.description, this.concurrentCallsLimit, this.cpsLimit, this.credentialUuid, this.ipaclUuid, this.primaryUriUuid, this.fallbackUriUuid, this.recording, this.enableTranscription, this.piiRedaction, this.piiEntityTypes, this.webhookUrl, this.webhookMethod, this.recordingWebhookEnabled);
   }
 
   @java.lang.Override
@@ -106,59 +247,55 @@ public final class UpdateTrunkRequest {
     return ObjectMappers.stringify(this);
   }
 
-  public static NameStage builder() {
+  public static Builder builder() {
     return new Builder();
-  }
-
-  public interface NameStage {
-    MaxConcurrentCallsStage name(@NotNull String name);
-
-    Builder from(UpdateTrunkRequest other);
-  }
-
-  public interface MaxConcurrentCallsStage {
-    EnabledStage maxConcurrentCalls(int maxConcurrentCalls);
-  }
-
-  public interface EnabledStage {
-    _FinalStage enabled(boolean enabled);
-  }
-
-  public interface _FinalStage {
-    UpdateTrunkRequest build();
-
-    _FinalStage additionalProperty(String key, Object value);
-
-    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-    /**
-     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
-     */
-    _FinalStage webhookUrl(Optional<String> webhookUrl);
-
-    _FinalStage webhookUrl(String webhookUrl);
-
-    /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
-     */
-    _FinalStage webhookMethod(Optional<UpdateTrunkRequestWebhookMethod> webhookMethod);
-
-    _FinalStage webhookMethod(UpdateTrunkRequestWebhookMethod webhookMethod);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, MaxConcurrentCallsStage, EnabledStage, _FinalStage {
-    private String name;
+  public static final class Builder {
+    private Optional<String> name = Optional.empty();
 
-    private int maxConcurrentCalls;
+    private Optional<UpdateTrunkRequestTrunkDirection> trunkDirection = Optional.empty();
 
-    private boolean enabled;
+    private Optional<UpdateTrunkRequestTrunkStatus> trunkStatus = Optional.empty();
+
+    private Optional<Boolean> secure = Optional.empty();
+
+    private Optional<String> trunkDomain = Optional.empty();
+
+    private Optional<UpdateTrunkRequestTransport> transport = Optional.empty();
+
+    private Optional<String> inboundDestination = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<Integer> concurrentCallsLimit = Optional.empty();
+
+    private Optional<Integer> cpsLimit = Optional.empty();
+
+    private Optional<String> credentialUuid = Optional.empty();
+
+    private Optional<String> ipaclUuid = Optional.empty();
+
+    private Optional<String> primaryUriUuid = Optional.empty();
+
+    private Optional<String> fallbackUriUuid = Optional.empty();
+
+    private Optional<Boolean> recording = Optional.empty();
+
+    private Optional<Boolean> enableTranscription = Optional.empty();
+
+    private Optional<Boolean> piiRedaction = Optional.empty();
+
+    private Optional<String> piiEntityTypes = Optional.empty();
+
+    private Optional<String> webhookUrl = Optional.empty();
 
     private Optional<UpdateTrunkRequestWebhookMethod> webhookMethod = Optional.empty();
 
-    private Optional<String> webhookUrl = Optional.empty();
+    private Optional<Boolean> recordingWebhookEnabled = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -166,95 +303,340 @@ public final class UpdateTrunkRequest {
     private Builder() {
     }
 
-    @java.lang.Override
     public Builder from(UpdateTrunkRequest other) {
       name(other.getName());
-      maxConcurrentCalls(other.getMaxConcurrentCalls());
-      enabled(other.getEnabled());
+      trunkDirection(other.getTrunkDirection());
+      trunkStatus(other.getTrunkStatus());
+      secure(other.getSecure());
+      trunkDomain(other.getTrunkDomain());
+      transport(other.getTransport());
+      inboundDestination(other.getInboundDestination());
+      description(other.getDescription());
+      concurrentCallsLimit(other.getConcurrentCallsLimit());
+      cpsLimit(other.getCpsLimit());
+      credentialUuid(other.getCredentialUuid());
+      ipaclUuid(other.getIpaclUuid());
+      primaryUriUuid(other.getPrimaryUriUuid());
+      fallbackUriUuid(other.getFallbackUriUuid());
+      recording(other.getRecording());
+      enableTranscription(other.getEnableTranscription());
+      piiRedaction(other.getPiiRedaction());
+      piiEntityTypes(other.getPiiEntityTypes());
       webhookUrl(other.getWebhookUrl());
       webhookMethod(other.getWebhookMethod());
+      recordingWebhookEnabled(other.getRecordingWebhookEnabled());
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("name")
-    public MaxConcurrentCallsStage name(@NotNull String name) {
-      this.name = Objects.requireNonNull(name, "name must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("max_concurrent_calls")
-    public EnabledStage maxConcurrentCalls(int maxConcurrentCalls) {
-      this.maxConcurrentCalls = maxConcurrentCalls;
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("enabled")
-    public _FinalStage enabled(boolean enabled) {
-      this.enabled = enabled;
-      return this;
-    }
-
-    /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage webhookMethod(UpdateTrunkRequestWebhookMethod webhookMethod) {
-      this.webhookMethod = Optional.ofNullable(webhookMethod);
-      return this;
-    }
-
-    /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
-     */
-    @java.lang.Override
     @JsonSetter(
-        value = "webhook_method",
+        value = "name",
         nulls = Nulls.SKIP
     )
-    public _FinalStage webhookMethod(Optional<UpdateTrunkRequestWebhookMethod> webhookMethod) {
-      this.webhookMethod = webhookMethod;
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
       return this;
     }
 
     /**
-     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
+     * <p>Direction of the trunk — <code>inbound</code> or <code>outbound</code> only.</p>
      */
-    @java.lang.Override
-    public _FinalStage webhookUrl(String webhookUrl) {
-      this.webhookUrl = Optional.ofNullable(webhookUrl);
+    @JsonSetter(
+        value = "trunk_direction",
+        nulls = Nulls.SKIP
+    )
+    public Builder trunkDirection(Optional<UpdateTrunkRequestTrunkDirection> trunkDirection) {
+      this.trunkDirection = trunkDirection;
+      return this;
+    }
+
+    public Builder trunkDirection(UpdateTrunkRequestTrunkDirection trunkDirection) {
+      this.trunkDirection = Optional.ofNullable(trunkDirection);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "trunk_status",
+        nulls = Nulls.SKIP
+    )
+    public Builder trunkStatus(Optional<UpdateTrunkRequestTrunkStatus> trunkStatus) {
+      this.trunkStatus = trunkStatus;
+      return this;
+    }
+
+    public Builder trunkStatus(UpdateTrunkRequestTrunkStatus trunkStatus) {
+      this.trunkStatus = Optional.ofNullable(trunkStatus);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "secure",
+        nulls = Nulls.SKIP
+    )
+    public Builder secure(Optional<Boolean> secure) {
+      this.secure = secure;
+      return this;
+    }
+
+    public Builder secure(Boolean secure) {
+      this.secure = Optional.ofNullable(secure);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "trunk_domain",
+        nulls = Nulls.SKIP
+    )
+    public Builder trunkDomain(Optional<String> trunkDomain) {
+      this.trunkDomain = trunkDomain;
+      return this;
+    }
+
+    public Builder trunkDomain(String trunkDomain) {
+      this.trunkDomain = Optional.ofNullable(trunkDomain);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "transport",
+        nulls = Nulls.SKIP
+    )
+    public Builder transport(Optional<UpdateTrunkRequestTransport> transport) {
+      this.transport = transport;
+      return this;
+    }
+
+    public Builder transport(UpdateTrunkRequestTransport transport) {
+      this.transport = Optional.ofNullable(transport);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "inbound_destination",
+        nulls = Nulls.SKIP
+    )
+    public Builder inboundDestination(Optional<String> inboundDestination) {
+      this.inboundDestination = inboundDestination;
+      return this;
+    }
+
+    public Builder inboundDestination(String inboundDestination) {
+      this.inboundDestination = Optional.ofNullable(inboundDestination);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "description",
+        nulls = Nulls.SKIP
+    )
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "concurrent_calls_limit",
+        nulls = Nulls.SKIP
+    )
+    public Builder concurrentCallsLimit(Optional<Integer> concurrentCallsLimit) {
+      this.concurrentCallsLimit = concurrentCallsLimit;
+      return this;
+    }
+
+    public Builder concurrentCallsLimit(Integer concurrentCallsLimit) {
+      this.concurrentCallsLimit = Optional.ofNullable(concurrentCallsLimit);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "cps_limit",
+        nulls = Nulls.SKIP
+    )
+    public Builder cpsLimit(Optional<Integer> cpsLimit) {
+      this.cpsLimit = cpsLimit;
+      return this;
+    }
+
+    public Builder cpsLimit(Integer cpsLimit) {
+      this.cpsLimit = Optional.ofNullable(cpsLimit);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "credential_uuid",
+        nulls = Nulls.SKIP
+    )
+    public Builder credentialUuid(Optional<String> credentialUuid) {
+      this.credentialUuid = credentialUuid;
+      return this;
+    }
+
+    public Builder credentialUuid(String credentialUuid) {
+      this.credentialUuid = Optional.ofNullable(credentialUuid);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "ipacl_uuid",
+        nulls = Nulls.SKIP
+    )
+    public Builder ipaclUuid(Optional<String> ipaclUuid) {
+      this.ipaclUuid = ipaclUuid;
+      return this;
+    }
+
+    public Builder ipaclUuid(String ipaclUuid) {
+      this.ipaclUuid = Optional.ofNullable(ipaclUuid);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "primary_uri_uuid",
+        nulls = Nulls.SKIP
+    )
+    public Builder primaryUriUuid(Optional<String> primaryUriUuid) {
+      this.primaryUriUuid = primaryUriUuid;
+      return this;
+    }
+
+    public Builder primaryUriUuid(String primaryUriUuid) {
+      this.primaryUriUuid = Optional.ofNullable(primaryUriUuid);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "fallback_uri_uuid",
+        nulls = Nulls.SKIP
+    )
+    public Builder fallbackUriUuid(Optional<String> fallbackUriUuid) {
+      this.fallbackUriUuid = fallbackUriUuid;
+      return this;
+    }
+
+    public Builder fallbackUriUuid(String fallbackUriUuid) {
+      this.fallbackUriUuid = Optional.ofNullable(fallbackUriUuid);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "recording",
+        nulls = Nulls.SKIP
+    )
+    public Builder recording(Optional<Boolean> recording) {
+      this.recording = recording;
+      return this;
+    }
+
+    public Builder recording(Boolean recording) {
+      this.recording = Optional.ofNullable(recording);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "enable_transcription",
+        nulls = Nulls.SKIP
+    )
+    public Builder enableTranscription(Optional<Boolean> enableTranscription) {
+      this.enableTranscription = enableTranscription;
+      return this;
+    }
+
+    public Builder enableTranscription(Boolean enableTranscription) {
+      this.enableTranscription = Optional.ofNullable(enableTranscription);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "pii_redaction",
+        nulls = Nulls.SKIP
+    )
+    public Builder piiRedaction(Optional<Boolean> piiRedaction) {
+      this.piiRedaction = piiRedaction;
+      return this;
+    }
+
+    public Builder piiRedaction(Boolean piiRedaction) {
+      this.piiRedaction = Optional.ofNullable(piiRedaction);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "pii_entity_types",
+        nulls = Nulls.SKIP
+    )
+    public Builder piiEntityTypes(Optional<String> piiEntityTypes) {
+      this.piiEntityTypes = piiEntityTypes;
+      return this;
+    }
+
+    public Builder piiEntityTypes(String piiEntityTypes) {
+      this.piiEntityTypes = Optional.ofNullable(piiEntityTypes);
       return this;
     }
 
     /**
-     * <p>HTTPS URL for real-time call-event webhooks (<code>CallInitiated</code>, <code>Hangup</code>). See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>). Public http/https URL; SSRF-validated. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      */
-    @java.lang.Override
     @JsonSetter(
         value = "webhook_url",
         nulls = Nulls.SKIP
     )
-    public _FinalStage webhookUrl(Optional<String> webhookUrl) {
+    public Builder webhookUrl(Optional<String> webhookUrl) {
       this.webhookUrl = webhookUrl;
       return this;
     }
 
-    @java.lang.Override
-    public UpdateTrunkRequest build() {
-      return new UpdateTrunkRequest(name, maxConcurrentCalls, enabled, webhookUrl, webhookMethod, additionalProperties);
+    public Builder webhookUrl(String webhookUrl) {
+      this.webhookUrl = Optional.ofNullable(webhookUrl);
+      return this;
     }
 
-    @java.lang.Override
+    @JsonSetter(
+        value = "webhook_method",
+        nulls = Nulls.SKIP
+    )
+    public Builder webhookMethod(Optional<UpdateTrunkRequestWebhookMethod> webhookMethod) {
+      this.webhookMethod = webhookMethod;
+      return this;
+    }
+
+    public Builder webhookMethod(UpdateTrunkRequestWebhookMethod webhookMethod) {
+      this.webhookMethod = Optional.ofNullable(webhookMethod);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "recording_webhook_enabled",
+        nulls = Nulls.SKIP
+    )
+    public Builder recordingWebhookEnabled(Optional<Boolean> recordingWebhookEnabled) {
+      this.recordingWebhookEnabled = recordingWebhookEnabled;
+      return this;
+    }
+
+    public Builder recordingWebhookEnabled(Boolean recordingWebhookEnabled) {
+      this.recordingWebhookEnabled = Optional.ofNullable(recordingWebhookEnabled);
+      return this;
+    }
+
+    public UpdateTrunkRequest build() {
+      return new UpdateTrunkRequest(name, trunkDirection, trunkStatus, secure, trunkDomain, transport, inboundDestination, description, concurrentCallsLimit, cpsLimit, credentialUuid, ipaclUuid, primaryUriUuid, fallbackUriUuid, recording, enableTranscription, piiRedaction, piiEntityTypes, webhookUrl, webhookMethod, recordingWebhookEnabled, additionalProperties);
+    }
+
     public Builder additionalProperty(String key, Object value) {
       this.additionalProperties.put(key, value);
       return this;
     }
 
-    @java.lang.Override
     public Builder additionalProperties(Map<String, Object> additionalProperties) {
       this.additionalProperties.putAll(additionalProperties);
       return this;

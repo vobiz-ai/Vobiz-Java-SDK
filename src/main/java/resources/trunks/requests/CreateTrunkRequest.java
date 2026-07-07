@@ -13,13 +13,19 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Boolean;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
+import resources.trunks.types.CreateTrunkRequestTransport;
+import resources.trunks.types.CreateTrunkRequestTrunkDirection;
+import resources.trunks.types.CreateTrunkRequestTrunkStatus;
 import resources.trunks.types.CreateTrunkRequestWebhookMethod;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -29,46 +35,231 @@ import resources.trunks.types.CreateTrunkRequestWebhookMethod;
 public final class CreateTrunkRequest {
   private final String name;
 
-  private final String trunkType;
+  private final Optional<CreateTrunkRequestTrunkDirection> trunkDirection;
 
-  private final int maxConcurrentCalls;
+  private final Optional<CreateTrunkRequestTrunkStatus> trunkStatus;
+
+  private final Optional<Boolean> secure;
+
+  private final Optional<String> trunkDomain;
+
+  private final Optional<CreateTrunkRequestTransport> transport;
+
+  private final Optional<String> inboundDestination;
+
+  private final Optional<String> description;
+
+  private final Optional<Integer> concurrentCallsLimit;
+
+  private final Optional<Integer> cpsLimit;
+
+  private final Optional<String> credentialUuid;
+
+  private final Optional<String> ipaclUuid;
+
+  private final Optional<String> primaryUriUuid;
+
+  private final Optional<String> fallbackUriUuid;
+
+  private final Optional<Boolean> recording;
+
+  private final Optional<Boolean> enableTranscription;
+
+  private final Optional<Boolean> piiRedaction;
+
+  private final Optional<String> piiEntityTypes;
 
   private final Optional<String> webhookUrl;
 
   private final Optional<CreateTrunkRequestWebhookMethod> webhookMethod;
 
+  private final Optional<Boolean> recordingWebhookEnabled;
+
+  private final Optional<String> username;
+
+  private final Optional<String> password;
+
+  private final Optional<List<String>> ipWhitelist;
+
   private final Map<String, Object> additionalProperties;
 
-  private CreateTrunkRequest(String name, String trunkType, int maxConcurrentCalls,
-      Optional<String> webhookUrl, Optional<CreateTrunkRequestWebhookMethod> webhookMethod,
+  private CreateTrunkRequest(String name, Optional<CreateTrunkRequestTrunkDirection> trunkDirection,
+      Optional<CreateTrunkRequestTrunkStatus> trunkStatus, Optional<Boolean> secure,
+      Optional<String> trunkDomain, Optional<CreateTrunkRequestTransport> transport,
+      Optional<String> inboundDestination, Optional<String> description,
+      Optional<Integer> concurrentCallsLimit, Optional<Integer> cpsLimit,
+      Optional<String> credentialUuid, Optional<String> ipaclUuid, Optional<String> primaryUriUuid,
+      Optional<String> fallbackUriUuid, Optional<Boolean> recording,
+      Optional<Boolean> enableTranscription, Optional<Boolean> piiRedaction,
+      Optional<String> piiEntityTypes, Optional<String> webhookUrl,
+      Optional<CreateTrunkRequestWebhookMethod> webhookMethod,
+      Optional<Boolean> recordingWebhookEnabled, Optional<String> username,
+      Optional<String> password, Optional<List<String>> ipWhitelist,
       Map<String, Object> additionalProperties) {
     this.name = name;
-    this.trunkType = trunkType;
-    this.maxConcurrentCalls = maxConcurrentCalls;
+    this.trunkDirection = trunkDirection;
+    this.trunkStatus = trunkStatus;
+    this.secure = secure;
+    this.trunkDomain = trunkDomain;
+    this.transport = transport;
+    this.inboundDestination = inboundDestination;
+    this.description = description;
+    this.concurrentCallsLimit = concurrentCallsLimit;
+    this.cpsLimit = cpsLimit;
+    this.credentialUuid = credentialUuid;
+    this.ipaclUuid = ipaclUuid;
+    this.primaryUriUuid = primaryUriUuid;
+    this.fallbackUriUuid = fallbackUriUuid;
+    this.recording = recording;
+    this.enableTranscription = enableTranscription;
+    this.piiRedaction = piiRedaction;
+    this.piiEntityTypes = piiEntityTypes;
     this.webhookUrl = webhookUrl;
     this.webhookMethod = webhookMethod;
+    this.recordingWebhookEnabled = recordingWebhookEnabled;
+    this.username = username;
+    this.password = password;
+    this.ipWhitelist = ipWhitelist;
     this.additionalProperties = additionalProperties;
   }
 
+  /**
+   * @return Trunk name.
+   */
   @JsonProperty("name")
   public String getName() {
     return name;
   }
 
-  @JsonProperty("trunk_type")
-  public String getTrunkType() {
-    return trunkType;
-  }
-
-  @JsonProperty("max_concurrent_calls")
-  public int getMaxConcurrentCalls() {
-    return maxConcurrentCalls;
+  /**
+   * @return Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).
+   */
+  @JsonProperty("trunk_direction")
+  public Optional<CreateTrunkRequestTrunkDirection> getTrunkDirection() {
+    return trunkDirection;
   }
 
   /**
-   * @return HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
-   * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
-   * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.
+   * @return Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).
+   */
+  @JsonProperty("trunk_status")
+  public Optional<CreateTrunkRequestTrunkStatus> getTrunkStatus() {
+    return trunkStatus;
+  }
+
+  @JsonProperty("secure")
+  public Optional<Boolean> getSecure() {
+    return secure;
+  }
+
+  /**
+   * @return SIP domain. Auto-generated as <code>{first8ofUUID}.sip.vobiz.ai</code> if omitted.
+   */
+  @JsonProperty("trunk_domain")
+  public Optional<String> getTrunkDomain() {
+    return trunkDomain;
+  }
+
+  @JsonProperty("transport")
+  public Optional<CreateTrunkRequestTransport> getTransport() {
+    return transport;
+  }
+
+  @JsonProperty("inbound_destination")
+  public Optional<String> getInboundDestination() {
+    return inboundDestination;
+  }
+
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Stored on the trunk. The <strong>enforced</strong> concurrency limit is account-level (account base + channel subscriptions), not this field.
+   */
+  @JsonProperty("concurrent_calls_limit")
+  public Optional<Integer> getConcurrentCallsLimit() {
+    return concurrentCallsLimit;
+  }
+
+  /**
+   * @return Stored on the trunk. The <strong>enforced</strong> CPS is account-level, not this field.
+   */
+  @JsonProperty("cps_limit")
+  public Optional<Integer> getCpsLimit() {
+    return cpsLimit;
+  }
+
+  /**
+   * @return Attach an existing SIP credential (username / password / realm) by UUID.
+   */
+  @JsonProperty("credential_uuid")
+  public Optional<String> getCredentialUuid() {
+    return credentialUuid;
+  }
+
+  /**
+   * @return Attach an existing IP access-control list (IP-based auth) by UUID.
+   */
+  @JsonProperty("ipacl_uuid")
+  public Optional<String> getIpaclUuid() {
+    return ipaclUuid;
+  }
+
+  /**
+   * @return Primary origination URI UUID.
+   */
+  @JsonProperty("primary_uri_uuid")
+  public Optional<String> getPrimaryUriUuid() {
+    return primaryUriUuid;
+  }
+
+  /**
+   * @return Fallback origination URI UUID.
+   */
+  @JsonProperty("fallback_uri_uuid")
+  public Optional<String> getFallbackUriUuid() {
+    return fallbackUriUuid;
+  }
+
+  /**
+   * @return Enable call recording.
+   */
+  @JsonProperty("recording")
+  public Optional<Boolean> getRecording() {
+    return recording;
+  }
+
+  /**
+   * @return Auto-transcribe recordings when <code>recording=true</code>.
+   */
+  @JsonProperty("enable_transcription")
+  public Optional<Boolean> getEnableTranscription() {
+    return enableTranscription;
+  }
+
+  /**
+   * @return Redact PII from transcriptions.
+   */
+  @JsonProperty("pii_redaction")
+  public Optional<Boolean> getPiiRedaction() {
+    return piiRedaction;
+  }
+
+  /**
+   * @return Comma-separated list of entity types to redact.
+   */
+  @JsonProperty("pii_entity_types")
+  public Optional<String> getPiiEntityTypes() {
+    return piiEntityTypes;
+  }
+
+  /**
+   * @return Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
+   * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+   * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
+   * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.
    */
   @JsonProperty("webhook_url")
   public Optional<String> getWebhookUrl() {
@@ -76,11 +267,43 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return HTTP method for the webhook callback. Defaults to <code>POST</code>.
+   * @return HTTP method for the webhook callback.
    */
   @JsonProperty("webhook_method")
   public Optional<CreateTrunkRequestWebhookMethod> getWebhookMethod() {
     return webhookMethod;
+  }
+
+  /**
+   * @return Fire a <code>recording.completed</code> webhook to <code>webhook_url</code> after a recording is saved.
+   */
+  @JsonProperty("recording_webhook_enabled")
+  public Optional<Boolean> getRecordingWebhookEnabled() {
+    return recordingWebhookEnabled;
+  }
+
+  /**
+   * @return Deprecated — use <code>credential_uuid</code>.
+   */
+  @JsonProperty("username")
+  public Optional<String> getUsername() {
+    return username;
+  }
+
+  /**
+   * @return Deprecated — use <code>credential_uuid</code>.
+   */
+  @JsonProperty("password")
+  public Optional<String> getPassword() {
+    return password;
+  }
+
+  /**
+   * @return Deprecated — use <code>ipacl_uuid</code>.
+   */
+  @JsonProperty("ip_whitelist")
+  public Optional<List<String>> getIpWhitelist() {
+    return ipWhitelist;
   }
 
   @java.lang.Override
@@ -95,12 +318,12 @@ public final class CreateTrunkRequest {
   }
 
   private boolean equalTo(CreateTrunkRequest other) {
-    return name.equals(other.name) && trunkType.equals(other.trunkType) && maxConcurrentCalls == other.maxConcurrentCalls && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod);
+    return name.equals(other.name) && trunkDirection.equals(other.trunkDirection) && trunkStatus.equals(other.trunkStatus) && secure.equals(other.secure) && trunkDomain.equals(other.trunkDomain) && transport.equals(other.transport) && inboundDestination.equals(other.inboundDestination) && description.equals(other.description) && concurrentCallsLimit.equals(other.concurrentCallsLimit) && cpsLimit.equals(other.cpsLimit) && credentialUuid.equals(other.credentialUuid) && ipaclUuid.equals(other.ipaclUuid) && primaryUriUuid.equals(other.primaryUriUuid) && fallbackUriUuid.equals(other.fallbackUriUuid) && recording.equals(other.recording) && enableTranscription.equals(other.enableTranscription) && piiRedaction.equals(other.piiRedaction) && piiEntityTypes.equals(other.piiEntityTypes) && webhookUrl.equals(other.webhookUrl) && webhookMethod.equals(other.webhookMethod) && recordingWebhookEnabled.equals(other.recordingWebhookEnabled) && username.equals(other.username) && password.equals(other.password) && ipWhitelist.equals(other.ipWhitelist);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.trunkType, this.maxConcurrentCalls, this.webhookUrl, this.webhookMethod);
+    return Objects.hash(this.name, this.trunkDirection, this.trunkStatus, this.secure, this.trunkDomain, this.transport, this.inboundDestination, this.description, this.concurrentCallsLimit, this.cpsLimit, this.credentialUuid, this.ipaclUuid, this.primaryUriUuid, this.fallbackUriUuid, this.recording, this.enableTranscription, this.piiRedaction, this.piiEntityTypes, this.webhookUrl, this.webhookMethod, this.recordingWebhookEnabled, this.username, this.password, this.ipWhitelist);
   }
 
   @java.lang.Override
@@ -113,17 +336,12 @@ public final class CreateTrunkRequest {
   }
 
   public interface NameStage {
-    TrunkTypeStage name(@NotNull String name);
+    /**
+     * <p>Trunk name.</p>
+     */
+    _FinalStage name(@NotNull String name);
 
     Builder from(CreateTrunkRequest other);
-  }
-
-  public interface TrunkTypeStage {
-    MaxConcurrentCallsStage trunkType(@NotNull String trunkType);
-  }
-
-  public interface MaxConcurrentCallsStage {
-    _FinalStage maxConcurrentCalls(int maxConcurrentCalls);
   }
 
   public interface _FinalStage {
@@ -134,35 +352,209 @@ public final class CreateTrunkRequest {
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
-     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
-     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
-     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     */
+    _FinalStage trunkDirection(Optional<CreateTrunkRequestTrunkDirection> trunkDirection);
+
+    _FinalStage trunkDirection(CreateTrunkRequestTrunkDirection trunkDirection);
+
+    /**
+     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     */
+    _FinalStage trunkStatus(Optional<CreateTrunkRequestTrunkStatus> trunkStatus);
+
+    _FinalStage trunkStatus(CreateTrunkRequestTrunkStatus trunkStatus);
+
+    _FinalStage secure(Optional<Boolean> secure);
+
+    _FinalStage secure(Boolean secure);
+
+    /**
+     * <p>SIP domain. Auto-generated as <code>{first8ofUUID}.sip.vobiz.ai</code> if omitted.</p>
+     */
+    _FinalStage trunkDomain(Optional<String> trunkDomain);
+
+    _FinalStage trunkDomain(String trunkDomain);
+
+    _FinalStage transport(Optional<CreateTrunkRequestTransport> transport);
+
+    _FinalStage transport(CreateTrunkRequestTransport transport);
+
+    _FinalStage inboundDestination(Optional<String> inboundDestination);
+
+    _FinalStage inboundDestination(String inboundDestination);
+
+    _FinalStage description(Optional<String> description);
+
+    _FinalStage description(String description);
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> concurrency limit is account-level (account base + channel subscriptions), not this field.</p>
+     */
+    _FinalStage concurrentCallsLimit(Optional<Integer> concurrentCallsLimit);
+
+    _FinalStage concurrentCallsLimit(Integer concurrentCallsLimit);
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> CPS is account-level, not this field.</p>
+     */
+    _FinalStage cpsLimit(Optional<Integer> cpsLimit);
+
+    _FinalStage cpsLimit(Integer cpsLimit);
+
+    /**
+     * <p>Attach an existing SIP credential (username / password / realm) by UUID.</p>
+     */
+    _FinalStage credentialUuid(Optional<String> credentialUuid);
+
+    _FinalStage credentialUuid(String credentialUuid);
+
+    /**
+     * <p>Attach an existing IP access-control list (IP-based auth) by UUID.</p>
+     */
+    _FinalStage ipaclUuid(Optional<String> ipaclUuid);
+
+    _FinalStage ipaclUuid(String ipaclUuid);
+
+    /**
+     * <p>Primary origination URI UUID.</p>
+     */
+    _FinalStage primaryUriUuid(Optional<String> primaryUriUuid);
+
+    _FinalStage primaryUriUuid(String primaryUriUuid);
+
+    /**
+     * <p>Fallback origination URI UUID.</p>
+     */
+    _FinalStage fallbackUriUuid(Optional<String> fallbackUriUuid);
+
+    _FinalStage fallbackUriUuid(String fallbackUriUuid);
+
+    /**
+     * <p>Enable call recording.</p>
+     */
+    _FinalStage recording(Optional<Boolean> recording);
+
+    _FinalStage recording(Boolean recording);
+
+    /**
+     * <p>Auto-transcribe recordings when <code>recording=true</code>.</p>
+     */
+    _FinalStage enableTranscription(Optional<Boolean> enableTranscription);
+
+    _FinalStage enableTranscription(Boolean enableTranscription);
+
+    /**
+     * <p>Redact PII from transcriptions.</p>
+     */
+    _FinalStage piiRedaction(Optional<Boolean> piiRedaction);
+
+    _FinalStage piiRedaction(Boolean piiRedaction);
+
+    /**
+     * <p>Comma-separated list of entity types to redact.</p>
+     */
+    _FinalStage piiEntityTypes(Optional<String> piiEntityTypes);
+
+    _FinalStage piiEntityTypes(String piiEntityTypes);
+
+    /**
+     * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
+     * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      */
     _FinalStage webhookUrl(Optional<String> webhookUrl);
 
     _FinalStage webhookUrl(String webhookUrl);
 
     /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     * <p>HTTP method for the webhook callback.</p>
      */
     _FinalStage webhookMethod(Optional<CreateTrunkRequestWebhookMethod> webhookMethod);
 
     _FinalStage webhookMethod(CreateTrunkRequestWebhookMethod webhookMethod);
+
+    /**
+     * <p>Fire a <code>recording.completed</code> webhook to <code>webhook_url</code> after a recording is saved.</p>
+     */
+    _FinalStage recordingWebhookEnabled(Optional<Boolean> recordingWebhookEnabled);
+
+    _FinalStage recordingWebhookEnabled(Boolean recordingWebhookEnabled);
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     */
+    _FinalStage username(Optional<String> username);
+
+    _FinalStage username(String username);
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     */
+    _FinalStage password(Optional<String> password);
+
+    _FinalStage password(String password);
+
+    /**
+     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     */
+    _FinalStage ipWhitelist(Optional<List<String>> ipWhitelist);
+
+    _FinalStage ipWhitelist(List<String> ipWhitelist);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, TrunkTypeStage, MaxConcurrentCallsStage, _FinalStage {
+  public static final class Builder implements NameStage, _FinalStage {
     private String name;
 
-    private String trunkType;
+    private Optional<List<String>> ipWhitelist = Optional.empty();
 
-    private int maxConcurrentCalls;
+    private Optional<String> password = Optional.empty();
+
+    private Optional<String> username = Optional.empty();
+
+    private Optional<Boolean> recordingWebhookEnabled = Optional.empty();
 
     private Optional<CreateTrunkRequestWebhookMethod> webhookMethod = Optional.empty();
 
     private Optional<String> webhookUrl = Optional.empty();
+
+    private Optional<String> piiEntityTypes = Optional.empty();
+
+    private Optional<Boolean> piiRedaction = Optional.empty();
+
+    private Optional<Boolean> enableTranscription = Optional.empty();
+
+    private Optional<Boolean> recording = Optional.empty();
+
+    private Optional<String> fallbackUriUuid = Optional.empty();
+
+    private Optional<String> primaryUriUuid = Optional.empty();
+
+    private Optional<String> ipaclUuid = Optional.empty();
+
+    private Optional<String> credentialUuid = Optional.empty();
+
+    private Optional<Integer> cpsLimit = Optional.empty();
+
+    private Optional<Integer> concurrentCallsLimit = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<String> inboundDestination = Optional.empty();
+
+    private Optional<CreateTrunkRequestTransport> transport = Optional.empty();
+
+    private Optional<String> trunkDomain = Optional.empty();
+
+    private Optional<Boolean> secure = Optional.empty();
+
+    private Optional<CreateTrunkRequestTrunkStatus> trunkStatus = Optional.empty();
+
+    private Optional<CreateTrunkRequestTrunkDirection> trunkDirection = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -173,36 +565,138 @@ public final class CreateTrunkRequest {
     @java.lang.Override
     public Builder from(CreateTrunkRequest other) {
       name(other.getName());
-      trunkType(other.getTrunkType());
-      maxConcurrentCalls(other.getMaxConcurrentCalls());
+      trunkDirection(other.getTrunkDirection());
+      trunkStatus(other.getTrunkStatus());
+      secure(other.getSecure());
+      trunkDomain(other.getTrunkDomain());
+      transport(other.getTransport());
+      inboundDestination(other.getInboundDestination());
+      description(other.getDescription());
+      concurrentCallsLimit(other.getConcurrentCallsLimit());
+      cpsLimit(other.getCpsLimit());
+      credentialUuid(other.getCredentialUuid());
+      ipaclUuid(other.getIpaclUuid());
+      primaryUriUuid(other.getPrimaryUriUuid());
+      fallbackUriUuid(other.getFallbackUriUuid());
+      recording(other.getRecording());
+      enableTranscription(other.getEnableTranscription());
+      piiRedaction(other.getPiiRedaction());
+      piiEntityTypes(other.getPiiEntityTypes());
       webhookUrl(other.getWebhookUrl());
       webhookMethod(other.getWebhookMethod());
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("name")
-    public TrunkTypeStage name(@NotNull String name) {
-      this.name = Objects.requireNonNull(name, "name must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("trunk_type")
-    public MaxConcurrentCallsStage trunkType(@NotNull String trunkType) {
-      this.trunkType = Objects.requireNonNull(trunkType, "trunkType must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("max_concurrent_calls")
-    public _FinalStage maxConcurrentCalls(int maxConcurrentCalls) {
-      this.maxConcurrentCalls = maxConcurrentCalls;
+      recordingWebhookEnabled(other.getRecordingWebhookEnabled());
+      username(other.getUsername());
+      password(other.getPassword());
+      ipWhitelist(other.getIpWhitelist());
       return this;
     }
 
     /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     * <p>Trunk name.</p>
+     * <p>Trunk name.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    @JsonSetter("name")
+    public _FinalStage name(@NotNull String name) {
+      this.name = Objects.requireNonNull(name, "name must not be null");
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage ipWhitelist(List<String> ipWhitelist) {
+      this.ipWhitelist = Optional.ofNullable(ipWhitelist);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "ip_whitelist",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage ipWhitelist(Optional<List<String>> ipWhitelist) {
+      this.ipWhitelist = ipWhitelist;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage password(String password) {
+      this.password = Optional.ofNullable(password);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "password",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage password(Optional<String> password) {
+      this.password = password;
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage username(String username) {
+      this.username = Optional.ofNullable(username);
+      return this;
+    }
+
+    /**
+     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "username",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage username(Optional<String> username) {
+      this.username = username;
+      return this;
+    }
+
+    /**
+     * <p>Fire a <code>recording.completed</code> webhook to <code>webhook_url</code> after a recording is saved.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage recordingWebhookEnabled(Boolean recordingWebhookEnabled) {
+      this.recordingWebhookEnabled = Optional.ofNullable(recordingWebhookEnabled);
+      return this;
+    }
+
+    /**
+     * <p>Fire a <code>recording.completed</code> webhook to <code>webhook_url</code> after a recording is saved.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "recording_webhook_enabled",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage recordingWebhookEnabled(Optional<Boolean> recordingWebhookEnabled) {
+      this.recordingWebhookEnabled = recordingWebhookEnabled;
+      return this;
+    }
+
+    /**
+     * <p>HTTP method for the webhook callback.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -212,7 +706,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>HTTP method for the webhook callback. Defaults to <code>POST</code>.</p>
+     * <p>HTTP method for the webhook callback.</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -225,9 +719,10 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
-     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
-     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
+     * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -237,9 +732,10 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>HTTPS URL to receive real-time call-event webhooks (<code>CallInitiated</code>
-     * and <code>Hangup</code>) for this trunk. Max 500 characters; private, localhost,
-     * and cloud-metadata IPs are blocked. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
+     * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
+     * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -251,9 +747,372 @@ public final class CreateTrunkRequest {
       return this;
     }
 
+    /**
+     * <p>Comma-separated list of entity types to redact.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage piiEntityTypes(String piiEntityTypes) {
+      this.piiEntityTypes = Optional.ofNullable(piiEntityTypes);
+      return this;
+    }
+
+    /**
+     * <p>Comma-separated list of entity types to redact.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "pii_entity_types",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage piiEntityTypes(Optional<String> piiEntityTypes) {
+      this.piiEntityTypes = piiEntityTypes;
+      return this;
+    }
+
+    /**
+     * <p>Redact PII from transcriptions.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage piiRedaction(Boolean piiRedaction) {
+      this.piiRedaction = Optional.ofNullable(piiRedaction);
+      return this;
+    }
+
+    /**
+     * <p>Redact PII from transcriptions.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "pii_redaction",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage piiRedaction(Optional<Boolean> piiRedaction) {
+      this.piiRedaction = piiRedaction;
+      return this;
+    }
+
+    /**
+     * <p>Auto-transcribe recordings when <code>recording=true</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage enableTranscription(Boolean enableTranscription) {
+      this.enableTranscription = Optional.ofNullable(enableTranscription);
+      return this;
+    }
+
+    /**
+     * <p>Auto-transcribe recordings when <code>recording=true</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "enable_transcription",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage enableTranscription(Optional<Boolean> enableTranscription) {
+      this.enableTranscription = enableTranscription;
+      return this;
+    }
+
+    /**
+     * <p>Enable call recording.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage recording(Boolean recording) {
+      this.recording = Optional.ofNullable(recording);
+      return this;
+    }
+
+    /**
+     * <p>Enable call recording.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "recording",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage recording(Optional<Boolean> recording) {
+      this.recording = recording;
+      return this;
+    }
+
+    /**
+     * <p>Fallback origination URI UUID.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage fallbackUriUuid(String fallbackUriUuid) {
+      this.fallbackUriUuid = Optional.ofNullable(fallbackUriUuid);
+      return this;
+    }
+
+    /**
+     * <p>Fallback origination URI UUID.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "fallback_uri_uuid",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage fallbackUriUuid(Optional<String> fallbackUriUuid) {
+      this.fallbackUriUuid = fallbackUriUuid;
+      return this;
+    }
+
+    /**
+     * <p>Primary origination URI UUID.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage primaryUriUuid(String primaryUriUuid) {
+      this.primaryUriUuid = Optional.ofNullable(primaryUriUuid);
+      return this;
+    }
+
+    /**
+     * <p>Primary origination URI UUID.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "primary_uri_uuid",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage primaryUriUuid(Optional<String> primaryUriUuid) {
+      this.primaryUriUuid = primaryUriUuid;
+      return this;
+    }
+
+    /**
+     * <p>Attach an existing IP access-control list (IP-based auth) by UUID.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage ipaclUuid(String ipaclUuid) {
+      this.ipaclUuid = Optional.ofNullable(ipaclUuid);
+      return this;
+    }
+
+    /**
+     * <p>Attach an existing IP access-control list (IP-based auth) by UUID.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "ipacl_uuid",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage ipaclUuid(Optional<String> ipaclUuid) {
+      this.ipaclUuid = ipaclUuid;
+      return this;
+    }
+
+    /**
+     * <p>Attach an existing SIP credential (username / password / realm) by UUID.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage credentialUuid(String credentialUuid) {
+      this.credentialUuid = Optional.ofNullable(credentialUuid);
+      return this;
+    }
+
+    /**
+     * <p>Attach an existing SIP credential (username / password / realm) by UUID.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "credential_uuid",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage credentialUuid(Optional<String> credentialUuid) {
+      this.credentialUuid = credentialUuid;
+      return this;
+    }
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> CPS is account-level, not this field.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage cpsLimit(Integer cpsLimit) {
+      this.cpsLimit = Optional.ofNullable(cpsLimit);
+      return this;
+    }
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> CPS is account-level, not this field.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "cps_limit",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage cpsLimit(Optional<Integer> cpsLimit) {
+      this.cpsLimit = cpsLimit;
+      return this;
+    }
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> concurrency limit is account-level (account base + channel subscriptions), not this field.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage concurrentCallsLimit(Integer concurrentCallsLimit) {
+      this.concurrentCallsLimit = Optional.ofNullable(concurrentCallsLimit);
+      return this;
+    }
+
+    /**
+     * <p>Stored on the trunk. The <strong>enforced</strong> concurrency limit is account-level (account base + channel subscriptions), not this field.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "concurrent_calls_limit",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage concurrentCallsLimit(Optional<Integer> concurrentCallsLimit) {
+      this.concurrentCallsLimit = concurrentCallsLimit;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "description",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage inboundDestination(String inboundDestination) {
+      this.inboundDestination = Optional.ofNullable(inboundDestination);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "inbound_destination",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage inboundDestination(Optional<String> inboundDestination) {
+      this.inboundDestination = inboundDestination;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage transport(CreateTrunkRequestTransport transport) {
+      this.transport = Optional.ofNullable(transport);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "transport",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage transport(Optional<CreateTrunkRequestTransport> transport) {
+      this.transport = transport;
+      return this;
+    }
+
+    /**
+     * <p>SIP domain. Auto-generated as <code>{first8ofUUID}.sip.vobiz.ai</code> if omitted.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage trunkDomain(String trunkDomain) {
+      this.trunkDomain = Optional.ofNullable(trunkDomain);
+      return this;
+    }
+
+    /**
+     * <p>SIP domain. Auto-generated as <code>{first8ofUUID}.sip.vobiz.ai</code> if omitted.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "trunk_domain",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage trunkDomain(Optional<String> trunkDomain) {
+      this.trunkDomain = trunkDomain;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage secure(Boolean secure) {
+      this.secure = Optional.ofNullable(secure);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "secure",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage secure(Optional<Boolean> secure) {
+      this.secure = secure;
+      return this;
+    }
+
+    /**
+     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage trunkStatus(CreateTrunkRequestTrunkStatus trunkStatus) {
+      this.trunkStatus = Optional.ofNullable(trunkStatus);
+      return this;
+    }
+
+    /**
+     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "trunk_status",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage trunkStatus(Optional<CreateTrunkRequestTrunkStatus> trunkStatus) {
+      this.trunkStatus = trunkStatus;
+      return this;
+    }
+
+    /**
+     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage trunkDirection(CreateTrunkRequestTrunkDirection trunkDirection) {
+      this.trunkDirection = Optional.ofNullable(trunkDirection);
+      return this;
+    }
+
+    /**
+     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "trunk_direction",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage trunkDirection(Optional<CreateTrunkRequestTrunkDirection> trunkDirection) {
+      this.trunkDirection = trunkDirection;
+      return this;
+    }
+
     @java.lang.Override
     public CreateTrunkRequest build() {
-      return new CreateTrunkRequest(name, trunkType, maxConcurrentCalls, webhookUrl, webhookMethod, additionalProperties);
+      return new CreateTrunkRequest(name, trunkDirection, trunkStatus, secure, trunkDomain, transport, inboundDestination, description, concurrentCallsLimit, cpsLimit, credentialUuid, ipaclUuid, primaryUriUuid, fallbackUriUuid, recording, enableTranscription, piiRedaction, piiEntityTypes, webhookUrl, webhookMethod, recordingWebhookEnabled, username, password, ipWhitelist, additionalProperties);
     }
 
     @java.lang.Override

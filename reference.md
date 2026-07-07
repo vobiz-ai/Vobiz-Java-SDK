@@ -3581,10 +3581,16 @@ client.trunks().createTrunk(
     "MA_XXXXXX",
     CreateTrunkRequest
         .builder()
-        .name("My Outbound Trunk")
-        .trunkType("OUTBOUND")
-        .maxConcurrentCalls(10)
-        .webhookUrl("https://your-app.example.com/trunk-webhook")
+        .name("Retell AI SIP")
+        .trunkDirection(CreateTrunkRequestTrunkDirection.OUTBOUND)
+        .transport(CreateTrunkRequestTransport.UDP)
+        .concurrentCallsLimit(50)
+        .cpsLimit(15)
+        .credentialUuid("b1e2...")
+        .ipaclUuid("c3d4...")
+        .recording(true)
+        .enableTranscription(true)
+        .webhookUrl("https://example.com/vobiz/webhook")
         .webhookMethod(CreateTrunkRequestWebhookMethod.POST)
         .build()
 );
@@ -3610,7 +3616,7 @@ client.trunks().createTrunk(
 <dl>
 <dd>
 
-**name:** `String` 
+**name:** `String` — Trunk name.
     
 </dd>
 </dl>
@@ -3618,7 +3624,7 @@ client.trunks().createTrunk(
 <dl>
 <dd>
 
-**trunkType:** `String` 
+**trunkDirection:** `Optional<CreateTrunkRequestTrunkDirection>` — Direction of the trunk — **`inbound` or `outbound` only** (a trunk is one direction, not both).
     
 </dd>
 </dl>
@@ -3626,7 +3632,127 @@ client.trunks().createTrunk(
 <dl>
 <dd>
 
-**maxConcurrentCalls:** `Integer` 
+**trunkStatus:** `Optional<CreateTrunkRequestTrunkStatus>` — Trunk status — `enabled` or `disabled` (note: not `active`).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secure:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**trunkDomain:** `Optional<String>` — SIP domain. Auto-generated as `{first8ofUUID}.sip.vobiz.ai` if omitted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transport:** `Optional<CreateTrunkRequestTransport>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**inboundDestination:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**concurrentCallsLimit:** `Optional<Integer>` — Stored on the trunk. The **enforced** concurrency limit is account-level (account base + channel subscriptions), not this field.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cpsLimit:** `Optional<Integer>` — Stored on the trunk. The **enforced** CPS is account-level, not this field.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**credentialUuid:** `Optional<String>` — Attach an existing SIP credential (username / password / realm) by UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ipaclUuid:** `Optional<String>` — Attach an existing IP access-control list (IP-based auth) by UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**primaryUriUuid:** `Optional<String>` — Primary origination URI UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fallbackUriUuid:** `Optional<String>` — Fallback origination URI UUID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recording:** `Optional<Boolean>` — Enable call recording.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enableTranscription:** `Optional<Boolean>` — Auto-transcribe recordings when `recording=true`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**piiRedaction:** `Optional<Boolean>` — Redact PII from transcriptions.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**piiEntityTypes:** `Optional<String>` — Comma-separated list of entity types to redact.
     
 </dd>
 </dl>
@@ -3636,9 +3762,10 @@ client.trunks().createTrunk(
 
 **webhookUrl:** `Optional<String>` 
 
-HTTPS URL to receive real-time call-event webhooks (`CallInitiated`
-and `Hangup`) for this trunk. Max 500 characters; private, localhost,
-and cloud-metadata IPs are blocked. See [Trunk Webhooks](/trunks/webhook).
+Customer webhook for call-admission events (`CallInitiated` / `Hangup`).
+Must be a valid **public** http/https URL. SSRF-validated — localhost,
+private (RFC1918), and cloud-metadata (`169.254.169.254`) URLs are
+rejected with `invalid webhook_url`. See [Trunk Webhooks](/trunks/webhook).
     
 </dd>
 </dl>
@@ -3646,7 +3773,39 @@ and cloud-metadata IPs are blocked. See [Trunk Webhooks](/trunks/webhook).
 <dl>
 <dd>
 
-**webhookMethod:** `Optional<CreateTrunkRequestWebhookMethod>` — HTTP method for the webhook callback. Defaults to `POST`.
+**webhookMethod:** `Optional<CreateTrunkRequestWebhookMethod>` — HTTP method for the webhook callback.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recordingWebhookEnabled:** `Optional<Boolean>` — Fire a `recording.completed` webhook to `webhook_url` after a recording is saved.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**username:** `Optional<String>` — Deprecated — use `credential_uuid`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**password:** `Optional<String>` — Deprecated — use `credential_uuid`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ipWhitelist:** `Optional<List<String>>` — Deprecated — use `ipacl_uuid`.
     
 </dd>
 </dl>
@@ -3758,9 +3917,6 @@ client.trunks().updateTrunk(
     "trunk_id",
     UpdateTrunkRequest
         .builder()
-        .name("name")
-        .maxConcurrentCalls(1)
-        .enabled(true)
         .build()
 );
 ```
@@ -3793,7 +3949,7 @@ client.trunks().updateTrunk(
 <dl>
 <dd>
 
-**name:** `String` 
+**name:** `Optional<String>` 
     
 </dd>
 </dl>
@@ -3801,7 +3957,7 @@ client.trunks().updateTrunk(
 <dl>
 <dd>
 
-**maxConcurrentCalls:** `Integer` 
+**trunkDirection:** `Optional<UpdateTrunkRequestTrunkDirection>` — Direction of the trunk — `inbound` or `outbound` only.
     
 </dd>
 </dl>
@@ -3809,7 +3965,7 @@ client.trunks().updateTrunk(
 <dl>
 <dd>
 
-**enabled:** `Boolean` 
+**trunkStatus:** `Optional<UpdateTrunkRequestTrunkStatus>` 
     
 </dd>
 </dl>
@@ -3817,7 +3973,7 @@ client.trunks().updateTrunk(
 <dl>
 <dd>
 
-**webhookUrl:** `Optional<String>` — HTTPS URL for real-time call-event webhooks (`CallInitiated`, `Hangup`). See [Trunk Webhooks](/trunks/webhook).
+**secure:** `Optional<Boolean>` 
     
 </dd>
 </dl>
@@ -3825,7 +3981,135 @@ client.trunks().updateTrunk(
 <dl>
 <dd>
 
-**webhookMethod:** `Optional<UpdateTrunkRequestWebhookMethod>` — HTTP method for the webhook callback. Defaults to `POST`.
+**trunkDomain:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transport:** `Optional<UpdateTrunkRequestTransport>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**inboundDestination:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**concurrentCallsLimit:** `Optional<Integer>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cpsLimit:** `Optional<Integer>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**credentialUuid:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ipaclUuid:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**primaryUriUuid:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fallbackUriUuid:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recording:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enableTranscription:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**piiRedaction:** `Optional<Boolean>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**piiEntityTypes:** `Optional<String>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookUrl:** `Optional<String>` — Customer webhook for call-admission events (`CallInitiated` / `Hangup`). Public http/https URL; SSRF-validated. See [Trunk Webhooks](/trunks/webhook).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**webhookMethod:** `Optional<UpdateTrunkRequestWebhookMethod>` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recordingWebhookEnabled:** `Optional<Boolean>` 
     
 </dd>
 </dl>
