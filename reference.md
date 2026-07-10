@@ -2945,6 +2945,7 @@ client.phoneNumbers().listInventoryNumbers(
     ListInventoryNumbersRequest
         .builder()
         .country("IN")
+        .exclude("9180,9192")
         .build()
 );
 ```

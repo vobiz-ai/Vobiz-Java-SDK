@@ -257,14 +257,14 @@ public class AsyncRawPhoneNumbersClient {
           if (request.getSearch().isPresent()) {
             QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
           }
+          if (request.getExclude().isPresent()) {
+            QueryStringMapper.addQueryParameter(httpUrl, "exclude", request.getExclude().get(), false);
+          }
           if (request.getPage().isPresent()) {
             QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
           }
           if (request.getPerPage().isPresent()) {
             QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
-          }
-          if (request.getExclude().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "exclude", request.getExclude().get(), true);
           }
           if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
