@@ -232,6 +232,9 @@ public class RawPhoneNumbersClient {
           if (request.getPerPage().isPresent()) {
             QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
           }
+          if (request.getExclude().isPresent()) {
+            QueryStringMapper.addQueryParameter(httpUrl, "exclude", request.getExclude().get(), true);
+          }
           if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
               httpUrl.addQueryParameter(_key, _value);

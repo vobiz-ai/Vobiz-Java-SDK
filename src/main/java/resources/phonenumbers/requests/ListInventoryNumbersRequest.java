@@ -16,7 +16,9 @@ import core.ObjectMappers;
 import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +28,8 @@ import java.util.Optional;
     builder = ListInventoryNumbersRequest.Builder.class
 )
 public final class ListInventoryNumbersRequest {
+  private final Optional<List<String>> exclude;
+
   private final Optional<String> country;
 
   private final Optional<String> search;
@@ -36,13 +40,23 @@ public final class ListInventoryNumbersRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private ListInventoryNumbersRequest(Optional<String> country, Optional<String> search,
-      Optional<Integer> page, Optional<Integer> perPage, Map<String, Object> additionalProperties) {
+  private ListInventoryNumbersRequest(Optional<List<String>> exclude, Optional<String> country,
+      Optional<String> search, Optional<Integer> page, Optional<Integer> perPage,
+      Map<String, Object> additionalProperties) {
+    this.exclude = exclude;
     this.country = country;
     this.search = search;
     this.page = page;
     this.perPage = perPage;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return One or more E.164 prefixes to remove from results. Include the country code (e.g. &quot;9180&quot; for India +91 80-series, &quot;1415&quot; for US +1 415); a leading &quot;+&quot; is optional. Matched against the full E.164 form, so it works for any country. Accepts a comma-separated list (&quot;9180,9192&quot;) or repeated params (&quot;exclude=9180&amp;exclude=9192&quot;), and the two forms can be combined. It is ANDed with all other filters, so it takes priority over <code>search</code>; duplicates are de-duplicated silently and <code>total</code> reflects the filtered result set.
+   */
+  @JsonProperty("exclude")
+  public Optional<List<String>> getExclude() {
+    return exclude;
   }
 
   /**
@@ -83,12 +97,12 @@ public final class ListInventoryNumbersRequest {
   }
 
   private boolean equalTo(ListInventoryNumbersRequest other) {
-    return country.equals(other.country) && search.equals(other.search) && page.equals(other.page) && perPage.equals(other.perPage);
+    return exclude.equals(other.exclude) && country.equals(other.country) && search.equals(other.search) && page.equals(other.page) && perPage.equals(other.perPage);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.country, this.search, this.page, this.perPage);
+    return Objects.hash(this.exclude, this.country, this.search, this.page, this.perPage);
   }
 
   @java.lang.Override
@@ -104,6 +118,8 @@ public final class ListInventoryNumbersRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<List<String>> exclude = Optional.empty();
+
     private Optional<String> country = Optional.empty();
 
     private Optional<String> search = Optional.empty();
@@ -119,10 +135,33 @@ public final class ListInventoryNumbersRequest {
     }
 
     public Builder from(ListInventoryNumbersRequest other) {
+      exclude(other.getExclude());
       country(other.getCountry());
       search(other.getSearch());
       page(other.getPage());
       perPage(other.getPerPage());
+      return this;
+    }
+
+    /**
+     * <p>One or more E.164 prefixes to remove from results. Include the country code (e.g. &quot;9180&quot; for India +91 80-series, &quot;1415&quot; for US +1 415); a leading &quot;+&quot; is optional. Matched against the full E.164 form, so it works for any country. Accepts a comma-separated list (&quot;9180,9192&quot;) or repeated params (&quot;exclude=9180&amp;exclude=9192&quot;), and the two forms can be combined. It is ANDed with all other filters, so it takes priority over <code>search</code>; duplicates are de-duplicated silently and <code>total</code> reflects the filtered result set.</p>
+     */
+    @JsonSetter(
+        value = "exclude",
+        nulls = Nulls.SKIP
+    )
+    public Builder exclude(Optional<List<String>> exclude) {
+      this.exclude = exclude;
+      return this;
+    }
+
+    public Builder exclude(List<String> exclude) {
+      this.exclude = Optional.ofNullable(exclude);
+      return this;
+    }
+
+    public Builder exclude(String exclude) {
+      this.exclude = Optional.of(Collections.singletonList(exclude));
       return this;
     }
 
@@ -189,7 +228,7 @@ public final class ListInventoryNumbersRequest {
     }
 
     public ListInventoryNumbersRequest build() {
-      return new ListInventoryNumbersRequest(country, search, page, perPage, additionalProperties);
+      return new ListInventoryNumbersRequest(exclude, country, search, page, perPage, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {
