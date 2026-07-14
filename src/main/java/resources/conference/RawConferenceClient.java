@@ -38,7 +38,7 @@ public class RawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public VobizApiHttpResponse<Object> kickMember(String authId, String conferenceName,
       String memberId) {
@@ -46,7 +46,7 @@ public class RawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public VobizApiHttpResponse<Object> kickMember(String authId, String conferenceName,
       String memberId, RequestOptions requestOptions) {
@@ -54,7 +54,7 @@ public class RawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public VobizApiHttpResponse<Object> kickMember(String authId, String conferenceName,
       String memberId, KickMemberRequest request) {
@@ -62,7 +62,7 @@ public class RawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public VobizApiHttpResponse<Object> kickMember(String authId, String conferenceName,
       String memberId, KickMemberRequest request, RequestOptions requestOptions) {
@@ -104,7 +104,7 @@ public class RawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public VobizApiHttpResponse<Void> hangupMember(String authId, String conferenceName,
         String memberId) {
@@ -112,7 +112,7 @@ public class RawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public VobizApiHttpResponse<Void> hangupMember(String authId, String conferenceName,
         String memberId, RequestOptions requestOptions) {
@@ -120,7 +120,7 @@ public class RawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public VobizApiHttpResponse<Void> hangupMember(String authId, String conferenceName,
         String memberId, HangupMemberRequest request) {
@@ -128,7 +128,7 @@ public class RawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public VobizApiHttpResponse<Void> hangupMember(String authId, String conferenceName,
         String memberId, HangupMemberRequest request, RequestOptions requestOptions) {
@@ -170,7 +170,7 @@ public class RawConferenceClient {
       /**
        * Play an audio file to a specific conference member.
        */
-      public VobizApiHttpResponse<Void> playAudioMember(String authId, String conferenceName,
+      public VobizApiHttpResponse<Object> playAudioMember(String authId, String conferenceName,
           String memberId, PlayAudioMemberRequest request) {
         return playAudioMember(authId,conferenceName,memberId,request,null);
       }
@@ -178,7 +178,7 @@ public class RawConferenceClient {
       /**
        * Play an audio file to a specific conference member.
        */
-      public VobizApiHttpResponse<Void> playAudioMember(String authId, String conferenceName,
+      public VobizApiHttpResponse<Object> playAudioMember(String authId, String conferenceName,
           String memberId, PlayAudioMemberRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -205,6 +205,7 @@ public class RawConferenceClient {
             .method("POST", body)
             .headers(Headers.of(clientOptions.headers(requestOptions)))
             .addHeader("Content-Type", "application/json")
+            .addHeader("Accept", "application/json")
             .build();
           OkHttpClient client = clientOptions.httpClient();
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -212,10 +213,10 @@ public class RawConferenceClient {
           }
           try (Response response = client.newCall(okhttpRequest).execute()) {
             ResponseBody responseBody = response.body();
-            if (response.isSuccessful()) {
-              return new VobizApiHttpResponse<>(null, response);
-            }
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+            }
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
           }
@@ -292,7 +293,7 @@ public class RawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public VobizApiHttpResponse<Void> deafMember(String authId, String conferenceName,
+          public VobizApiHttpResponse<Object> deafMember(String authId, String conferenceName,
               String memberId) {
             return deafMember(authId,conferenceName,memberId,DeafMemberRequest.builder().build());
           }
@@ -300,7 +301,7 @@ public class RawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public VobizApiHttpResponse<Void> deafMember(String authId, String conferenceName,
+          public VobizApiHttpResponse<Object> deafMember(String authId, String conferenceName,
               String memberId, RequestOptions requestOptions) {
             return deafMember(authId,conferenceName,memberId,DeafMemberRequest.builder().build(),requestOptions);
           }
@@ -308,7 +309,7 @@ public class RawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public VobizApiHttpResponse<Void> deafMember(String authId, String conferenceName,
+          public VobizApiHttpResponse<Object> deafMember(String authId, String conferenceName,
               String memberId, DeafMemberRequest request) {
             return deafMember(authId,conferenceName,memberId,request,null);
           }
@@ -316,7 +317,7 @@ public class RawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public VobizApiHttpResponse<Void> deafMember(String authId, String conferenceName,
+          public VobizApiHttpResponse<Object> deafMember(String authId, String conferenceName,
               String memberId, DeafMemberRequest request, RequestOptions requestOptions) {
             HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -334,7 +335,8 @@ public class RawConferenceClient {
               Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("POST", RequestBody.create("", null))
-                .headers(Headers.of(clientOptions.headers(requestOptions)));
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
               Request okhttpRequest = _requestBuilder.build();
               OkHttpClient client = clientOptions.httpClient();
               if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -342,10 +344,10 @@ public class RawConferenceClient {
               }
               try (Response response = client.newCall(okhttpRequest).execute()) {
                 ResponseBody responseBody = response.body();
-                if (response.isSuccessful()) {
-                  return new VobizApiHttpResponse<>(null, response);
-                }
                 String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                if (response.isSuccessful()) {
+                  return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
                 Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                 throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
               }

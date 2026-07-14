@@ -4,12 +4,14 @@
 
 package resources.conferences;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import core.ClientOptions;
 import core.ObjectMappers;
 import core.RequestOptions;
 import core.VobizApiApiException;
 import core.VobizApiException;
 import core.VobizApiHttpResponse;
+import errors.NotFoundError;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -29,6 +31,7 @@ import resources.conferences.requests.DeleteAllConferencesRequest;
 import resources.conferences.requests.DeleteConferenceRequest;
 import resources.conferences.requests.GetConferenceRequest;
 import resources.conferences.requests.ListConferencesRequest;
+import resources.conferences.types.GetConferenceResponse;
 import resources.conferences.types.ListConferencesResponse;
 
 public class AsyncRawConferencesClient {
@@ -39,7 +42,7 @@ public class AsyncRawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<VobizApiHttpResponse<ListConferencesResponse>> listConferences(
       String authId) {
@@ -47,7 +50,7 @@ public class AsyncRawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<VobizApiHttpResponse<ListConferencesResponse>> listConferences(
       String authId, RequestOptions requestOptions) {
@@ -55,7 +58,7 @@ public class AsyncRawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<VobizApiHttpResponse<ListConferencesResponse>> listConferences(
       String authId, ListConferencesRequest request) {
@@ -63,7 +66,7 @@ public class AsyncRawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<VobizApiHttpResponse<ListConferencesResponse>> listConferences(
       String authId, ListConferencesRequest request, RequestOptions requestOptions) {
@@ -187,34 +190,35 @@ public class AsyncRawConferencesClient {
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public CompletableFuture<VobizApiHttpResponse<Object>> getConference(String authId,
-          String conferenceName) {
+      public CompletableFuture<VobizApiHttpResponse<GetConferenceResponse>> getConference(
+          String authId, String conferenceName) {
         return getConference(authId,conferenceName,GetConferenceRequest.builder().build());
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public CompletableFuture<VobizApiHttpResponse<Object>> getConference(String authId,
-          String conferenceName, RequestOptions requestOptions) {
+      public CompletableFuture<VobizApiHttpResponse<GetConferenceResponse>> getConference(
+          String authId, String conferenceName, RequestOptions requestOptions) {
         return getConference(authId,conferenceName,GetConferenceRequest.builder().build(),requestOptions);
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public CompletableFuture<VobizApiHttpResponse<Object>> getConference(String authId,
-          String conferenceName, GetConferenceRequest request) {
+      public CompletableFuture<VobizApiHttpResponse<GetConferenceResponse>> getConference(
+          String authId, String conferenceName, GetConferenceRequest request) {
         return getConference(authId,conferenceName,request,null);
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public CompletableFuture<VobizApiHttpResponse<Object>> getConference(String authId,
-          String conferenceName, GetConferenceRequest request, RequestOptions requestOptions) {
+      public CompletableFuture<VobizApiHttpResponse<GetConferenceResponse>> getConference(
+          String authId, String conferenceName, GetConferenceRequest request,
+          RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
           .addPathSegments("api/v1/Account")
@@ -235,15 +239,24 @@ public class AsyncRawConferencesClient {
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
-          CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
+          CompletableFuture<VobizApiHttpResponse<GetConferenceResponse>> future = new CompletableFuture<>();
           client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
               try (ResponseBody responseBody = response.body()) {
                 String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                 if (response.isSuccessful()) {
-                  future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                  future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetConferenceResponse.class), response));
                   return;
+                }
+                try {
+                  if (response.code() == 404) {
+                    future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    return;
+                  }
+                }
+                catch (JsonProcessingException ignored) {
+                  // unable to map error response, throwing generic error
                 }
                 Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                 future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));

@@ -33,14 +33,14 @@ public class ConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public Object kickMember(String authId, String conferenceName, String memberId) {
     return this.rawClient.kickMember(authId, conferenceName, memberId).body();
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public Object kickMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
@@ -48,7 +48,7 @@ public class ConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public Object kickMember(String authId, String conferenceName, String memberId,
       KickMemberRequest request) {
@@ -56,7 +56,7 @@ public class ConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public Object kickMember(String authId, String conferenceName, String memberId,
       KickMemberRequest request, RequestOptions requestOptions) {
@@ -64,14 +64,14 @@ public class ConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public void hangupMember(String authId, String conferenceName, String memberId) {
     this.rawClient.hangupMember(authId, conferenceName, memberId).body();
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public void hangupMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
@@ -79,7 +79,7 @@ public class ConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public void hangupMember(String authId, String conferenceName, String memberId,
       HangupMemberRequest request) {
@@ -87,7 +87,7 @@ public class ConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public void hangupMember(String authId, String conferenceName, String memberId,
       HangupMemberRequest request, RequestOptions requestOptions) {
@@ -97,17 +97,17 @@ public class ConferenceClient {
   /**
    * Play an audio file to a specific conference member.
    */
-  public void playAudioMember(String authId, String conferenceName, String memberId,
+  public Object playAudioMember(String authId, String conferenceName, String memberId,
       PlayAudioMemberRequest request) {
-    this.rawClient.playAudioMember(authId, conferenceName, memberId, request).body();
+    return this.rawClient.playAudioMember(authId, conferenceName, memberId, request).body();
   }
 
   /**
    * Play an audio file to a specific conference member.
    */
-  public void playAudioMember(String authId, String conferenceName, String memberId,
+  public Object playAudioMember(String authId, String conferenceName, String memberId,
       PlayAudioMemberRequest request, RequestOptions requestOptions) {
-    this.rawClient.playAudioMember(authId, conferenceName, memberId, request, requestOptions).body();
+    return this.rawClient.playAudioMember(authId, conferenceName, memberId, request, requestOptions).body();
   }
 
   /**
@@ -144,32 +144,32 @@ public class ConferenceClient {
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public void deafMember(String authId, String conferenceName, String memberId) {
-    this.rawClient.deafMember(authId, conferenceName, memberId).body();
+  public Object deafMember(String authId, String conferenceName, String memberId) {
+    return this.rawClient.deafMember(authId, conferenceName, memberId).body();
   }
 
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public void deafMember(String authId, String conferenceName, String memberId,
+  public Object deafMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
-    this.rawClient.deafMember(authId, conferenceName, memberId, requestOptions).body();
+    return this.rawClient.deafMember(authId, conferenceName, memberId, requestOptions).body();
   }
 
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public void deafMember(String authId, String conferenceName, String memberId,
+  public Object deafMember(String authId, String conferenceName, String memberId,
       DeafMemberRequest request) {
-    this.rawClient.deafMember(authId, conferenceName, memberId, request).body();
+    return this.rawClient.deafMember(authId, conferenceName, memberId, request).body();
   }
 
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public void deafMember(String authId, String conferenceName, String memberId,
+  public Object deafMember(String authId, String conferenceName, String memberId,
       DeafMemberRequest request, RequestOptions requestOptions) {
-    this.rawClient.deafMember(authId, conferenceName, memberId, request, requestOptions).body();
+    return this.rawClient.deafMember(authId, conferenceName, memberId, request, requestOptions).body();
   }
 
   /**

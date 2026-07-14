@@ -6,12 +6,12 @@ package resources.conferences;
 
 import core.ClientOptions;
 import core.RequestOptions;
-import java.lang.Object;
 import java.lang.String;
 import resources.conferences.requests.DeleteAllConferencesRequest;
 import resources.conferences.requests.DeleteConferenceRequest;
 import resources.conferences.requests.GetConferenceRequest;
 import resources.conferences.requests.ListConferencesRequest;
+import resources.conferences.types.GetConferenceResponse;
 import resources.conferences.types.ListConferencesResponse;
 
 public class ConferencesClient {
@@ -32,28 +32,28 @@ public class ConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public ListConferencesResponse listConferences(String authId) {
     return this.rawClient.listConferences(authId).body();
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public ListConferencesResponse listConferences(String authId, RequestOptions requestOptions) {
     return this.rawClient.listConferences(authId, requestOptions).body();
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public ListConferencesResponse listConferences(String authId, ListConferencesRequest request) {
     return this.rawClient.listConferences(authId, request).body();
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public ListConferencesResponse listConferences(String authId, ListConferencesRequest request,
       RequestOptions requestOptions) {
@@ -90,31 +90,33 @@ public class ConferencesClient {
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public Object getConference(String authId, String conferenceName) {
+  public GetConferenceResponse getConference(String authId, String conferenceName) {
     return this.rawClient.getConference(authId, conferenceName).body();
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public Object getConference(String authId, String conferenceName, RequestOptions requestOptions) {
+  public GetConferenceResponse getConference(String authId, String conferenceName,
+      RequestOptions requestOptions) {
     return this.rawClient.getConference(authId, conferenceName, requestOptions).body();
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public Object getConference(String authId, String conferenceName, GetConferenceRequest request) {
+  public GetConferenceResponse getConference(String authId, String conferenceName,
+      GetConferenceRequest request) {
     return this.rawClient.getConference(authId, conferenceName, request).body();
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public Object getConference(String authId, String conferenceName, GetConferenceRequest request,
-      RequestOptions requestOptions) {
+  public GetConferenceResponse getConference(String authId, String conferenceName,
+      GetConferenceRequest request, RequestOptions requestOptions) {
     return this.rawClient.getConference(authId, conferenceName, request, requestOptions).body();
   }
 

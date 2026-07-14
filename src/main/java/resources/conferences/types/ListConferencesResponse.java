@@ -29,11 +29,11 @@ import org.jetbrains.annotations.NotNull;
 public final class ListConferencesResponse {
   private final String apiId;
 
-  private final List<Object> conferences;
+  private final List<String> conferences;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListConferencesResponse(String apiId, List<Object> conferences,
+  private ListConferencesResponse(String apiId, List<String> conferences,
       Map<String, Object> additionalProperties) {
     this.apiId = apiId;
     this.conferences = conferences;
@@ -45,8 +45,11 @@ public final class ListConferencesResponse {
     return apiId;
   }
 
+  /**
+   * @return Conference names reported by the API. An empty array is inconclusive.
+   */
   @JsonProperty("conferences")
-  public List<Object> getConferences() {
+  public List<String> getConferences() {
     return conferences;
   }
 
@@ -92,11 +95,14 @@ public final class ListConferencesResponse {
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
-    _FinalStage conferences(List<Object> conferences);
+    /**
+     * <p>Conference names reported by the API. An empty array is inconclusive.</p>
+     */
+    _FinalStage conferences(List<String> conferences);
 
-    _FinalStage addConferences(Object conferences);
+    _FinalStage addConferences(String conferences);
 
-    _FinalStage addAllConferences(List<Object> conferences);
+    _FinalStage addAllConferences(List<String> conferences);
   }
 
   @JsonIgnoreProperties(
@@ -105,7 +111,7 @@ public final class ListConferencesResponse {
   public static final class Builder implements ApiIdStage, _FinalStage {
     private String apiId;
 
-    private List<Object> conferences = new ArrayList<>();
+    private List<String> conferences = new ArrayList<>();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -127,26 +133,37 @@ public final class ListConferencesResponse {
       return this;
     }
 
+    /**
+     * <p>Conference names reported by the API. An empty array is inconclusive.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    public _FinalStage addAllConferences(List<Object> conferences) {
+    public _FinalStage addAllConferences(List<String> conferences) {
       if (conferences != null) {
         this.conferences.addAll(conferences);
       }
       return this;
     }
 
+    /**
+     * <p>Conference names reported by the API. An empty array is inconclusive.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    public _FinalStage addConferences(Object conferences) {
+    public _FinalStage addConferences(String conferences) {
       this.conferences.add(conferences);
       return this;
     }
 
+    /**
+     * <p>Conference names reported by the API. An empty array is inconclusive.</p>
+     */
     @java.lang.Override
     @JsonSetter(
         value = "conferences",
         nulls = Nulls.SKIP
     )
-    public _FinalStage conferences(List<Object> conferences) {
+    public _FinalStage conferences(List<String> conferences) {
       this.conferences.clear();
       if (conferences != null) {
         this.conferences.addAll(conferences);

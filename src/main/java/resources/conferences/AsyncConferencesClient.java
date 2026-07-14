@@ -6,7 +6,6 @@ package resources.conferences;
 
 import core.ClientOptions;
 import core.RequestOptions;
-import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +13,7 @@ import resources.conferences.requests.DeleteAllConferencesRequest;
 import resources.conferences.requests.DeleteConferenceRequest;
 import resources.conferences.requests.GetConferenceRequest;
 import resources.conferences.requests.ListConferencesRequest;
+import resources.conferences.types.GetConferenceResponse;
 import resources.conferences.types.ListConferencesResponse;
 
 public class AsyncConferencesClient {
@@ -34,14 +34,14 @@ public class AsyncConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<ListConferencesResponse> listConferences(String authId) {
     return this.rawClient.listConferences(authId).thenApply(response -> response.body());
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<ListConferencesResponse> listConferences(String authId,
       RequestOptions requestOptions) {
@@ -49,7 +49,7 @@ public class AsyncConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<ListConferencesResponse> listConferences(String authId,
       ListConferencesRequest request) {
@@ -57,7 +57,7 @@ public class AsyncConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public CompletableFuture<ListConferencesResponse> listConferences(String authId,
       ListConferencesRequest request, RequestOptions requestOptions) {
@@ -96,33 +96,34 @@ public class AsyncConferencesClient {
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public CompletableFuture<Object> getConference(String authId, String conferenceName) {
+  public CompletableFuture<GetConferenceResponse> getConference(String authId,
+      String conferenceName) {
     return this.rawClient.getConference(authId, conferenceName).thenApply(response -> response.body());
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public CompletableFuture<Object> getConference(String authId, String conferenceName,
-      RequestOptions requestOptions) {
+  public CompletableFuture<GetConferenceResponse> getConference(String authId,
+      String conferenceName, RequestOptions requestOptions) {
     return this.rawClient.getConference(authId, conferenceName, requestOptions).thenApply(response -> response.body());
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public CompletableFuture<Object> getConference(String authId, String conferenceName,
-      GetConferenceRequest request) {
+  public CompletableFuture<GetConferenceResponse> getConference(String authId,
+      String conferenceName, GetConferenceRequest request) {
     return this.rawClient.getConference(authId, conferenceName, request).thenApply(response -> response.body());
   }
 
   /**
-   * Get details and member list of a specific conference room.
+   * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
    */
-  public CompletableFuture<Object> getConference(String authId, String conferenceName,
-      GetConferenceRequest request, RequestOptions requestOptions) {
+  public CompletableFuture<GetConferenceResponse> getConference(String authId,
+      String conferenceName, GetConferenceRequest request, RequestOptions requestOptions) {
     return this.rawClient.getConference(authId, conferenceName, request, requestOptions).thenApply(response -> response.body());
   }
 

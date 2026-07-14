@@ -34,32 +34,33 @@ public class RawConferenceRecordingClient {
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public VobizApiHttpResponse<Void> startConferenceRecording(String authId, String conferenceName) {
+  public VobizApiHttpResponse<Object> startConferenceRecording(String authId,
+      String conferenceName) {
     return startConferenceRecording(authId,conferenceName,StartConferenceRecordingRequest.builder().build());
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public VobizApiHttpResponse<Void> startConferenceRecording(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> startConferenceRecording(String authId, String conferenceName,
       RequestOptions requestOptions) {
     return startConferenceRecording(authId,conferenceName,StartConferenceRecordingRequest.builder().build(),requestOptions);
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public VobizApiHttpResponse<Void> startConferenceRecording(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request) {
     return startConferenceRecording(authId,conferenceName,request,null);
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public VobizApiHttpResponse<Void> startConferenceRecording(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -84,6 +85,7 @@ public class RawConferenceRecordingClient {
         .method("POST", body)
         .headers(Headers.of(clientOptions.headers(requestOptions)))
         .addHeader("Content-Type", "application/json")
+        .addHeader("Accept", "application/json")
         .build();
       OkHttpClient client = clientOptions.httpClient();
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -91,10 +93,10 @@ public class RawConferenceRecordingClient {
       }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return new VobizApiHttpResponse<>(null, response);
-        }
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+        if (response.isSuccessful()) {
+          return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+        }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
       }

@@ -6,6 +6,7 @@ package resources.conferencemembers;
 
 import core.ClientOptions;
 import core.RequestOptions;
+import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
 import java.util.concurrent.CompletableFuture;
@@ -32,14 +33,15 @@ public class AsyncConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<Void> muteMember(String authId, String conferenceName, String memberId) {
+  public CompletableFuture<Object> muteMember(String authId, String conferenceName,
+      String memberId) {
     return this.rawClient.muteMember(authId, conferenceName, memberId).thenApply(response -> response.body());
   }
 
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<Void> muteMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> muteMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
     return this.rawClient.muteMember(authId, conferenceName, memberId, requestOptions).thenApply(response -> response.body());
   }
@@ -47,7 +49,7 @@ public class AsyncConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<Void> muteMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> muteMember(String authId, String conferenceName, String memberId,
       MuteMemberRequest request) {
     return this.rawClient.muteMember(authId, conferenceName, memberId, request).thenApply(response -> response.body());
   }
@@ -55,7 +57,7 @@ public class AsyncConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<Void> muteMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> muteMember(String authId, String conferenceName, String memberId,
       MuteMemberRequest request, RequestOptions requestOptions) {
     return this.rawClient.muteMember(authId, conferenceName, memberId, request, requestOptions).thenApply(response -> response.body());
   }

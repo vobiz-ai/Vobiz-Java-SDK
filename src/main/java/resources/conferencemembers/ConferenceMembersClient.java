@@ -6,6 +6,7 @@ package resources.conferencemembers;
 
 import core.ClientOptions;
 import core.RequestOptions;
+import java.lang.Object;
 import java.lang.String;
 import resources.conferencemembers.requests.MuteMemberRequest;
 import resources.conferencemembers.requests.UnmuteMemberRequest;
@@ -30,32 +31,32 @@ public class ConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public void muteMember(String authId, String conferenceName, String memberId) {
-    this.rawClient.muteMember(authId, conferenceName, memberId).body();
+  public Object muteMember(String authId, String conferenceName, String memberId) {
+    return this.rawClient.muteMember(authId, conferenceName, memberId).body();
   }
 
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public void muteMember(String authId, String conferenceName, String memberId,
+  public Object muteMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
-    this.rawClient.muteMember(authId, conferenceName, memberId, requestOptions).body();
+    return this.rawClient.muteMember(authId, conferenceName, memberId, requestOptions).body();
   }
 
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public void muteMember(String authId, String conferenceName, String memberId,
+  public Object muteMember(String authId, String conferenceName, String memberId,
       MuteMemberRequest request) {
-    this.rawClient.muteMember(authId, conferenceName, memberId, request).body();
+    return this.rawClient.muteMember(authId, conferenceName, memberId, request).body();
   }
 
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public void muteMember(String authId, String conferenceName, String memberId,
+  public Object muteMember(String authId, String conferenceName, String memberId,
       MuteMemberRequest request, RequestOptions requestOptions) {
-    this.rawClient.muteMember(authId, conferenceName, memberId, request, requestOptions).body();
+    return this.rawClient.muteMember(authId, conferenceName, memberId, request, requestOptions).body();
   }
 
   /**

@@ -43,7 +43,7 @@ public class AsyncRawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<VobizApiHttpResponse<Object>> kickMember(String authId,
       String conferenceName, String memberId) {
@@ -51,7 +51,7 @@ public class AsyncRawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<VobizApiHttpResponse<Object>> kickMember(String authId,
       String conferenceName, String memberId, RequestOptions requestOptions) {
@@ -59,7 +59,7 @@ public class AsyncRawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<VobizApiHttpResponse<Object>> kickMember(String authId,
       String conferenceName, String memberId, KickMemberRequest request) {
@@ -67,7 +67,7 @@ public class AsyncRawConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<VobizApiHttpResponse<Object>> kickMember(String authId,
       String conferenceName, String memberId, KickMemberRequest request,
@@ -123,7 +123,7 @@ public class AsyncRawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> hangupMember(String authId,
         String conferenceName, String memberId) {
@@ -131,7 +131,7 @@ public class AsyncRawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> hangupMember(String authId,
         String conferenceName, String memberId, RequestOptions requestOptions) {
@@ -139,7 +139,7 @@ public class AsyncRawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> hangupMember(String authId,
         String conferenceName, String memberId, HangupMemberRequest request) {
@@ -147,7 +147,7 @@ public class AsyncRawConferenceClient {
     }
 
     /**
-     * Disconnect a specific member from a conference.
+     * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> hangupMember(String authId,
         String conferenceName, String memberId, HangupMemberRequest request,
@@ -203,7 +203,7 @@ public class AsyncRawConferenceClient {
       /**
        * Play an audio file to a specific conference member.
        */
-      public CompletableFuture<VobizApiHttpResponse<Void>> playAudioMember(String authId,
+      public CompletableFuture<VobizApiHttpResponse<Object>> playAudioMember(String authId,
           String conferenceName, String memberId, PlayAudioMemberRequest request) {
         return playAudioMember(authId,conferenceName,memberId,request,null);
       }
@@ -211,7 +211,7 @@ public class AsyncRawConferenceClient {
       /**
        * Play an audio file to a specific conference member.
        */
-      public CompletableFuture<VobizApiHttpResponse<Void>> playAudioMember(String authId,
+      public CompletableFuture<VobizApiHttpResponse<Object>> playAudioMember(String authId,
           String conferenceName, String memberId, PlayAudioMemberRequest request,
           RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
@@ -239,21 +239,22 @@ public class AsyncRawConferenceClient {
             .method("POST", body)
             .headers(Headers.of(clientOptions.headers(requestOptions)))
             .addHeader("Content-Type", "application/json")
+            .addHeader("Accept", "application/json")
             .build();
           OkHttpClient client = clientOptions.httpClient();
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
-          CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+          CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
           client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
               try (ResponseBody responseBody = response.body()) {
+                String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                 if (response.isSuccessful()) {
-                  future.complete(new VobizApiHttpResponse<>(null, response));
+                  future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                   return;
                 }
-                String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                 Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                 future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
                 return;
@@ -353,7 +354,7 @@ public class AsyncRawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> deafMember(String authId,
+          public CompletableFuture<VobizApiHttpResponse<Object>> deafMember(String authId,
               String conferenceName, String memberId) {
             return deafMember(authId,conferenceName,memberId,DeafMemberRequest.builder().build());
           }
@@ -361,7 +362,7 @@ public class AsyncRawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> deafMember(String authId,
+          public CompletableFuture<VobizApiHttpResponse<Object>> deafMember(String authId,
               String conferenceName, String memberId, RequestOptions requestOptions) {
             return deafMember(authId,conferenceName,memberId,DeafMemberRequest.builder().build(),requestOptions);
           }
@@ -369,7 +370,7 @@ public class AsyncRawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> deafMember(String authId,
+          public CompletableFuture<VobizApiHttpResponse<Object>> deafMember(String authId,
               String conferenceName, String memberId, DeafMemberRequest request) {
             return deafMember(authId,conferenceName,memberId,request,null);
           }
@@ -377,7 +378,7 @@ public class AsyncRawConferenceClient {
           /**
            * Prevent a conference member from hearing other participants.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> deafMember(String authId,
+          public CompletableFuture<VobizApiHttpResponse<Object>> deafMember(String authId,
               String conferenceName, String memberId, DeafMemberRequest request,
               RequestOptions requestOptions) {
             HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
@@ -396,22 +397,23 @@ public class AsyncRawConferenceClient {
               Request.Builder _requestBuilder = new Request.Builder()
                 .url(httpUrl.build())
                 .method("POST", RequestBody.create("", null))
-                .headers(Headers.of(clientOptions.headers(requestOptions)));
+                .headers(Headers.of(clientOptions.headers(requestOptions)))
+                .addHeader("Accept", "application/json");
               Request okhttpRequest = _requestBuilder.build();
               OkHttpClient client = clientOptions.httpClient();
               if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                 client = clientOptions.httpClientWithTimeout(requestOptions);
               }
-              CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+              CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
               client.newCall(okhttpRequest).enqueue(new Callback() {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                   try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
-                      future.complete(new VobizApiHttpResponse<>(null, response));
+                      future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                       return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                     future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
                     return;

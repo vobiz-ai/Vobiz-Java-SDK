@@ -6,6 +6,7 @@ package resources.conferencerecording;
 
 import core.ClientOptions;
 import core.RequestOptions;
+import java.lang.Object;
 import java.lang.String;
 import java.lang.Void;
 import java.util.concurrent.CompletableFuture;
@@ -30,32 +31,32 @@ public class AsyncConferenceRecordingClient {
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public CompletableFuture<Void> startConferenceRecording(String authId, String conferenceName) {
+  public CompletableFuture<Object> startConferenceRecording(String authId, String conferenceName) {
     return this.rawClient.startConferenceRecording(authId, conferenceName).thenApply(response -> response.body());
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public CompletableFuture<Void> startConferenceRecording(String authId, String conferenceName,
+  public CompletableFuture<Object> startConferenceRecording(String authId, String conferenceName,
       RequestOptions requestOptions) {
     return this.rawClient.startConferenceRecording(authId, conferenceName, requestOptions).thenApply(response -> response.body());
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public CompletableFuture<Void> startConferenceRecording(String authId, String conferenceName,
+  public CompletableFuture<Object> startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request) {
     return this.rawClient.startConferenceRecording(authId, conferenceName, request).thenApply(response -> response.body());
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public CompletableFuture<Void> startConferenceRecording(String authId, String conferenceName,
+  public CompletableFuture<Object> startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request, RequestOptions requestOptions) {
     return this.rawClient.startConferenceRecording(authId, conferenceName, request, requestOptions).thenApply(response -> response.body());
   }

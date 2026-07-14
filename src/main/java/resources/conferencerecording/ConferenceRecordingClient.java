@@ -6,6 +6,7 @@ package resources.conferencerecording;
 
 import core.ClientOptions;
 import core.RequestOptions;
+import java.lang.Object;
 import java.lang.String;
 import resources.conferencerecording.requests.StartConferenceRecordingRequest;
 import resources.conferencerecording.requests.StopConferenceRecordingRequest;
@@ -28,34 +29,34 @@ public class ConferenceRecordingClient {
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public void startConferenceRecording(String authId, String conferenceName) {
-    this.rawClient.startConferenceRecording(authId, conferenceName).body();
+  public Object startConferenceRecording(String authId, String conferenceName) {
+    return this.rawClient.startConferenceRecording(authId, conferenceName).body();
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public void startConferenceRecording(String authId, String conferenceName,
+  public Object startConferenceRecording(String authId, String conferenceName,
       RequestOptions requestOptions) {
-    this.rawClient.startConferenceRecording(authId, conferenceName, requestOptions).body();
+    return this.rawClient.startConferenceRecording(authId, conferenceName, requestOptions).body();
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public void startConferenceRecording(String authId, String conferenceName,
+  public Object startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request) {
-    this.rawClient.startConferenceRecording(authId, conferenceName, request).body();
+    return this.rawClient.startConferenceRecording(authId, conferenceName, request).body();
   }
 
   /**
-   * Begin recording all audio in a conference room.
+   * Queue recording for all audio in a conference room. The response does not include a recording ID or download URL.
    */
-  public void startConferenceRecording(String authId, String conferenceName,
+  public Object startConferenceRecording(String authId, String conferenceName,
       StartConferenceRecordingRequest request, RequestOptions requestOptions) {
-    this.rawClient.startConferenceRecording(authId, conferenceName, request, requestOptions).body();
+    return this.rawClient.startConferenceRecording(authId, conferenceName, request, requestOptions).body();
   }
 
   /**

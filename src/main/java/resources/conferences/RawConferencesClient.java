@@ -4,12 +4,14 @@
 
 package resources.conferences;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import core.ClientOptions;
 import core.ObjectMappers;
 import core.RequestOptions;
 import core.VobizApiApiException;
 import core.VobizApiException;
 import core.VobizApiHttpResponse;
+import errors.NotFoundError;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.String;
@@ -24,6 +26,7 @@ import resources.conferences.requests.DeleteAllConferencesRequest;
 import resources.conferences.requests.DeleteConferenceRequest;
 import resources.conferences.requests.GetConferenceRequest;
 import resources.conferences.requests.ListConferencesRequest;
+import resources.conferences.types.GetConferenceResponse;
 import resources.conferences.types.ListConferencesResponse;
 
 public class RawConferencesClient {
@@ -34,14 +37,14 @@ public class RawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public VobizApiHttpResponse<ListConferencesResponse> listConferences(String authId) {
     return listConferences(authId,ListConferencesRequest.builder().build());
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public VobizApiHttpResponse<ListConferencesResponse> listConferences(String authId,
       RequestOptions requestOptions) {
@@ -49,7 +52,7 @@ public class RawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public VobizApiHttpResponse<ListConferencesResponse> listConferences(String authId,
       ListConferencesRequest request) {
@@ -57,7 +60,7 @@ public class RawConferencesClient {
   }
 
   /**
-   * Retrieve all active conference rooms on the account.
+   * Retrieve conference room names reported by the API. An empty array is inconclusive and can occur while conferences are active. Maintain your own room registry for authoritative discovery, billing, cleanup, and destructive workflows.
    */
   public VobizApiHttpResponse<ListConferencesResponse> listConferences(String authId,
       ListConferencesRequest request, RequestOptions requestOptions) {
@@ -155,33 +158,34 @@ public class RawConferencesClient {
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public VobizApiHttpResponse<Object> getConference(String authId, String conferenceName) {
+      public VobizApiHttpResponse<GetConferenceResponse> getConference(String authId,
+          String conferenceName) {
         return getConference(authId,conferenceName,GetConferenceRequest.builder().build());
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public VobizApiHttpResponse<Object> getConference(String authId, String conferenceName,
-          RequestOptions requestOptions) {
+      public VobizApiHttpResponse<GetConferenceResponse> getConference(String authId,
+          String conferenceName, RequestOptions requestOptions) {
         return getConference(authId,conferenceName,GetConferenceRequest.builder().build(),requestOptions);
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public VobizApiHttpResponse<Object> getConference(String authId, String conferenceName,
-          GetConferenceRequest request) {
+      public VobizApiHttpResponse<GetConferenceResponse> getConference(String authId,
+          String conferenceName, GetConferenceRequest request) {
         return getConference(authId,conferenceName,request,null);
       }
 
       /**
-       * Get details and member list of a specific conference room.
+       * Retrieve a specific conference room. A live conference can currently return a 200 response with an error payload instead of conference details.
        */
-      public VobizApiHttpResponse<Object> getConference(String authId, String conferenceName,
-          GetConferenceRequest request, RequestOptions requestOptions) {
+      public VobizApiHttpResponse<GetConferenceResponse> getConference(String authId,
+          String conferenceName, GetConferenceRequest request, RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
           .addPathSegments("api/v1/Account")
@@ -206,7 +210,15 @@ public class RawConferencesClient {
             ResponseBody responseBody = response.body();
             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
-              return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+              return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetConferenceResponse.class), response);
+            }
+            try {
+              if (response.code() == 404) {
+                throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+              }
+            }
+            catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
             }
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);

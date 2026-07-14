@@ -35,7 +35,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<Object> kickMember(String authId, String conferenceName,
       String memberId) {
@@ -43,7 +43,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<Object> kickMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
@@ -51,7 +51,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<Object> kickMember(String authId, String conferenceName, String memberId,
       KickMemberRequest request) {
@@ -59,7 +59,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Remove a specific participant from a conference call.
+   * Remove one or more participants from a conference while allowing their XML flow to continue.
    */
   public CompletableFuture<Object> kickMember(String authId, String conferenceName, String memberId,
       KickMemberRequest request, RequestOptions requestOptions) {
@@ -67,7 +67,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public CompletableFuture<Void> hangupMember(String authId, String conferenceName,
       String memberId) {
@@ -75,7 +75,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public CompletableFuture<Void> hangupMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
@@ -83,7 +83,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public CompletableFuture<Void> hangupMember(String authId, String conferenceName, String memberId,
       HangupMemberRequest request) {
@@ -91,7 +91,7 @@ public class AsyncConferenceClient {
   }
 
   /**
-   * Disconnect a specific member from a conference.
+   * Terminate one or more active conference member calls. A normal active-member request disconnects the member. If a member was kicked, continued its XML flow, and rejoined with the same numeric member ID, confirm removal through conference exit or call hangup callbacks.
    */
   public CompletableFuture<Void> hangupMember(String authId, String conferenceName, String memberId,
       HangupMemberRequest request, RequestOptions requestOptions) {
@@ -101,7 +101,7 @@ public class AsyncConferenceClient {
   /**
    * Play an audio file to a specific conference member.
    */
-  public CompletableFuture<Void> playAudioMember(String authId, String conferenceName,
+  public CompletableFuture<Object> playAudioMember(String authId, String conferenceName,
       String memberId, PlayAudioMemberRequest request) {
     return this.rawClient.playAudioMember(authId, conferenceName, memberId, request).thenApply(response -> response.body());
   }
@@ -109,7 +109,7 @@ public class AsyncConferenceClient {
   /**
    * Play an audio file to a specific conference member.
    */
-  public CompletableFuture<Void> playAudioMember(String authId, String conferenceName,
+  public CompletableFuture<Object> playAudioMember(String authId, String conferenceName,
       String memberId, PlayAudioMemberRequest request, RequestOptions requestOptions) {
     return this.rawClient.playAudioMember(authId, conferenceName, memberId, request, requestOptions).thenApply(response -> response.body());
   }
@@ -149,14 +149,15 @@ public class AsyncConferenceClient {
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public CompletableFuture<Void> deafMember(String authId, String conferenceName, String memberId) {
+  public CompletableFuture<Object> deafMember(String authId, String conferenceName,
+      String memberId) {
     return this.rawClient.deafMember(authId, conferenceName, memberId).thenApply(response -> response.body());
   }
 
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public CompletableFuture<Void> deafMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> deafMember(String authId, String conferenceName, String memberId,
       RequestOptions requestOptions) {
     return this.rawClient.deafMember(authId, conferenceName, memberId, requestOptions).thenApply(response -> response.body());
   }
@@ -164,7 +165,7 @@ public class AsyncConferenceClient {
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public CompletableFuture<Void> deafMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> deafMember(String authId, String conferenceName, String memberId,
       DeafMemberRequest request) {
     return this.rawClient.deafMember(authId, conferenceName, memberId, request).thenApply(response -> response.body());
   }
@@ -172,7 +173,7 @@ public class AsyncConferenceClient {
   /**
    * Prevent a conference member from hearing other participants.
    */
-  public CompletableFuture<Void> deafMember(String authId, String conferenceName, String memberId,
+  public CompletableFuture<Object> deafMember(String authId, String conferenceName, String memberId,
       DeafMemberRequest request, RequestOptions requestOptions) {
     return this.rawClient.deafMember(authId, conferenceName, memberId, request, requestOptions).thenApply(response -> response.body());
   }

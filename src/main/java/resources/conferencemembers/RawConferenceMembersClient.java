@@ -34,7 +34,7 @@ public class RawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public VobizApiHttpResponse<Void> muteMember(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> muteMember(String authId, String conferenceName,
       String memberId) {
     return muteMember(authId,conferenceName,memberId,MuteMemberRequest.builder().build());
   }
@@ -42,7 +42,7 @@ public class RawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public VobizApiHttpResponse<Void> muteMember(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> muteMember(String authId, String conferenceName,
       String memberId, RequestOptions requestOptions) {
     return muteMember(authId,conferenceName,memberId,MuteMemberRequest.builder().build(),requestOptions);
   }
@@ -50,7 +50,7 @@ public class RawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public VobizApiHttpResponse<Void> muteMember(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> muteMember(String authId, String conferenceName,
       String memberId, MuteMemberRequest request) {
     return muteMember(authId,conferenceName,memberId,request,null);
   }
@@ -58,7 +58,7 @@ public class RawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public VobizApiHttpResponse<Void> muteMember(String authId, String conferenceName,
+  public VobizApiHttpResponse<Object> muteMember(String authId, String conferenceName,
       String memberId, MuteMemberRequest request, RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -76,7 +76,8 @@ public class RawConferenceMembersClient {
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("POST", RequestBody.create("", null))
-        .headers(Headers.of(clientOptions.headers(requestOptions)));
+        .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Accept", "application/json");
       Request okhttpRequest = _requestBuilder.build();
       OkHttpClient client = clientOptions.httpClient();
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
@@ -84,10 +85,10 @@ public class RawConferenceMembersClient {
       }
       try (Response response = client.newCall(okhttpRequest).execute()) {
         ResponseBody responseBody = response.body();
-        if (response.isSuccessful()) {
-          return new VobizApiHttpResponse<>(null, response);
-        }
         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+        if (response.isSuccessful()) {
+          return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+        }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
       }

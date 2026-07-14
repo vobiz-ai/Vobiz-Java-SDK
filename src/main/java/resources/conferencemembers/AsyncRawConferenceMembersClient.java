@@ -39,7 +39,7 @@ public class AsyncRawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<VobizApiHttpResponse<Void>> muteMember(String authId,
+  public CompletableFuture<VobizApiHttpResponse<Object>> muteMember(String authId,
       String conferenceName, String memberId) {
     return muteMember(authId,conferenceName,memberId,MuteMemberRequest.builder().build());
   }
@@ -47,7 +47,7 @@ public class AsyncRawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<VobizApiHttpResponse<Void>> muteMember(String authId,
+  public CompletableFuture<VobizApiHttpResponse<Object>> muteMember(String authId,
       String conferenceName, String memberId, RequestOptions requestOptions) {
     return muteMember(authId,conferenceName,memberId,MuteMemberRequest.builder().build(),requestOptions);
   }
@@ -55,7 +55,7 @@ public class AsyncRawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<VobizApiHttpResponse<Void>> muteMember(String authId,
+  public CompletableFuture<VobizApiHttpResponse<Object>> muteMember(String authId,
       String conferenceName, String memberId, MuteMemberRequest request) {
     return muteMember(authId,conferenceName,memberId,request,null);
   }
@@ -63,7 +63,7 @@ public class AsyncRawConferenceMembersClient {
   /**
    * Prevent a member from speaking. Use <code>all</code> as member_id to mute everyone.
    */
-  public CompletableFuture<VobizApiHttpResponse<Void>> muteMember(String authId,
+  public CompletableFuture<VobizApiHttpResponse<Object>> muteMember(String authId,
       String conferenceName, String memberId, MuteMemberRequest request,
       RequestOptions requestOptions) {
     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
@@ -82,22 +82,23 @@ public class AsyncRawConferenceMembersClient {
       Request.Builder _requestBuilder = new Request.Builder()
         .url(httpUrl.build())
         .method("POST", RequestBody.create("", null))
-        .headers(Headers.of(clientOptions.headers(requestOptions)));
+        .headers(Headers.of(clientOptions.headers(requestOptions)))
+        .addHeader("Accept", "application/json");
       Request okhttpRequest = _requestBuilder.build();
       OkHttpClient client = clientOptions.httpClient();
       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
         client = clientOptions.httpClientWithTimeout(requestOptions);
       }
-      CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+      CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
       client.newCall(okhttpRequest).enqueue(new Callback() {
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
           try (ResponseBody responseBody = response.body()) {
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             if (response.isSuccessful()) {
-              future.complete(new VobizApiHttpResponse<>(null, response));
+              future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
               return;
             }
-            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
