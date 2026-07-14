@@ -2799,6 +2799,7 @@ client.phoneNumbers().listNumbers(
     "MA_XXXXXX",
     ListNumbersRequest
         .builder()
+        .search("+919876543210")
         .build()
 );
 ```
@@ -2823,7 +2824,7 @@ client.phoneNumbers().listNumbers(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**page:** `Optional<Integer>` — Page number, starting at 1
     
 </dd>
 </dl>
@@ -2831,7 +2832,15 @@ client.phoneNumbers().listNumbers(
 <dl>
 <dd>
 
-**offset:** `Optional<Integer>` 
+**perPage:** `Optional<Integer>` — Number of phone numbers to return per page
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `Optional<String>` — Filter by phone number. Include the country code and URL-encode a leading plus sign.
     
 </dd>
 </dl>

@@ -26,27 +26,44 @@ import java.util.Optional;
     builder = ListNumbersRequest.Builder.class
 )
 public final class ListNumbersRequest {
-  private final Optional<Integer> limit;
+  private final Optional<Integer> page;
 
-  private final Optional<Integer> offset;
+  private final Optional<Integer> perPage;
+
+  private final Optional<String> search;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListNumbersRequest(Optional<Integer> limit, Optional<Integer> offset,
-      Map<String, Object> additionalProperties) {
-    this.limit = limit;
-    this.offset = offset;
+  private ListNumbersRequest(Optional<Integer> page, Optional<Integer> perPage,
+      Optional<String> search, Map<String, Object> additionalProperties) {
+    this.page = page;
+    this.perPage = perPage;
+    this.search = search;
     this.additionalProperties = additionalProperties;
   }
 
-  @JsonProperty("limit")
-  public Optional<Integer> getLimit() {
-    return limit;
+  /**
+   * @return Page number, starting at 1
+   */
+  @JsonProperty("page")
+  public Optional<Integer> getPage() {
+    return page;
   }
 
-  @JsonProperty("offset")
-  public Optional<Integer> getOffset() {
-    return offset;
+  /**
+   * @return Number of phone numbers to return per page
+   */
+  @JsonProperty("per_page")
+  public Optional<Integer> getPerPage() {
+    return perPage;
+  }
+
+  /**
+   * @return Filter by phone number. Include the country code and URL-encode a leading plus sign.
+   */
+  @JsonProperty("search")
+  public Optional<String> getSearch() {
+    return search;
   }
 
   @java.lang.Override
@@ -61,12 +78,12 @@ public final class ListNumbersRequest {
   }
 
   private boolean equalTo(ListNumbersRequest other) {
-    return limit.equals(other.limit) && offset.equals(other.offset);
+    return page.equals(other.page) && perPage.equals(other.perPage) && search.equals(other.search);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.limit, this.offset);
+    return Objects.hash(this.page, this.perPage, this.search);
   }
 
   @java.lang.Override
@@ -82,9 +99,11 @@ public final class ListNumbersRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
-    private Optional<Integer> limit = Optional.empty();
+    private Optional<Integer> page = Optional.empty();
 
-    private Optional<Integer> offset = Optional.empty();
+    private Optional<Integer> perPage = Optional.empty();
+
+    private Optional<String> search = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -93,41 +112,65 @@ public final class ListNumbersRequest {
     }
 
     public Builder from(ListNumbersRequest other) {
-      limit(other.getLimit());
-      offset(other.getOffset());
+      page(other.getPage());
+      perPage(other.getPerPage());
+      search(other.getSearch());
       return this;
     }
 
+    /**
+     * <p>Page number, starting at 1</p>
+     */
     @JsonSetter(
-        value = "limit",
+        value = "page",
         nulls = Nulls.SKIP
     )
-    public Builder limit(Optional<Integer> limit) {
-      this.limit = limit;
+    public Builder page(Optional<Integer> page) {
+      this.page = page;
       return this;
     }
 
-    public Builder limit(Integer limit) {
-      this.limit = Optional.ofNullable(limit);
+    public Builder page(Integer page) {
+      this.page = Optional.ofNullable(page);
       return this;
     }
 
+    /**
+     * <p>Number of phone numbers to return per page</p>
+     */
     @JsonSetter(
-        value = "offset",
+        value = "per_page",
         nulls = Nulls.SKIP
     )
-    public Builder offset(Optional<Integer> offset) {
-      this.offset = offset;
+    public Builder perPage(Optional<Integer> perPage) {
+      this.perPage = perPage;
       return this;
     }
 
-    public Builder offset(Integer offset) {
-      this.offset = Optional.ofNullable(offset);
+    public Builder perPage(Integer perPage) {
+      this.perPage = Optional.ofNullable(perPage);
+      return this;
+    }
+
+    /**
+     * <p>Filter by phone number. Include the country code and URL-encode a leading plus sign.</p>
+     */
+    @JsonSetter(
+        value = "search",
+        nulls = Nulls.SKIP
+    )
+    public Builder search(Optional<String> search) {
+      this.search = search;
+      return this;
+    }
+
+    public Builder search(String search) {
+      this.search = Optional.ofNullable(search);
       return this;
     }
 
     public ListNumbersRequest build() {
-      return new ListNumbersRequest(limit, offset, additionalProperties);
+      return new ListNumbersRequest(page, perPage, search, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

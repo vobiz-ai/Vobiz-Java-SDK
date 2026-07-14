@@ -82,11 +82,14 @@ public class RawPhoneNumbersClient {
 
       .addPathSegments("api/v1/Account")
       .addPathSegment(authId)
-      .addPathSegments("numbers");if (request.getLimit().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+      .addPathSegments("numbers");if (request.getPage().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
       }
-      if (request.getOffset().isPresent()) {
-        QueryStringMapper.addQueryParameter(httpUrl, "offset", request.getOffset().get(), false);
+      if (request.getPerPage().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
+      }
+      if (request.getSearch().isPresent()) {
+        QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
       }
       if (requestOptions != null) {
         requestOptions.getQueryParameters().forEach((_key, _value) -> {
