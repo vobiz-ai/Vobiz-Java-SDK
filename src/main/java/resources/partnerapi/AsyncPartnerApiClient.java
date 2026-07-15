@@ -251,19 +251,39 @@ public class AsyncPartnerApiClient {
     return this.rawClient.listCustomerNumbers(customerAuthId, request, requestOptions).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public CompletableFuture<ListKycSessionsResponse> listKycSessions() {
     return this.rawClient.listKycSessions().thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public CompletableFuture<ListKycSessionsResponse> listKycSessions(RequestOptions requestOptions) {
     return this.rawClient.listKycSessions(requestOptions).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public CompletableFuture<ListKycSessionsResponse> listKycSessions(
       ListKycSessionsRequest request) {
     return this.rawClient.listKycSessions(request).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public CompletableFuture<ListKycSessionsResponse> listKycSessions(ListKycSessionsRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.listKycSessions(request, requestOptions).thenApply(response -> response.body());
@@ -288,18 +308,34 @@ public class AsyncPartnerApiClient {
     return this.rawClient.createKycSession(request, requestOptions).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public CompletableFuture<Void> getKycSession(String sessionId) {
     return this.rawClient.getKycSession(sessionId).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public CompletableFuture<Void> getKycSession(String sessionId, RequestOptions requestOptions) {
     return this.rawClient.getKycSession(sessionId, requestOptions).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public CompletableFuture<Void> getKycSession(String sessionId, GetKycSessionRequest request) {
     return this.rawClient.getKycSession(sessionId, request).thenApply(response -> response.body());
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public CompletableFuture<Void> getKycSession(String sessionId, GetKycSessionRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.getKycSession(sessionId, request, requestOptions).thenApply(response -> response.body());

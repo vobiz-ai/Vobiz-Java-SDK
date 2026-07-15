@@ -243,18 +243,38 @@ public class PartnerApiClient {
     return this.rawClient.listCustomerNumbers(customerAuthId, request, requestOptions).body();
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public ListKycSessionsResponse listKycSessions() {
     return this.rawClient.listKycSessions().body();
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public ListKycSessionsResponse listKycSessions(RequestOptions requestOptions) {
     return this.rawClient.listKycSessions(requestOptions).body();
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public ListKycSessionsResponse listKycSessions(ListKycSessionsRequest request) {
     return this.rawClient.listKycSessions(request).body();
   }
 
+  /**
+   * Returns the authenticated partner's KYC sessions. Filter the list by
+   * session status or customer account, and use <code>page</code> and <code>size</code> to
+   * paginate the results.
+   */
   public ListKycSessionsResponse listKycSessions(ListKycSessionsRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.listKycSessions(request, requestOptions).body();
@@ -278,18 +298,34 @@ public class PartnerApiClient {
     return this.rawClient.createKycSession(request, requestOptions).body();
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public void getKycSession(String sessionId) {
     this.rawClient.getKycSession(sessionId).body();
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public void getKycSession(String sessionId, RequestOptions requestOptions) {
     this.rawClient.getKycSession(sessionId, requestOptions).body();
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public void getKycSession(String sessionId, GetKycSessionRequest request) {
     this.rawClient.getKycSession(sessionId, request).body();
   }
 
+  /**
+   * Returns the current status and available details for one KYC session
+   * owned by the authenticated partner.
+   */
   public void getKycSession(String sessionId, GetKycSessionRequest request,
       RequestOptions requestOptions) {
     this.rawClient.getKycSession(sessionId, request, requestOptions).body();

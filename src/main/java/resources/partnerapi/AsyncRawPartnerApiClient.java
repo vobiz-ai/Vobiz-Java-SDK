@@ -688,21 +688,41 @@ public class AsyncRawPartnerApiClient {
                     return future;
                   }
 
+                  /**
+                   * Returns the authenticated partner's KYC sessions. Filter the list by
+                   * session status or customer account, and use <code>page</code> and <code>size</code> to
+                   * paginate the results.
+                   */
                   public CompletableFuture<VobizApiHttpResponse<ListKycSessionsResponse>> listKycSessions(
                       ) {
                     return listKycSessions(ListKycSessionsRequest.builder().build());
                   }
 
+                  /**
+                   * Returns the authenticated partner's KYC sessions. Filter the list by
+                   * session status or customer account, and use <code>page</code> and <code>size</code> to
+                   * paginate the results.
+                   */
                   public CompletableFuture<VobizApiHttpResponse<ListKycSessionsResponse>> listKycSessions(
                       RequestOptions requestOptions) {
                     return listKycSessions(ListKycSessionsRequest.builder().build(),requestOptions);
                   }
 
+                  /**
+                   * Returns the authenticated partner's KYC sessions. Filter the list by
+                   * session status or customer account, and use <code>page</code> and <code>size</code> to
+                   * paginate the results.
+                   */
                   public CompletableFuture<VobizApiHttpResponse<ListKycSessionsResponse>> listKycSessions(
                       ListKycSessionsRequest request) {
                     return listKycSessions(request,null);
                   }
 
+                  /**
+                   * Returns the authenticated partner's KYC sessions. Filter the list by
+                   * session status or customer account, and use <code>page</code> and <code>size</code> to
+                   * paginate the results.
+                   */
                   public CompletableFuture<VobizApiHttpResponse<ListKycSessionsResponse>> listKycSessions(
                       ListKycSessionsRequest request, RequestOptions requestOptions) {
                     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
@@ -841,21 +861,37 @@ public class AsyncRawPartnerApiClient {
                         return future;
                       }
 
+                      /**
+                       * Returns the current status and available details for one KYC session
+                       * owned by the authenticated partner.
+                       */
                       public CompletableFuture<VobizApiHttpResponse<Void>> getKycSession(
                           String sessionId) {
                         return getKycSession(sessionId,GetKycSessionRequest.builder().build());
                       }
 
+                      /**
+                       * Returns the current status and available details for one KYC session
+                       * owned by the authenticated partner.
+                       */
                       public CompletableFuture<VobizApiHttpResponse<Void>> getKycSession(
                           String sessionId, RequestOptions requestOptions) {
                         return getKycSession(sessionId,GetKycSessionRequest.builder().build(),requestOptions);
                       }
 
+                      /**
+                       * Returns the current status and available details for one KYC session
+                       * owned by the authenticated partner.
+                       */
                       public CompletableFuture<VobizApiHttpResponse<Void>> getKycSession(
                           String sessionId, GetKycSessionRequest request) {
                         return getKycSession(sessionId,request,null);
                       }
 
+                      /**
+                       * Returns the current status and available details for one KYC session
+                       * owned by the authenticated partner.
+                       */
                       public CompletableFuture<VobizApiHttpResponse<Void>> getKycSession(
                           String sessionId, GetKycSessionRequest request,
                           RequestOptions requestOptions) {
