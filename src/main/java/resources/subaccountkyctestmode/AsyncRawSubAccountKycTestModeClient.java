@@ -44,7 +44,7 @@ public class AsyncRawSubAccountKycTestModeClient {
   }
 
   /**
-   * Mock PAN verification — never hits the provider. Magic <code>pan</code> inputs:
+   * Mock PAN verification - never hits the provider. Magic <code>pan</code> inputs:
    * <p>| Input | Outcome |
    * |---|---|
    * | <code>TESTSUCCESS0001</code> | verified |
@@ -60,7 +60,7 @@ public class AsyncRawSubAccountKycTestModeClient {
   }
 
   /**
-   * Mock PAN verification — never hits the provider. Magic <code>pan</code> inputs:
+   * Mock PAN verification - never hits the provider. Magic <code>pan</code> inputs:
    * <p>| Input | Outcome |
    * |---|---|
    * | <code>TESTSUCCESS0001</code> | verified |
@@ -472,7 +472,7 @@ public class AsyncRawSubAccountKycTestModeClient {
 
               /**
                * Promotes the most recent <strong>pending</strong> mock verification of the given
-               * type to a terminal outcome — this drives the async (<code>TESTPENDING…</code>)
+               * type to a terminal outcome - this drives the async (<code>TESTPENDING…</code>)
                * path without webhooks. <code>verification_type</code> ∈ <code>pan | aadhaar | gst | cin</code>;
                * <code>outcome</code> ∈ <code>verified | failed</code>.
                */
@@ -483,7 +483,7 @@ public class AsyncRawSubAccountKycTestModeClient {
 
               /**
                * Promotes the most recent <strong>pending</strong> mock verification of the given
-               * type to a terminal outcome — this drives the async (<code>TESTPENDING…</code>)
+               * type to a terminal outcome - this drives the async (<code>TESTPENDING…</code>)
                * path without webhooks. <code>verification_type</code> ∈ <code>pan | aadhaar | gst | cin</code>;
                * <code>outcome</code> ∈ <code>verified | failed</code>.
                */

@@ -1,4 +1,4 @@
 // Hand-authored because Fern's free local generation does not emit a Gradle build
-// for Java (see ../../fern/PLAN.md §4). Regeneration only rewrites src/ — it will
+// for Java (see ../../fern/PLAN.md §4). Regeneration only rewrites src/ - it will
 // NOT touch this file, so versions/coordinates you set here are safe.
 rootProject.name = 'vobiz-java'

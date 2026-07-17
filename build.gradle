@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Hand-authored Gradle build for the Fern-generated Java SDK.
 //
-// WHY THIS FILE IS HERE: Fern's FREE local generation emits Java SOURCE only — it
+// WHY THIS FILE IS HERE: Fern's FREE local generation emits Java SOURCE only - it
 // does not write a build manifest (documented paid-gated behaviour, ../../fern/PLAN.md §4).
 // Regeneration rewrites src/main/java only; this file, settings.gradle and
-// gradle.properties are NOT overwritten. You own them — bump deps/version here.
+// gradle.properties are NOT overwritten. You own them - bump deps/version here.
 //
 // Dependency set mirrors the imports the generator actually emits:
 //   Jackson (annotations/core/databind + jdk8 + jsr310), OkHttp3, JetBrains
@@ -58,7 +58,7 @@ test {
 
 // Sonatype Central Portal upload + automatic release, with in-memory GPG signing.
 // vanniktech reads creds from ORG_GRADLE_PROJECT_mavenCentralUsername/Password and
-// the key from ORG_GRADLE_PROJECT_signingInMemoryKey(+Password) — set by CI.
+// the key from ORG_GRADLE_PROJECT_signingInMemoryKey(+Password) - set by CI.
 import com.vanniktech.maven.publish.SonatypeHost
 
 mavenPublishing {

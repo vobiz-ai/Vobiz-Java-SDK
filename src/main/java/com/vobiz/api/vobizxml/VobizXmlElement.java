@@ -1,5 +1,5 @@
 /*
- * VobizXmlElement — base element + serialization for the Vobiz call-control XML builder.
+ * VobizXmlElement - base element + serialization for the Vobiz call-control XML builder.
  *
  * Mirrors the Python `vobizxml` package and the Node `@vobiz/sdk` `vobizxml` namespace
  * (ResponseElement + add* builders + toString()), and emits byte-identical XML. Java has

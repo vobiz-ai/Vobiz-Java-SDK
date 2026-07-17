@@ -69,9 +69,9 @@ public class SubAccountsClient {
    * Create a new sub-account under the master account.
    * <p>Set <code>kyc_mode</code> to control how the sub-account is verified:</p>
    * <ul>
-   * <li><code>personal_use</code> <em>(default)</em> — the sub-account inherits the parent's
+   * <li><code>personal_use</code> <em>(default)</em> - the sub-account inherits the parent's
    * KYC; no separate verification is required.</li>
-   * <li><code>customer_use</code> — the sub-account must complete its own KYC before it
+   * <li><code>customer_use</code> - the sub-account must complete its own KYC before it
    * can place calls. A fresh <code>customer_use</code> sub-account is returned with
    * <code>kyc_calls_blocked: true</code>. <code>customer_use</code> <strong>requires</strong> <code>email</code>.</li>
    * </ul>
@@ -84,9 +84,9 @@ public class SubAccountsClient {
    * Create a new sub-account under the master account.
    * <p>Set <code>kyc_mode</code> to control how the sub-account is verified:</p>
    * <ul>
-   * <li><code>personal_use</code> <em>(default)</em> — the sub-account inherits the parent's
+   * <li><code>personal_use</code> <em>(default)</em> - the sub-account inherits the parent's
    * KYC; no separate verification is required.</li>
-   * <li><code>customer_use</code> — the sub-account must complete its own KYC before it
+   * <li><code>customer_use</code> - the sub-account must complete its own KYC before it
    * can place calls. A fresh <code>customer_use</code> sub-account is returned with
    * <code>kyc_calls_blocked: true</code>. <code>customer_use</code> <strong>requires</strong> <code>email</code>.</li>
    * </ul>

@@ -117,7 +117,7 @@ public final class UpdateTrunkRequest {
   }
 
   /**
-   * @return Direction of the trunk — <code>inbound</code> or <code>outbound</code> only.
+   * @return Direction of the trunk - <code>inbound</code> or <code>outbound</code> only.
    */
   @JsonProperty("trunk_direction")
   public Optional<UpdateTrunkRequestTrunkDirection> getTrunkDirection() {
@@ -343,7 +343,7 @@ public final class UpdateTrunkRequest {
     }
 
     /**
-     * <p>Direction of the trunk — <code>inbound</code> or <code>outbound</code> only.</p>
+     * <p>Direction of the trunk - <code>inbound</code> or <code>outbound</code> only.</p>
      */
     @JsonSetter(
         value = "trunk_direction",

@@ -132,7 +132,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).
+   * @return Direction of the trunk - <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).
    */
   @JsonProperty("trunk_direction")
   public Optional<CreateTrunkRequestTrunkDirection> getTrunkDirection() {
@@ -140,7 +140,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).
+   * @return Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).
    */
   @JsonProperty("trunk_status")
   public Optional<CreateTrunkRequestTrunkStatus> getTrunkStatus() {
@@ -257,7 +257,7 @@ public final class CreateTrunkRequest {
 
   /**
    * @return Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
-   * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+   * Must be a valid <strong>public</strong> http/https URL. SSRF-validated - localhost,
    * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
    * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.
    */
@@ -283,7 +283,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Deprecated — use <code>credential_uuid</code>.
+   * @return Deprecated - use <code>credential_uuid</code>.
    */
   @JsonProperty("username")
   public Optional<String> getUsername() {
@@ -291,7 +291,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Deprecated — use <code>credential_uuid</code>.
+   * @return Deprecated - use <code>credential_uuid</code>.
    */
   @JsonProperty("password")
   public Optional<String> getPassword() {
@@ -299,7 +299,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Deprecated — use <code>ipacl_uuid</code>.
+   * @return Deprecated - use <code>ipacl_uuid</code>.
    */
   @JsonProperty("ip_whitelist")
   public Optional<List<String>> getIpWhitelist() {
@@ -352,14 +352,14 @@ public final class CreateTrunkRequest {
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
 
     /**
-     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     * <p>Direction of the trunk - <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
      */
     _FinalStage trunkDirection(Optional<CreateTrunkRequestTrunkDirection> trunkDirection);
 
     _FinalStage trunkDirection(CreateTrunkRequestTrunkDirection trunkDirection);
 
     /**
-     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
      */
     _FinalStage trunkStatus(Optional<CreateTrunkRequestTrunkStatus> trunkStatus);
 
@@ -460,7 +460,7 @@ public final class CreateTrunkRequest {
 
     /**
      * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
-     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated - localhost,
      * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
      * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      */
@@ -483,21 +483,21 @@ public final class CreateTrunkRequest {
     _FinalStage recordingWebhookEnabled(Boolean recordingWebhookEnabled);
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      */
     _FinalStage username(Optional<String> username);
 
     _FinalStage username(String username);
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      */
     _FinalStage password(Optional<String> password);
 
     _FinalStage password(String password);
 
     /**
-     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     * <p>Deprecated - use <code>ipacl_uuid</code>.</p>
      */
     _FinalStage ipWhitelist(Optional<List<String>> ipWhitelist);
 
@@ -604,7 +604,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     * <p>Deprecated - use <code>ipacl_uuid</code>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -614,7 +614,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>ipacl_uuid</code>.</p>
+     * <p>Deprecated - use <code>ipacl_uuid</code>.</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -627,7 +627,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -637,7 +637,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -650,7 +650,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -660,7 +660,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Deprecated — use <code>credential_uuid</code>.</p>
+     * <p>Deprecated - use <code>credential_uuid</code>.</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -720,7 +720,7 @@ public final class CreateTrunkRequest {
 
     /**
      * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
-     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated - localhost,
      * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
      * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
@@ -733,7 +733,7 @@ public final class CreateTrunkRequest {
 
     /**
      * <p>Customer webhook for call-admission events (<code>CallInitiated</code> / <code>Hangup</code>).
-     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated — localhost,
+     * Must be a valid <strong>public</strong> http/https URL. SSRF-validated - localhost,
      * private (RFC1918), and cloud-metadata (<code>169.254.169.254</code>) URLs are
      * rejected with <code>invalid webhook_url</code>. See <a href="/trunks/webhook">Trunk Webhooks</a>.</p>
      */
@@ -1065,7 +1065,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -1075,7 +1075,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Trunk status — <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
      */
     @java.lang.Override
     @JsonSetter(
@@ -1088,7 +1088,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     * <p>Direction of the trunk - <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -1098,7 +1098,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Direction of the trunk — <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
+     * <p>Direction of the trunk - <strong><code>inbound</code> or <code>outbound</code> only</strong> (a trunk is one direction, not both).</p>
      */
     @java.lang.Override
     @JsonSetter(
