@@ -5,21 +5,21 @@
 package errors;
 
 import core.VobizApiApiException;
+import java.lang.Object;
 import okhttp3.Response;
-import types.Error;
 
 public final class ForbiddenError extends VobizApiApiException {
   /**
    * The body of the response that triggered the exception.
    */
-  private final Error body;
+  private final Object body;
 
-  public ForbiddenError(Error body) {
+  public ForbiddenError(Object body) {
     super("ForbiddenError", 403, body);
     this.body = body;
   }
 
-  public ForbiddenError(Error body, Response rawResponse) {
+  public ForbiddenError(Object body, Response rawResponse) {
     super("ForbiddenError", 403, body, rawResponse);
     this.body = body;
   }
@@ -28,7 +28,7 @@ public final class ForbiddenError extends VobizApiApiException {
    * @return the body
    */
   @java.lang.Override
-  public Error body() {
+  public Object body() {
     return this.body;
   }
 }

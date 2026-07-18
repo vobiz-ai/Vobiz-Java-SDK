@@ -34,7 +34,6 @@ import resources.subaccountkyc.requests.SubaccountDigilockerInitiateRequest;
 import resources.subaccountkyc.requests.SubaccountDigilockerVerifyRequest;
 import resources.subaccountkyc.requests.VerifySubaccountGstRequest;
 import resources.subaccountkyc.requests.VerifySubaccountPanRequest;
-import types.Error;
 import types.KycVerificationResult;
 import types.SubAccountKycStatus;
 
@@ -113,7 +112,7 @@ public class RawSubAccountKycClient {
         }
         try {
           switch (response.code()) {
-            case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response);
+            case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
             case 404:throw new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
           }
         }

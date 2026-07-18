@@ -6,11 +6,15 @@ package resources.account;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import core.ClientOptions;
+import core.MediaTypes;
 import core.ObjectMappers;
+import core.QueryStringMapper;
 import core.RequestOptions;
 import core.VobizApiApiException;
 import core.VobizApiException;
 import core.VobizApiHttpResponse;
+import errors.BadRequestError;
+import errors.ForbiddenError;
 import errors.UnauthorizedError;
 import java.io.IOException;
 import java.lang.Object;
@@ -19,11 +23,16 @@ import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import resources.account.requests.ChannelSubscriptionRequest;
 import resources.account.requests.GetConcurrencyRequest;
+import resources.account.requests.PreviewChannelPricingRequest;
 import resources.account.types.GetConcurrencyResponse;
 import resources.account.types.RetrieveAccountResponse;
+import types.ChannelPricingPreview;
+import types.ChannelSubscription;
 
 public class RawAccountClient {
   protected final ClientOptions clientOptions;
@@ -143,4 +152,126 @@ public class RawAccountClient {
           throw new VobizApiException("Network error executing HTTP request", e);
         }
       }
-    }
+
+      /**
+       * Calculate the monthly price for CPS or concurrent-call capacity without purchasing capacity or debiting the account.
+       */
+      public VobizApiHttpResponse<ChannelPricingPreview> previewChannelPricing(String authId,
+          PreviewChannelPricingRequest request) {
+        return previewChannelPricing(authId,request,null);
+      }
+
+      /**
+       * Calculate the monthly price for CPS or concurrent-call capacity without purchasing capacity or debiting the account.
+       */
+      public VobizApiHttpResponse<ChannelPricingPreview> previewChannelPricing(String authId,
+          PreviewChannelPricingRequest request, RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+
+          .addPathSegments("api/v1/accounts")
+          .addPathSegment(authId)
+          .addPathSegments("channel-pricing-preview");QueryStringMapper.addQueryParameter(httpUrl, "resource_type", request.getResourceType(), false);
+          QueryStringMapper.addQueryParameter(httpUrl, "quantity", request.getQuantity(), false);
+          if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+              httpUrl.addQueryParameter(_key, _value);
+            } );
+          }
+          Request.Builder _requestBuilder = new Request.Builder()
+            .url(httpUrl.build())
+            .method("GET", null)
+            .headers(Headers.of(clientOptions.headers(requestOptions)))
+            .addHeader("Accept", "application/json");
+          Request okhttpRequest = _requestBuilder.build();
+          OkHttpClient client = clientOptions.httpClient();
+          if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+          }
+          try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ChannelPricingPreview.class), response);
+            }
+            try {
+              switch (response.code()) {
+                case 400:throw new BadRequestError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+              }
+            }
+            catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+          }
+          catch (IOException e) {
+            throw new VobizApiException("Network error executing HTTP request", e);
+          }
+        }
+
+        /**
+         * Purchase recurring CPS or concurrent-call capacity. A successful request immediately debits the first monthly charge and activates a subscription that renews every 30 days.
+         */
+        public VobizApiHttpResponse<ChannelSubscription> createChannelSubscription(String authId,
+            ChannelSubscriptionRequest request) {
+          return createChannelSubscription(authId,request,null);
+        }
+
+        /**
+         * Purchase recurring CPS or concurrent-call capacity. A successful request immediately debits the first monthly charge and activates a subscription that renews every 30 days.
+         */
+        public VobizApiHttpResponse<ChannelSubscription> createChannelSubscription(String authId,
+            ChannelSubscriptionRequest request, RequestOptions requestOptions) {
+          HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+
+            .addPathSegments("api/v1/accounts")
+            .addPathSegment(authId)
+            .addPathSegments("channel-subscriptions");if (requestOptions != null) {
+              requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                httpUrl.addQueryParameter(_key, _value);
+              } );
+            }
+            RequestBody body;
+            try {
+              body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+            }
+            catch(JsonProcessingException e) {
+              throw new VobizApiException("Failed to serialize request", e);
+            }
+            Request okhttpRequest = new Request.Builder()
+              .url(httpUrl.build())
+              .method("POST", body)
+              .headers(Headers.of(clientOptions.headers(requestOptions)))
+              .addHeader("Content-Type", "application/json")
+              .addHeader("Accept", "application/json")
+              .build();
+            OkHttpClient client = clientOptions.httpClient();
+            if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+              client = clientOptions.httpClientWithTimeout(requestOptions);
+            }
+            try (Response response = client.newCall(okhttpRequest).execute()) {
+              ResponseBody responseBody = response.body();
+              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+              if (response.isSuccessful()) {
+                return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ChannelSubscription.class), response);
+              }
+              try {
+                switch (response.code()) {
+                  case 400:throw new BadRequestError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 401:throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                  case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+                }
+              }
+              catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
+              }
+              Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+              throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+            }
+            catch (IOException e) {
+              throw new VobizApiException("Network error executing HTTP request", e);
+            }
+          }
+        }

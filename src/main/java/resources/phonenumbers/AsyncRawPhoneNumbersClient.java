@@ -864,7 +864,7 @@ public class AsyncRawPhoneNumbersClient {
                             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                             try {
                               switch (response.code()) {
-                                case 403:future.completeExceptionally(new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response));
+                                case 403:future.completeExceptionally(new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                                 return;
                                 case 409:future.completeExceptionally(new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                                 return;

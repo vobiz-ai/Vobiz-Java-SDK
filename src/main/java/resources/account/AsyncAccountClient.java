@@ -8,9 +8,13 @@ import core.ClientOptions;
 import core.RequestOptions;
 import java.lang.String;
 import java.util.concurrent.CompletableFuture;
+import resources.account.requests.ChannelSubscriptionRequest;
 import resources.account.requests.GetConcurrencyRequest;
+import resources.account.requests.PreviewChannelPricingRequest;
 import resources.account.types.GetConcurrencyResponse;
 import resources.account.types.RetrieveAccountResponse;
+import types.ChannelPricingPreview;
+import types.ChannelSubscription;
 
 public class AsyncAccountClient {
   protected final ClientOptions clientOptions;
@@ -72,5 +76,37 @@ public class AsyncAccountClient {
   public CompletableFuture<GetConcurrencyResponse> getConcurrency(String authId,
       GetConcurrencyRequest request, RequestOptions requestOptions) {
     return this.rawClient.getConcurrency(authId, request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Calculate the monthly price for CPS or concurrent-call capacity without purchasing capacity or debiting the account.
+   */
+  public CompletableFuture<ChannelPricingPreview> previewChannelPricing(String authId,
+      PreviewChannelPricingRequest request) {
+    return this.rawClient.previewChannelPricing(authId, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Calculate the monthly price for CPS or concurrent-call capacity without purchasing capacity or debiting the account.
+   */
+  public CompletableFuture<ChannelPricingPreview> previewChannelPricing(String authId,
+      PreviewChannelPricingRequest request, RequestOptions requestOptions) {
+    return this.rawClient.previewChannelPricing(authId, request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Purchase recurring CPS or concurrent-call capacity. A successful request immediately debits the first monthly charge and activates a subscription that renews every 30 days.
+   */
+  public CompletableFuture<ChannelSubscription> createChannelSubscription(String authId,
+      ChannelSubscriptionRequest request) {
+    return this.rawClient.createChannelSubscription(authId, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Purchase recurring CPS or concurrent-call capacity. A successful request immediately debits the first monthly charge and activates a subscription that renews every 30 days.
+   */
+  public CompletableFuture<ChannelSubscription> createChannelSubscription(String authId,
+      ChannelSubscriptionRequest request, RequestOptions requestOptions) {
+    return this.rawClient.createChannelSubscription(authId, request, requestOptions).thenApply(response -> response.body());
   }
 }

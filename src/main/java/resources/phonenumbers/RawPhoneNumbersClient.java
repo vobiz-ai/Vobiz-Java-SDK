@@ -740,7 +740,7 @@ public class RawPhoneNumbersClient {
                         String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                         try {
                           switch (response.code()) {
-                            case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response);
+                            case 403:throw new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                             case 409:throw new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
                           }
                         }

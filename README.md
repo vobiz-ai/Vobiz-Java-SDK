@@ -31,24 +31,24 @@ Instantiate and use the client with the following:
 package com.example.usage;
 
 import com.vobiz.api.VobizApiClient;
-import com.vobiz.api.resources.calls.requests.MakeCallRequest;
+import com.vobiz.api.resources.account.requests.ChannelSubscriptionRequest;
+import com.vobiz.api.types.CapacityResourceType;
 
 public class Example {
     public static void main(String[] args) {
         VobizApiClient client = VobizApiClient
             .builder()
-            .apiKey("<value>")
+            .token("<token>")
+            .authId("<X-Auth-ID>")
             .authToken("<X-Auth-Token>")
             .build();
 
-        client.calls().makeCall(
-            "MA_XXXXXX",
-            MakeCallRequest
+        client.account().createChannelSubscription(
+            "MA_XXXX",
+            ChannelSubscriptionRequest
                 .builder()
-                .from("14155551234")
-                .to("+919876543210")
-                .answerUrl("https://example.com/answer")
-                .answerMethod("POST")
+                .resourceType(CapacityResourceType.CONCURRENT_CALLS)
+                .quantity(30)
                 .build()
         );
     }
@@ -90,7 +90,7 @@ When the API returns a non-success status code (4xx or 5xx response), an API exc
 import com.vobiz.api.core.VobizApiApiException;
 
 try{
-    client.calls().makeCall(...);
+    client.account().createChannelSubscription(...);
 } catch (VobizApiApiException e){
     // Do something with the API exception...
 }
@@ -162,7 +162,7 @@ VobizApiClient client = VobizApiClient
     .build();
 
 // Request level
-client.calls().makeCall(
+client.account().createChannelSubscription(
     ...,
     RequestOptions
         .builder()
@@ -188,7 +188,7 @@ VobizApiClient client = VobizApiClient
 ;
 
 // Request level
-client.calls().makeCall(
+client.account().createChannelSubscription(
     ...,
     RequestOptions
         .builder()
@@ -204,7 +204,7 @@ The `withRawResponse()` method returns a raw client that wraps all responses wit
 (A normal client's `response` is identical to a raw client's `response.body()`.)
 
 ```java
-VobizApiHttpResponse response = client.calls().withRawResponse().makeCall(...);
+VobizApiHttpResponse response = client.account().withRawResponse().createChannelSubscription(...);
 
 System.out.println(response.body());
 System.out.println(response.headers().get("X-My-Header"));

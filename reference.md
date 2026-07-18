@@ -98,6 +98,160 @@ client.account().getConcurrency(
 </dl>
 </details>
 
+<details><summary><code>client.account.previewChannelPricing(authId) -> ChannelPricingPreview</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Calculate the monthly price for CPS or concurrent-call capacity without purchasing capacity or debiting the account.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.account().previewChannelPricing(
+    "MA_XXXX",
+    PreviewChannelPricingRequest
+        .builder()
+        .resourceType(CapacityResourceType.CONCURRENT_CALLS)
+        .quantity(30)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Target account Auth ID. An account can preview only its own pricing; administrators may act for another account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resourceType:** `CapacityResourceType` — Capacity type to price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quantity:** `Integer` — Capacity quantity to price. Pricing-tier block and quantity rules also apply.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.account.createChannelSubscription(authId, request) -> ChannelSubscription</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Purchase recurring CPS or concurrent-call capacity. A successful request immediately debits the first monthly charge and activates a subscription that renews every 30 days.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.account().createChannelSubscription(
+    "MA_XXXX",
+    ChannelSubscriptionRequest
+        .builder()
+        .resourceType(CapacityResourceType.CONCURRENT_CALLS)
+        .quantity(30)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Target account Auth ID. An account can purchase only for itself; administrators may act for another account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**resourceType:** `CapacityResourceType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**quantity:** `Integer` — Capacity quantity to purchase. Pricing-tier block and quantity rules also apply.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Balance
 <details><summary><code>client.balance.getBalance(authId, currency) -> GetBalanceResponse</code></summary>
 <dl>
