@@ -8,33 +8,60 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = UnrentNumberRequest.Builder.class
 )
 public final class UnrentNumberRequest {
+  private final Optional<Boolean> immediate;
+
   private final Map<String, Object> additionalProperties;
 
-  private UnrentNumberRequest(Map<String, Object> additionalProperties) {
+  private UnrentNumberRequest(Optional<Boolean> immediate,
+      Map<String, Object> additionalProperties) {
+    this.immediate = immediate;
     this.additionalProperties = additionalProperties;
+  }
+
+  /**
+   * @return Skip the 24-hour cooldown and release the number immediately.
+   */
+  @JsonProperty("immediate")
+  public Optional<Boolean> getImmediate() {
+    return immediate;
   }
 
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
-    return other instanceof UnrentNumberRequest;
+    return other instanceof UnrentNumberRequest && equalTo((UnrentNumberRequest) other);
   }
 
   @JsonAnyGetter
   public Map<String, Object> getAdditionalProperties() {
     return this.additionalProperties;
+  }
+
+  private boolean equalTo(UnrentNumberRequest other) {
+    return immediate.equals(other.immediate);
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    return Objects.hash(this.immediate);
   }
 
   @java.lang.Override
@@ -50,6 +77,8 @@ public final class UnrentNumberRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
+    private Optional<Boolean> immediate = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -57,11 +86,29 @@ public final class UnrentNumberRequest {
     }
 
     public Builder from(UnrentNumberRequest other) {
+      immediate(other.getImmediate());
+      return this;
+    }
+
+    /**
+     * <p>Skip the 24-hour cooldown and release the number immediately.</p>
+     */
+    @JsonSetter(
+        value = "immediate",
+        nulls = Nulls.SKIP
+    )
+    public Builder immediate(Optional<Boolean> immediate) {
+      this.immediate = immediate;
+      return this;
+    }
+
+    public Builder immediate(Boolean immediate) {
+      this.immediate = Optional.ofNullable(immediate);
       return this;
     }
 
     public UnrentNumberRequest build() {
-      return new UnrentNumberRequest(additionalProperties);
+      return new UnrentNumberRequest(immediate, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

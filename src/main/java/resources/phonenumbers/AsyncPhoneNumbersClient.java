@@ -12,6 +12,7 @@ import java.lang.Void;
 import java.util.concurrent.CompletableFuture;
 import resources.phonenumbers.requests.AssignDidToSubaccountRequest;
 import resources.phonenumbers.requests.AssignNumberToTrunkRequest;
+import resources.phonenumbers.requests.CancelNumberReleaseRequest;
 import resources.phonenumbers.requests.GetNumberHealthRequest;
 import resources.phonenumbers.requests.ListInventoryNumbersRequest;
 import resources.phonenumbers.requests.ListNumbersRequest;
@@ -19,6 +20,7 @@ import resources.phonenumbers.requests.PurchaseFromInventoryRequest;
 import resources.phonenumbers.requests.UnassignDidFromSubaccountRequest;
 import resources.phonenumbers.requests.UnassignNumberFromTrunkRequest;
 import resources.phonenumbers.requests.UnrentNumberRequest;
+import resources.phonenumbers.types.CancelNumberReleaseResponse;
 import resources.phonenumbers.types.GetNumberHealthResponse;
 import resources.phonenumbers.types.ListInventoryNumbersResponse;
 import resources.phonenumbers.types.ListNumbersResponse;
@@ -72,14 +74,20 @@ public class AsyncPhoneNumbersClient {
   }
 
   /**
-   * Release a phone number from your account.
+   * Release a phone number from your account. By default, the number enters
+   * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+   * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+   * cannot be cancelled.
    */
   public CompletableFuture<Void> unrentNumber(String authId, String e164) {
     return this.rawClient.unrentNumber(authId, e164).thenApply(response -> response.body());
   }
 
   /**
-   * Release a phone number from your account.
+   * Release a phone number from your account. By default, the number enters
+   * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+   * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+   * cannot be cancelled.
    */
   public CompletableFuture<Void> unrentNumber(String authId, String e164,
       RequestOptions requestOptions) {
@@ -87,7 +95,10 @@ public class AsyncPhoneNumbersClient {
   }
 
   /**
-   * Release a phone number from your account.
+   * Release a phone number from your account. By default, the number enters
+   * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+   * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+   * cannot be cancelled.
    */
   public CompletableFuture<Void> unrentNumber(String authId, String e164,
       UnrentNumberRequest request) {
@@ -95,11 +106,58 @@ public class AsyncPhoneNumbersClient {
   }
 
   /**
-   * Release a phone number from your account.
+   * Release a phone number from your account. By default, the number enters
+   * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+   * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+   * cannot be cancelled.
    */
   public CompletableFuture<Void> unrentNumber(String authId, String e164,
       UnrentNumberRequest request, RequestOptions requestOptions) {
     return this.rawClient.unrentNumber(authId, e164, request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Cancel a pending number release during the 24-hour cooldown. The number is
+   * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+   * refunded. Any trunk or voice application detached by the release is not
+   * re-attached automatically.
+   */
+  public CompletableFuture<CancelNumberReleaseResponse> cancelNumberRelease(String accountId,
+      String e164) {
+    return this.rawClient.cancelNumberRelease(accountId, e164).thenApply(response -> response.body());
+  }
+
+  /**
+   * Cancel a pending number release during the 24-hour cooldown. The number is
+   * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+   * refunded. Any trunk or voice application detached by the release is not
+   * re-attached automatically.
+   */
+  public CompletableFuture<CancelNumberReleaseResponse> cancelNumberRelease(String accountId,
+      String e164, RequestOptions requestOptions) {
+    return this.rawClient.cancelNumberRelease(accountId, e164, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Cancel a pending number release during the 24-hour cooldown. The number is
+   * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+   * refunded. Any trunk or voice application detached by the release is not
+   * re-attached automatically.
+   */
+  public CompletableFuture<CancelNumberReleaseResponse> cancelNumberRelease(String accountId,
+      String e164, CancelNumberReleaseRequest request) {
+    return this.rawClient.cancelNumberRelease(accountId, e164, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Cancel a pending number release during the 24-hour cooldown. The number is
+   * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+   * refunded. Any trunk or voice application detached by the release is not
+   * re-attached automatically.
+   */
+  public CompletableFuture<CancelNumberReleaseResponse> cancelNumberRelease(String accountId,
+      String e164, CancelNumberReleaseRequest request, RequestOptions requestOptions) {
+    return this.rawClient.cancelNumberRelease(accountId, e164, request, requestOptions).thenApply(response -> response.body());
   }
 
   /**

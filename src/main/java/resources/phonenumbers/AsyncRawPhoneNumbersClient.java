@@ -18,6 +18,7 @@ import errors.ConflictError;
 import errors.ForbiddenError;
 import errors.InternalServerError;
 import errors.NotFoundError;
+import errors.UnauthorizedError;
 import java.io.IOException;
 import java.lang.Object;
 import java.lang.Override;
@@ -36,6 +37,7 @@ import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 import resources.phonenumbers.requests.AssignDidToSubaccountRequest;
 import resources.phonenumbers.requests.AssignNumberToTrunkRequest;
+import resources.phonenumbers.requests.CancelNumberReleaseRequest;
 import resources.phonenumbers.requests.GetNumberHealthRequest;
 import resources.phonenumbers.requests.ListInventoryNumbersRequest;
 import resources.phonenumbers.requests.ListNumbersRequest;
@@ -43,6 +45,7 @@ import resources.phonenumbers.requests.PurchaseFromInventoryRequest;
 import resources.phonenumbers.requests.UnassignDidFromSubaccountRequest;
 import resources.phonenumbers.requests.UnassignNumberFromTrunkRequest;
 import resources.phonenumbers.requests.UnrentNumberRequest;
+import resources.phonenumbers.types.CancelNumberReleaseResponse;
 import resources.phonenumbers.types.GetNumberHealthResponse;
 import resources.phonenumbers.types.ListInventoryNumbersResponse;
 import resources.phonenumbers.types.ListNumbersResponse;
@@ -139,14 +142,20 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account.
+     * Release a phone number from your account. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+     * cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164) {
       return unrentNumber(authId,e164,UnrentNumberRequest.builder().build());
     }
 
     /**
-     * Release a phone number from your account.
+     * Release a phone number from your account. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+     * cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
         RequestOptions requestOptions) {
@@ -154,7 +163,10 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account.
+     * Release a phone number from your account. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+     * cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
         UnrentNumberRequest request) {
@@ -162,7 +174,10 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account.
+     * Release a phone number from your account. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
+     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
+     * cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
         UnrentNumberRequest request, RequestOptions requestOptions) {
@@ -171,7 +186,10 @@ public class AsyncRawPhoneNumbersClient {
         .addPathSegments("api/v1/Account")
         .addPathSegment(authId)
         .addPathSegments("numbers")
-        .addPathSegment(e164);if (requestOptions != null) {
+        .addPathSegment(e164);if (request.getImmediate().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "immediate", request.getImmediate().get(), false);
+        }
+        if (requestOptions != null) {
           requestOptions.getQueryParameters().forEach((_key, _value) -> {
             httpUrl.addQueryParameter(_key, _value);
           } );
@@ -213,70 +231,61 @@ public class AsyncRawPhoneNumbersClient {
       }
 
       /**
-       * Browse available phone numbers in inventory that are not assigned to
-       * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
-       * are returned. These numbers are ready to be purchased.
+       * Cancel a pending number release during the 24-hour cooldown. The number is
+       * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+       * refunded. Any trunk or voice application detached by the release is not
+       * re-attached automatically.
        */
-      public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
-          String authId) {
-        return listInventoryNumbers(authId,ListInventoryNumbersRequest.builder().build());
+      public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
+          String accountId, String e164) {
+        return cancelNumberRelease(accountId,e164,CancelNumberReleaseRequest.builder().build());
       }
 
       /**
-       * Browse available phone numbers in inventory that are not assigned to
-       * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
-       * are returned. These numbers are ready to be purchased.
+       * Cancel a pending number release during the 24-hour cooldown. The number is
+       * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+       * refunded. Any trunk or voice application detached by the release is not
+       * re-attached automatically.
        */
-      public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
-          String authId, RequestOptions requestOptions) {
-        return listInventoryNumbers(authId,ListInventoryNumbersRequest.builder().build(),requestOptions);
+      public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
+          String accountId, String e164, RequestOptions requestOptions) {
+        return cancelNumberRelease(accountId,e164,CancelNumberReleaseRequest.builder().build(),requestOptions);
       }
 
       /**
-       * Browse available phone numbers in inventory that are not assigned to
-       * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
-       * are returned. These numbers are ready to be purchased.
+       * Cancel a pending number release during the 24-hour cooldown. The number is
+       * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+       * refunded. Any trunk or voice application detached by the release is not
+       * re-attached automatically.
        */
-      public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
-          String authId, ListInventoryNumbersRequest request) {
-        return listInventoryNumbers(authId,request,null);
+      public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
+          String accountId, String e164, CancelNumberReleaseRequest request) {
+        return cancelNumberRelease(accountId,e164,request,null);
       }
 
       /**
-       * Browse available phone numbers in inventory that are not assigned to
-       * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
-       * are returned. These numbers are ready to be purchased.
+       * Cancel a pending number release during the 24-hour cooldown. The number is
+       * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
+       * refunded. Any trunk or voice application detached by the release is not
+       * re-attached automatically.
        */
-      public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
-          String authId, ListInventoryNumbersRequest request, RequestOptions requestOptions) {
+      public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
+          String accountId, String e164, CancelNumberReleaseRequest request,
+          RequestOptions requestOptions) {
         HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
-          .addPathSegments("api/v1/Account")
-          .addPathSegment(authId)
-          .addPathSegments("inventory")
-          .addPathSegments("numbers");if (request.getCountry().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "country", request.getCountry().get(), false);
-          }
-          if (request.getSearch().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
-          }
-          if (request.getExclude().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "exclude", request.getExclude().get(), false);
-          }
-          if (request.getPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
-          }
-          if (request.getPerPage().isPresent()) {
-            QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
-          }
-          if (requestOptions != null) {
+          .addPathSegments("api/v1/account")
+          .addPathSegment(accountId)
+          .addPathSegments("numbers")
+          .addPathSegment(e164)
+          .addPathSegments("cancel-release");if (requestOptions != null) {
             requestOptions.getQueryParameters().forEach((_key, _value) -> {
               httpUrl.addQueryParameter(_key, _value);
             } );
           }
           Request.Builder _requestBuilder = new Request.Builder()
             .url(httpUrl.build())
-            .method("GET", null)
+            .method("POST", RequestBody.create("", null))
             .headers(Headers.of(clientOptions.headers(requestOptions)))
             .addHeader("Accept", "application/json");
           Request okhttpRequest = _requestBuilder.build();
@@ -284,15 +293,30 @@ public class AsyncRawPhoneNumbersClient {
           if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
             client = clientOptions.httpClientWithTimeout(requestOptions);
           }
-          CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> future = new CompletableFuture<>();
+          CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> future = new CompletableFuture<>();
           client.newCall(okhttpRequest).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
               try (ResponseBody responseBody = response.body()) {
                 String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                 if (response.isSuccessful()) {
-                  future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListInventoryNumbersResponse.class), response));
+                  future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, CancelNumberReleaseResponse.class), response));
                   return;
+                }
+                try {
+                  switch (response.code()) {
+                    case 400:future.completeExceptionally(new BadRequestError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    return;
+                    case 401:future.completeExceptionally(new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    return;
+                    case 403:future.completeExceptionally(new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    return;
+                    case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    return;
+                  }
+                }
+                catch (JsonProcessingException ignored) {
+                  // unable to map error response, throwing generic error
                 }
                 Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                 future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
@@ -312,70 +336,86 @@ public class AsyncRawPhoneNumbersClient {
         }
 
         /**
-         * Purchase a phone number from inventory and assign it to your account.
-         * Debits your account balance for the setup fee and monthly fee. For
-         * sub-accounts (SA_), the parent master account (MA_) is charged.
+         * Browse available phone numbers in inventory that are not assigned to
+         * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
+         * are returned. These numbers are ready to be purchased.
          */
-        public CompletableFuture<VobizApiHttpResponse<Object>> purchaseFromInventory(String authId,
-            PurchaseFromInventoryRequest request) {
-          return purchaseFromInventory(authId,request,null);
+        public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
+            String authId) {
+          return listInventoryNumbers(authId,ListInventoryNumbersRequest.builder().build());
         }
 
         /**
-         * Purchase a phone number from inventory and assign it to your account.
-         * Debits your account balance for the setup fee and monthly fee. For
-         * sub-accounts (SA_), the parent master account (MA_) is charged.
+         * Browse available phone numbers in inventory that are not assigned to
+         * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
+         * are returned. These numbers are ready to be purchased.
          */
-        public CompletableFuture<VobizApiHttpResponse<Object>> purchaseFromInventory(String authId,
-            PurchaseFromInventoryRequest request, RequestOptions requestOptions) {
+        public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
+            String authId, RequestOptions requestOptions) {
+          return listInventoryNumbers(authId,ListInventoryNumbersRequest.builder().build(),requestOptions);
+        }
+
+        /**
+         * Browse available phone numbers in inventory that are not assigned to
+         * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
+         * are returned. These numbers are ready to be purchased.
+         */
+        public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
+            String authId, ListInventoryNumbersRequest request) {
+          return listInventoryNumbers(authId,request,null);
+        }
+
+        /**
+         * Browse available phone numbers in inventory that are not assigned to
+         * any account. Only numbers with <code>status='active'</code> and <code>auth_id=NULL</code>
+         * are returned. These numbers are ready to be purchased.
+         */
+        public CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> listInventoryNumbers(
+            String authId, ListInventoryNumbersRequest request, RequestOptions requestOptions) {
           HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
             .addPathSegments("api/v1/Account")
             .addPathSegment(authId)
-            .addPathSegments("numbers")
-            .addPathSegments("purchase-from-inventory");if (requestOptions != null) {
+            .addPathSegments("inventory")
+            .addPathSegments("numbers");if (request.getCountry().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "country", request.getCountry().get(), false);
+            }
+            if (request.getSearch().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "search", request.getSearch().get(), false);
+            }
+            if (request.getExclude().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "exclude", request.getExclude().get(), false);
+            }
+            if (request.getPage().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
+            }
+            if (request.getPerPage().isPresent()) {
+              QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
+            }
+            if (requestOptions != null) {
               requestOptions.getQueryParameters().forEach((_key, _value) -> {
                 httpUrl.addQueryParameter(_key, _value);
               } );
             }
-            RequestBody body;
-            try {
-              body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-            }
-            catch(JsonProcessingException e) {
-              throw new VobizApiException("Failed to serialize request", e);
-            }
-            Request okhttpRequest = new Request.Builder()
+            Request.Builder _requestBuilder = new Request.Builder()
               .url(httpUrl.build())
-              .method("POST", body)
+              .method("GET", null)
               .headers(Headers.of(clientOptions.headers(requestOptions)))
-              .addHeader("Content-Type", "application/json")
-              .addHeader("Accept", "application/json")
-              .build();
+              .addHeader("Accept", "application/json");
+            Request okhttpRequest = _requestBuilder.build();
             OkHttpClient client = clientOptions.httpClient();
             if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
               client = clientOptions.httpClientWithTimeout(requestOptions);
             }
-            CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
+            CompletableFuture<VobizApiHttpResponse<ListInventoryNumbersResponse>> future = new CompletableFuture<>();
             client.newCall(okhttpRequest).enqueue(new Callback() {
               @Override
               public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                   String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                   if (response.isSuccessful()) {
-                    future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                    future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListInventoryNumbersResponse.class), response));
                     return;
-                  }
-                  try {
-                    switch (response.code()) {
-                      case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                      return;
-                      case 500:future.completeExceptionally(new InternalServerError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response));
-                      return;
-                    }
-                  }
-                  catch (JsonProcessingException ignored) {
-                    // unable to map error response, throwing generic error
                   }
                   Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
                   future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
@@ -395,32 +435,28 @@ public class AsyncRawPhoneNumbersClient {
           }
 
           /**
-           * Assign a phone number to a specific SIP trunk. Once assigned, all
-           * inbound calls to that phone number will be routed through the
-           * designated trunk. The phone number must be URL-encoded; use <code>%2B</code>
-           * instead of <code>+</code> (e.g., <code>%2B912271264217</code>).
+           * Purchase a phone number from inventory and assign it to your account.
+           * Debits your account balance for the setup fee and monthly fee. For
+           * sub-accounts (SA_), the parent master account (MA_) is charged.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> assignNumberToTrunk(String authId,
-              String phoneNumber, AssignNumberToTrunkRequest request) {
-            return assignNumberToTrunk(authId,phoneNumber,request,null);
+          public CompletableFuture<VobizApiHttpResponse<Object>> purchaseFromInventory(
+              String authId, PurchaseFromInventoryRequest request) {
+            return purchaseFromInventory(authId,request,null);
           }
 
           /**
-           * Assign a phone number to a specific SIP trunk. Once assigned, all
-           * inbound calls to that phone number will be routed through the
-           * designated trunk. The phone number must be URL-encoded; use <code>%2B</code>
-           * instead of <code>+</code> (e.g., <code>%2B912271264217</code>).
+           * Purchase a phone number from inventory and assign it to your account.
+           * Debits your account balance for the setup fee and monthly fee. For
+           * sub-accounts (SA_), the parent master account (MA_) is charged.
            */
-          public CompletableFuture<VobizApiHttpResponse<Void>> assignNumberToTrunk(String authId,
-              String phoneNumber, AssignNumberToTrunkRequest request,
-              RequestOptions requestOptions) {
+          public CompletableFuture<VobizApiHttpResponse<Object>> purchaseFromInventory(
+              String authId, PurchaseFromInventoryRequest request, RequestOptions requestOptions) {
             HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
               .addPathSegments("api/v1/Account")
               .addPathSegment(authId)
               .addPathSegments("numbers")
-              .addPathSegment(phoneNumber)
-              .addPathSegments("assign");if (requestOptions != null) {
+              .addPathSegments("purchase-from-inventory");if (requestOptions != null) {
                 requestOptions.getQueryParameters().forEach((_key, _value) -> {
                   httpUrl.addQueryParameter(_key, _value);
                 } );
@@ -443,21 +479,21 @@ public class AsyncRawPhoneNumbersClient {
               if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                 client = clientOptions.httpClientWithTimeout(requestOptions);
               }
-              CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+              CompletableFuture<VobizApiHttpResponse<Object>> future = new CompletableFuture<>();
               client.newCall(okhttpRequest).enqueue(new Callback() {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                   try (ResponseBody responseBody = response.body()) {
+                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     if (response.isSuccessful()) {
-                      future.complete(new VobizApiHttpResponse<>(null, response));
+                      future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                       return;
                     }
-                    String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                     try {
                       switch (response.code()) {
-                        case 400:future.completeExceptionally(new BadRequestError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                        return;
                         case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                        return;
+                        case 500:future.completeExceptionally(new InternalServerError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Error.class), response));
                         return;
                       }
                     }
@@ -482,46 +518,24 @@ public class AsyncRawPhoneNumbersClient {
             }
 
             /**
-             * Remove the assignment between a phone number and a SIP trunk. After
-             * unassignment, the number remains in your account inventory but will
-             * no longer route inbound calls through the previously assigned trunk.
-             * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+             * Assign a phone number to a specific SIP trunk. Once assigned, all
+             * inbound calls to that phone number will be routed through the
+             * designated trunk. The phone number must be URL-encoded; use <code>%2B</code>
+             * instead of <code>+</code> (e.g., <code>%2B912271264217</code>).
              */
-            public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
-                String authId, String phoneNumber) {
-              return unassignNumberFromTrunk(authId,phoneNumber,UnassignNumberFromTrunkRequest.builder().build());
+            public CompletableFuture<VobizApiHttpResponse<Void>> assignNumberToTrunk(String authId,
+                String phoneNumber, AssignNumberToTrunkRequest request) {
+              return assignNumberToTrunk(authId,phoneNumber,request,null);
             }
 
             /**
-             * Remove the assignment between a phone number and a SIP trunk. After
-             * unassignment, the number remains in your account inventory but will
-             * no longer route inbound calls through the previously assigned trunk.
-             * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+             * Assign a phone number to a specific SIP trunk. Once assigned, all
+             * inbound calls to that phone number will be routed through the
+             * designated trunk. The phone number must be URL-encoded; use <code>%2B</code>
+             * instead of <code>+</code> (e.g., <code>%2B912271264217</code>).
              */
-            public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
-                String authId, String phoneNumber, RequestOptions requestOptions) {
-              return unassignNumberFromTrunk(authId,phoneNumber,UnassignNumberFromTrunkRequest.builder().build(),requestOptions);
-            }
-
-            /**
-             * Remove the assignment between a phone number and a SIP trunk. After
-             * unassignment, the number remains in your account inventory but will
-             * no longer route inbound calls through the previously assigned trunk.
-             * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
-             */
-            public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
-                String authId, String phoneNumber, UnassignNumberFromTrunkRequest request) {
-              return unassignNumberFromTrunk(authId,phoneNumber,request,null);
-            }
-
-            /**
-             * Remove the assignment between a phone number and a SIP trunk. After
-             * unassignment, the number remains in your account inventory but will
-             * no longer route inbound calls through the previously assigned trunk.
-             * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
-             */
-            public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
-                String authId, String phoneNumber, UnassignNumberFromTrunkRequest request,
+            public CompletableFuture<VobizApiHttpResponse<Void>> assignNumberToTrunk(String authId,
+                String phoneNumber, AssignNumberToTrunkRequest request,
                 RequestOptions requestOptions) {
               HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -534,12 +548,20 @@ public class AsyncRawPhoneNumbersClient {
                     httpUrl.addQueryParameter(_key, _value);
                   } );
                 }
-                Request.Builder _requestBuilder = new Request.Builder()
+                RequestBody body;
+                try {
+                  body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                }
+                catch(JsonProcessingException e) {
+                  throw new VobizApiException("Failed to serialize request", e);
+                }
+                Request okhttpRequest = new Request.Builder()
                   .url(httpUrl.build())
-                  .method("DELETE", null)
+                  .method("POST", body)
                   .headers(Headers.of(clientOptions.headers(requestOptions)))
-                  .addHeader("Accept", "application/json");
-                Request okhttpRequest = _requestBuilder.build();
+                  .addHeader("Content-Type", "application/json")
+                  .addHeader("Accept", "application/json")
+                  .build();
                 OkHttpClient client = clientOptions.httpClient();
                 if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                   client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -583,67 +605,61 @@ public class AsyncRawPhoneNumbersClient {
               }
 
               /**
-               * Returns the health &amp; analytics dashboard for one of your numbers: current
-               * status, spam flag, and call metrics over the selected window (total and
-               * answered calls, answer rate, minutes, average duration) plus a per-period
-               * time series of snapshots.
+               * Remove the assignment between a phone number and a SIP trunk. After
+               * unassignment, the number remains in your account inventory but will
+               * no longer route inbound calls through the previously assigned trunk.
+               * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
                */
-              public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
-                  String authId, String e164) {
-                return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build());
+              public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
+                  String authId, String phoneNumber) {
+                return unassignNumberFromTrunk(authId,phoneNumber,UnassignNumberFromTrunkRequest.builder().build());
               }
 
               /**
-               * Returns the health &amp; analytics dashboard for one of your numbers: current
-               * status, spam flag, and call metrics over the selected window (total and
-               * answered calls, answer rate, minutes, average duration) plus a per-period
-               * time series of snapshots.
+               * Remove the assignment between a phone number and a SIP trunk. After
+               * unassignment, the number remains in your account inventory but will
+               * no longer route inbound calls through the previously assigned trunk.
+               * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
                */
-              public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
-                  String authId, String e164, RequestOptions requestOptions) {
-                return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build(),requestOptions);
+              public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
+                  String authId, String phoneNumber, RequestOptions requestOptions) {
+                return unassignNumberFromTrunk(authId,phoneNumber,UnassignNumberFromTrunkRequest.builder().build(),requestOptions);
               }
 
               /**
-               * Returns the health &amp; analytics dashboard for one of your numbers: current
-               * status, spam flag, and call metrics over the selected window (total and
-               * answered calls, answer rate, minutes, average duration) plus a per-period
-               * time series of snapshots.
+               * Remove the assignment between a phone number and a SIP trunk. After
+               * unassignment, the number remains in your account inventory but will
+               * no longer route inbound calls through the previously assigned trunk.
+               * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
                */
-              public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
-                  String authId, String e164, GetNumberHealthRequest request) {
-                return getNumberHealth(authId,e164,request,null);
+              public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
+                  String authId, String phoneNumber, UnassignNumberFromTrunkRequest request) {
+                return unassignNumberFromTrunk(authId,phoneNumber,request,null);
               }
 
               /**
-               * Returns the health &amp; analytics dashboard for one of your numbers: current
-               * status, spam flag, and call metrics over the selected window (total and
-               * answered calls, answer rate, minutes, average duration) plus a per-period
-               * time series of snapshots.
+               * Remove the assignment between a phone number and a SIP trunk. After
+               * unassignment, the number remains in your account inventory but will
+               * no longer route inbound calls through the previously assigned trunk.
+               * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
                */
-              public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
-                  String authId, String e164, GetNumberHealthRequest request,
+              public CompletableFuture<VobizApiHttpResponse<Void>> unassignNumberFromTrunk(
+                  String authId, String phoneNumber, UnassignNumberFromTrunkRequest request,
                   RequestOptions requestOptions) {
                 HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
-                  .addPathSegments("api/v1/account")
+                  .addPathSegments("api/v1/Account")
                   .addPathSegment(authId)
                   .addPathSegments("numbers")
-                  .addPathSegment(e164)
-                  .addPathSegments("health");if (request.getGranularity().isPresent()) {
-                    QueryStringMapper.addQueryParameter(httpUrl, "granularity", request.getGranularity().get(), false);
-                  }
-                  if (request.getDays().isPresent()) {
-                    QueryStringMapper.addQueryParameter(httpUrl, "days", request.getDays().get(), false);
-                  }
-                  if (requestOptions != null) {
+                  .addPathSegment(phoneNumber)
+                  .addPathSegments("assign");if (requestOptions != null) {
                     requestOptions.getQueryParameters().forEach((_key, _value) -> {
                       httpUrl.addQueryParameter(_key, _value);
                     } );
                   }
                   Request.Builder _requestBuilder = new Request.Builder()
                     .url(httpUrl.build())
-                    .method("GET", null)
+                    .method("DELETE", null)
                     .headers(Headers.of(clientOptions.headers(requestOptions)))
                     .addHeader("Accept", "application/json");
                   Request okhttpRequest = _requestBuilder.build();
@@ -651,19 +667,21 @@ public class AsyncRawPhoneNumbersClient {
                   if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                     client = clientOptions.httpClientWithTimeout(requestOptions);
                   }
-                  CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> future = new CompletableFuture<>();
+                  CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
                   client.newCall(okhttpRequest).enqueue(new Callback() {
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                       try (ResponseBody responseBody = response.body()) {
-                        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                         if (response.isSuccessful()) {
-                          future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNumberHealthResponse.class), response));
+                          future.complete(new VobizApiHttpResponse<>(null, response));
                           return;
                         }
+                        String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                         try {
-                          if (response.code() == 404) {
-                            future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                          switch (response.code()) {
+                            case 400:future.completeExceptionally(new BadRequestError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                            return;
+                            case 404:future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                             return;
                           }
                         }
@@ -688,18 +706,46 @@ public class AsyncRawPhoneNumbersClient {
                 }
 
                 /**
-                 * Assign a parent-pool DID to a sub-account.
+                 * Returns the health &amp; analytics dashboard for one of your numbers: current
+                 * status, spam flag, and call metrics over the selected window (total and
+                 * answered calls, answer rate, minutes, average duration) plus a per-period
+                 * time series of snapshots.
                  */
-                public CompletableFuture<VobizApiHttpResponse<Void>> assignDidToSubaccount(
-                    String authId, String e164, AssignDidToSubaccountRequest request) {
-                  return assignDidToSubaccount(authId,e164,request,null);
+                public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
+                    String authId, String e164) {
+                  return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build());
                 }
 
                 /**
-                 * Assign a parent-pool DID to a sub-account.
+                 * Returns the health &amp; analytics dashboard for one of your numbers: current
+                 * status, spam flag, and call metrics over the selected window (total and
+                 * answered calls, answer rate, minutes, average duration) plus a per-period
+                 * time series of snapshots.
                  */
-                public CompletableFuture<VobizApiHttpResponse<Void>> assignDidToSubaccount(
-                    String authId, String e164, AssignDidToSubaccountRequest request,
+                public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
+                    String authId, String e164, RequestOptions requestOptions) {
+                  return getNumberHealth(authId,e164,GetNumberHealthRequest.builder().build(),requestOptions);
+                }
+
+                /**
+                 * Returns the health &amp; analytics dashboard for one of your numbers: current
+                 * status, spam flag, and call metrics over the selected window (total and
+                 * answered calls, answer rate, minutes, average duration) plus a per-period
+                 * time series of snapshots.
+                 */
+                public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
+                    String authId, String e164, GetNumberHealthRequest request) {
+                  return getNumberHealth(authId,e164,request,null);
+                }
+
+                /**
+                 * Returns the health &amp; analytics dashboard for one of your numbers: current
+                 * status, spam flag, and call metrics over the selected window (total and
+                 * answered calls, answer rate, minutes, average duration) plus a per-period
+                 * time series of snapshots.
+                 */
+                public CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> getNumberHealth(
+                    String authId, String e164, GetNumberHealthRequest request,
                     RequestOptions requestOptions) {
                   HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -707,39 +753,37 @@ public class AsyncRawPhoneNumbersClient {
                     .addPathSegment(authId)
                     .addPathSegments("numbers")
                     .addPathSegment(e164)
-                    .addPathSegments("assign-subaccount");if (requestOptions != null) {
+                    .addPathSegments("health");if (request.getGranularity().isPresent()) {
+                      QueryStringMapper.addQueryParameter(httpUrl, "granularity", request.getGranularity().get(), false);
+                    }
+                    if (request.getDays().isPresent()) {
+                      QueryStringMapper.addQueryParameter(httpUrl, "days", request.getDays().get(), false);
+                    }
+                    if (requestOptions != null) {
                       requestOptions.getQueryParameters().forEach((_key, _value) -> {
                         httpUrl.addQueryParameter(_key, _value);
                       } );
                     }
-                    RequestBody body;
-                    try {
-                      body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
-                    }
-                    catch(JsonProcessingException e) {
-                      throw new VobizApiException("Failed to serialize request", e);
-                    }
-                    Request okhttpRequest = new Request.Builder()
+                    Request.Builder _requestBuilder = new Request.Builder()
                       .url(httpUrl.build())
-                      .method("POST", body)
+                      .method("GET", null)
                       .headers(Headers.of(clientOptions.headers(requestOptions)))
-                      .addHeader("Content-Type", "application/json")
-                      .addHeader("Accept", "application/json")
-                      .build();
+                      .addHeader("Accept", "application/json");
+                    Request okhttpRequest = _requestBuilder.build();
                     OkHttpClient client = clientOptions.httpClient();
                     if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                       client = clientOptions.httpClientWithTimeout(requestOptions);
                     }
-                    CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+                    CompletableFuture<VobizApiHttpResponse<GetNumberHealthResponse>> future = new CompletableFuture<>();
                     client.newCall(okhttpRequest).enqueue(new Callback() {
                       @Override
                       public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                         try (ResponseBody responseBody = response.body()) {
+                          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                           if (response.isSuccessful()) {
-                            future.complete(new VobizApiHttpResponse<>(null, response));
+                            future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetNumberHealthResponse.class), response));
                             return;
                           }
-                          String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                           try {
                             if (response.code() == 404) {
                               future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
@@ -767,66 +811,18 @@ public class AsyncRawPhoneNumbersClient {
                   }
 
                   /**
-                   * Move the DID back to the parent pool.
-                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                   * 15 days, the request is rejected with <code>409</code> and a
-                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                   * move back immediately.</p>
-                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                   * bypass writes a <code>did_assignment_audit</code> row and requires an
-                   * admin-role account.</p>
+                   * Assign a parent-pool DID to a sub-account.
                    */
-                  public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
-                      String authId, String e164) {
-                    return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build());
+                  public CompletableFuture<VobizApiHttpResponse<Void>> assignDidToSubaccount(
+                      String authId, String e164, AssignDidToSubaccountRequest request) {
+                    return assignDidToSubaccount(authId,e164,request,null);
                   }
 
                   /**
-                   * Move the DID back to the parent pool.
-                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                   * 15 days, the request is rejected with <code>409</code> and a
-                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                   * move back immediately.</p>
-                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                   * bypass writes a <code>did_assignment_audit</code> row and requires an
-                   * admin-role account.</p>
+                   * Assign a parent-pool DID to a sub-account.
                    */
-                  public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
-                      String authId, String e164, RequestOptions requestOptions) {
-                    return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build(),requestOptions);
-                  }
-
-                  /**
-                   * Move the DID back to the parent pool.
-                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                   * 15 days, the request is rejected with <code>409</code> and a
-                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                   * move back immediately.</p>
-                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                   * bypass writes a <code>did_assignment_audit</code> row and requires an
-                   * admin-role account.</p>
-                   */
-                  public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
-                      String authId, String e164, UnassignDidFromSubaccountRequest request) {
-                    return unassignDidFromSubaccount(authId,e164,request,null);
-                  }
-
-                  /**
-                   * Move the DID back to the parent pool.
-                   * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
-                   * 15 days, the request is rejected with <code>409</code> and a
-                   * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
-                   * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
-                   * move back immediately.</p>
-                   * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
-                   * bypass writes a <code>did_assignment_audit</code> row and requires an
-                   * admin-role account.</p>
-                   */
-                  public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
-                      String authId, String e164, UnassignDidFromSubaccountRequest request,
+                  public CompletableFuture<VobizApiHttpResponse<Void>> assignDidToSubaccount(
+                      String authId, String e164, AssignDidToSubaccountRequest request,
                       RequestOptions requestOptions) {
                     HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
@@ -834,20 +830,25 @@ public class AsyncRawPhoneNumbersClient {
                       .addPathSegment(authId)
                       .addPathSegments("numbers")
                       .addPathSegment(e164)
-                      .addPathSegments("assign-subaccount");if (request.getForce().isPresent()) {
-                        QueryStringMapper.addQueryParameter(httpUrl, "force", request.getForce().get(), false);
-                      }
-                      if (requestOptions != null) {
+                      .addPathSegments("assign-subaccount");if (requestOptions != null) {
                         requestOptions.getQueryParameters().forEach((_key, _value) -> {
                           httpUrl.addQueryParameter(_key, _value);
                         } );
                       }
-                      Request.Builder _requestBuilder = new Request.Builder()
+                      RequestBody body;
+                      try {
+                        body = RequestBody.create(ObjectMappers.JSON_MAPPER.writeValueAsBytes(request), MediaTypes.APPLICATION_JSON);
+                      }
+                      catch(JsonProcessingException e) {
+                        throw new VobizApiException("Failed to serialize request", e);
+                      }
+                      Request okhttpRequest = new Request.Builder()
                         .url(httpUrl.build())
-                        .method("DELETE", null)
+                        .method("POST", body)
                         .headers(Headers.of(clientOptions.headers(requestOptions)))
-                        .addHeader("Accept", "application/json");
-                      Request okhttpRequest = _requestBuilder.build();
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Accept", "application/json")
+                        .build();
                       OkHttpClient client = clientOptions.httpClient();
                       if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
                         client = clientOptions.httpClientWithTimeout(requestOptions);
@@ -863,10 +864,8 @@ public class AsyncRawPhoneNumbersClient {
                             }
                             String responseBodyString = responseBody != null ? responseBody.string() : "{}";
                             try {
-                              switch (response.code()) {
-                                case 403:future.completeExceptionally(new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
-                                return;
-                                case 409:future.completeExceptionally(new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                              if (response.code() == 404) {
+                                future.completeExceptionally(new NotFoundError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
                                 return;
                               }
                             }
@@ -889,4 +888,128 @@ public class AsyncRawPhoneNumbersClient {
                       });
                       return future;
                     }
-                  }
+
+                    /**
+                     * Move the DID back to the parent pool.
+                     * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                     * 15 days, the request is rejected with <code>409</code> and a
+                     * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                     * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                     * move back immediately.</p>
+                     * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                     * bypass writes a <code>did_assignment_audit</code> row and requires an
+                     * admin-role account.</p>
+                     */
+                    public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
+                        String authId, String e164) {
+                      return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build());
+                    }
+
+                    /**
+                     * Move the DID back to the parent pool.
+                     * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                     * 15 days, the request is rejected with <code>409</code> and a
+                     * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                     * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                     * move back immediately.</p>
+                     * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                     * bypass writes a <code>did_assignment_audit</code> row and requires an
+                     * admin-role account.</p>
+                     */
+                    public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
+                        String authId, String e164, RequestOptions requestOptions) {
+                      return unassignDidFromSubaccount(authId,e164,UnassignDidFromSubaccountRequest.builder().build(),requestOptions);
+                    }
+
+                    /**
+                     * Move the DID back to the parent pool.
+                     * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                     * 15 days, the request is rejected with <code>409</code> and a
+                     * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                     * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                     * move back immediately.</p>
+                     * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                     * bypass writes a <code>did_assignment_audit</code> row and requires an
+                     * admin-role account.</p>
+                     */
+                    public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
+                        String authId, String e164, UnassignDidFromSubaccountRequest request) {
+                      return unassignDidFromSubaccount(authId,e164,request,null);
+                    }
+
+                    /**
+                     * Move the DID back to the parent pool.
+                     * <p>A <strong>15-day cool-off</strong> is enforced: if the DID had a call within the last
+                     * 15 days, the request is rejected with <code>409</code> and a
+                     * <code>did_cool_off_in_effect</code> error that includes <code>cool_off_until</code> and
+                     * <code>cool_off_remaining_seconds</code>. Never-used DIDs (<code>last_call_at</code> is <code>NULL</code>)
+                     * move back immediately.</p>
+                     * <p>Admins can bypass the cool-off with <code>?force=true</code> (see below); the
+                     * bypass writes a <code>did_assignment_audit</code> row and requires an
+                     * admin-role account.</p>
+                     */
+                    public CompletableFuture<VobizApiHttpResponse<Void>> unassignDidFromSubaccount(
+                        String authId, String e164, UnassignDidFromSubaccountRequest request,
+                        RequestOptions requestOptions) {
+                      HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+
+                        .addPathSegments("api/v1/account")
+                        .addPathSegment(authId)
+                        .addPathSegments("numbers")
+                        .addPathSegment(e164)
+                        .addPathSegments("assign-subaccount");if (request.getForce().isPresent()) {
+                          QueryStringMapper.addQueryParameter(httpUrl, "force", request.getForce().get(), false);
+                        }
+                        if (requestOptions != null) {
+                          requestOptions.getQueryParameters().forEach((_key, _value) -> {
+                            httpUrl.addQueryParameter(_key, _value);
+                          } );
+                        }
+                        Request.Builder _requestBuilder = new Request.Builder()
+                          .url(httpUrl.build())
+                          .method("DELETE", null)
+                          .headers(Headers.of(clientOptions.headers(requestOptions)))
+                          .addHeader("Accept", "application/json");
+                        Request okhttpRequest = _requestBuilder.build();
+                        OkHttpClient client = clientOptions.httpClient();
+                        if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+                          client = clientOptions.httpClientWithTimeout(requestOptions);
+                        }
+                        CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+                        client.newCall(okhttpRequest).enqueue(new Callback() {
+                          @Override
+                          public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            try (ResponseBody responseBody = response.body()) {
+                              if (response.isSuccessful()) {
+                                future.complete(new VobizApiHttpResponse<>(null, response));
+                                return;
+                              }
+                              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+                              try {
+                                switch (response.code()) {
+                                  case 403:future.completeExceptionally(new ForbiddenError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                                  return;
+                                  case 409:future.completeExceptionally(new ConflictError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                                  return;
+                                }
+                              }
+                              catch (JsonProcessingException ignored) {
+                                // unable to map error response, throwing generic error
+                              }
+                              Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+                              future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
+                              return;
+                            }
+                            catch (IOException e) {
+                              future.completeExceptionally(new VobizApiException("Network error executing HTTP request", e));
+                            }
+                          }
+
+                          @Override
+                          public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            future.completeExceptionally(new VobizApiException("Network error executing HTTP request", e));
+                          }
+                        });
+                        return future;
+                      }
+                    }

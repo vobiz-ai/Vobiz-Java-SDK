@@ -7,6 +7,7 @@ import core.Environment;
 import core.LogConfig;
 import java.lang.Integer;
 import java.lang.String;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,7 +20,9 @@ public class VobizApiClientBuilder {
 
   private final Map<String, String> customHeaders = new HashMap<>();
 
-  private String token = null;
+  private String username = null;
+
+  private String password = null;
 
   private String authId = null;
 
@@ -31,11 +34,9 @@ public class VobizApiClientBuilder {
 
   private Optional<LogConfig> logging = Optional.empty();
 
-  /**
-   * Sets token
-   */
-  public VobizApiClientBuilder token(String token) {
-    this.token = token;
+  public VobizApiClientBuilder credentials(String username, String password) {
+    this.username = username;
+    this.password = password;
     return this;
   }
 
@@ -152,8 +153,10 @@ public class VobizApiClientBuilder {
    * }</pre>
    */
   protected void setAuthentication(ClientOptions.Builder builder) {
-    if (this.token != null) {
-      builder.addHeader("Authorization", "Bearer " + this.token);
+    if (this.username != null && this.password != null) {
+      String unencodedToken = this.username + ":" + this.password;
+      String encodedToken = Base64.getEncoder().encodeToString(unencodedToken.getBytes());
+      builder.addHeader("Authorization", "Basic " + encodedToken);
     }
   }
 
@@ -264,8 +267,11 @@ public class VobizApiClientBuilder {
   }
 
   public VobizApiClient build() {
-    if (token == null) {
-      throw new RuntimeException("Please provide token");
+    if (this.username == null) {
+      throw new RuntimeException("Please provide username");
+    }
+    if (this.password == null) {
+      throw new RuntimeException("Please provide password");
     }
     if (authId == null) {
       throw new RuntimeException("Please provide authId");
