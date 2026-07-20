@@ -38,7 +38,7 @@ public class Example {
     public static void main(String[] args) {
         VobizApiClient client = VobizApiClient
             .builder()
-            .credentials("<username>", "<password>")
+            .token("<token>")
             .authId("<X-Auth-ID>")
             .authToken("<X-Auth-Token>")
             .build();
