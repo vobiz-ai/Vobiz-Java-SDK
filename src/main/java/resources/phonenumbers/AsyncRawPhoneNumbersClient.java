@@ -49,6 +49,7 @@ import resources.phonenumbers.types.CancelNumberReleaseResponse;
 import resources.phonenumbers.types.GetNumberHealthResponse;
 import resources.phonenumbers.types.ListInventoryNumbersResponse;
 import resources.phonenumbers.types.ListNumbersResponse;
+import resources.phonenumbers.types.UnrentNumberResponse;
 import types.Error;
 
 public class AsyncRawPhoneNumbersClient {
@@ -147,7 +148,8 @@ public class AsyncRawPhoneNumbersClient {
      * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
      * cannot be cancelled.
      */
-    public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164) {
+    public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
+        String e164) {
       return unrentNumber(authId,e164,UnrentNumberRequest.builder().build());
     }
 
@@ -157,8 +159,8 @@ public class AsyncRawPhoneNumbersClient {
      * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
      * cannot be cancelled.
      */
-    public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
-        RequestOptions requestOptions) {
+    public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
+        String e164, RequestOptions requestOptions) {
       return unrentNumber(authId,e164,UnrentNumberRequest.builder().build(),requestOptions);
     }
 
@@ -168,8 +170,8 @@ public class AsyncRawPhoneNumbersClient {
      * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
      * cannot be cancelled.
      */
-    public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
-        UnrentNumberRequest request) {
+    public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
+        String e164, UnrentNumberRequest request) {
       return unrentNumber(authId,e164,request,null);
     }
 
@@ -179,8 +181,8 @@ public class AsyncRawPhoneNumbersClient {
      * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
      * cannot be cancelled.
      */
-    public CompletableFuture<VobizApiHttpResponse<Void>> unrentNumber(String authId, String e164,
-        UnrentNumberRequest request, RequestOptions requestOptions) {
+    public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
+        String e164, UnrentNumberRequest request, RequestOptions requestOptions) {
       HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
 
         .addPathSegments("api/v1/Account")
@@ -197,22 +199,23 @@ public class AsyncRawPhoneNumbersClient {
         Request.Builder _requestBuilder = new Request.Builder()
           .url(httpUrl.build())
           .method("DELETE", null)
-          .headers(Headers.of(clientOptions.headers(requestOptions)));
+          .headers(Headers.of(clientOptions.headers(requestOptions)))
+          .addHeader("Accept", "application/json");
         Request okhttpRequest = _requestBuilder.build();
         OkHttpClient client = clientOptions.httpClient();
         if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
           client = clientOptions.httpClientWithTimeout(requestOptions);
         }
-        CompletableFuture<VobizApiHttpResponse<Void>> future = new CompletableFuture<>();
+        CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> future = new CompletableFuture<>();
         client.newCall(okhttpRequest).enqueue(new Callback() {
           @Override
           public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
             try (ResponseBody responseBody = response.body()) {
+              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
               if (response.isSuccessful()) {
-                future.complete(new VobizApiHttpResponse<>(null, response));
+                future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, UnrentNumberResponse.class), response));
                 return;
               }
-              String responseBodyString = responseBody != null ? responseBody.string() : "{}";
               Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
               future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
               return;
@@ -233,8 +236,8 @@ public class AsyncRawPhoneNumbersClient {
       /**
        * Cancel a pending number release during the 24-hour cooldown. The number is
        * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
-       * refunded. Any trunk or voice application detached by the release is not
-       * re-attached automatically.
+       * refunded in full to the account balance. Any trunk or voice application
+       * detached by the release is not re-attached automatically.
        */
       public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
           String accountId, String e164) {
@@ -244,8 +247,8 @@ public class AsyncRawPhoneNumbersClient {
       /**
        * Cancel a pending number release during the 24-hour cooldown. The number is
        * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
-       * refunded. Any trunk or voice application detached by the release is not
-       * re-attached automatically.
+       * refunded in full to the account balance. Any trunk or voice application
+       * detached by the release is not re-attached automatically.
        */
       public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
           String accountId, String e164, RequestOptions requestOptions) {
@@ -255,8 +258,8 @@ public class AsyncRawPhoneNumbersClient {
       /**
        * Cancel a pending number release during the 24-hour cooldown. The number is
        * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
-       * refunded. Any trunk or voice application detached by the release is not
-       * re-attached automatically.
+       * refunded in full to the account balance. Any trunk or voice application
+       * detached by the release is not re-attached automatically.
        */
       public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
           String accountId, String e164, CancelNumberReleaseRequest request) {
@@ -266,8 +269,8 @@ public class AsyncRawPhoneNumbersClient {
       /**
        * Cancel a pending number release during the 24-hour cooldown. The number is
        * restored to <code>active</code>, the cooldown timer is cleared, and the release fee is
-       * refunded. Any trunk or voice application detached by the release is not
-       * re-attached automatically.
+       * refunded in full to the account balance. Any trunk or voice application
+       * detached by the release is not re-attached automatically.
        */
       public CompletableFuture<VobizApiHttpResponse<CancelNumberReleaseResponse>> cancelNumberRelease(
           String accountId, String e164, CancelNumberReleaseRequest request,

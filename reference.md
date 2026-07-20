@@ -3006,7 +3006,7 @@ client.phoneNumbers().listNumbers(
 </dl>
 </details>
 
-<details><summary><code>client.phoneNumbers.unrentNumber(authId, e164)</code></summary>
+<details><summary><code>client.phoneNumbers.unrentNumber(authId, e164) -> UnrentNumberResponse</code></summary>
 <dl>
 <dd>
 
@@ -3038,7 +3038,7 @@ cannot be cancelled.
 ```java
 client.phoneNumbers().unrentNumber(
     "MA_XXXXXX",
-    "919876543210",
+    "%2B919876543210",
     UnrentNumberRequest
         .builder()
         .build()
@@ -3065,7 +3065,7 @@ client.phoneNumbers().unrentNumber(
 <dl>
 <dd>
 
-**e164:** `String` — Phone number in E.164 format (without the +)
+**e164:** `String` — The URL-encoded phone number in E.164 format. Encode `+` as `%2B`.
     
 </dd>
 </dl>
@@ -3099,8 +3099,8 @@ client.phoneNumbers().unrentNumber(
 
 Cancel a pending number release during the 24-hour cooldown. The number is
 restored to `active`, the cooldown timer is cleared, and the release fee is
-refunded. Any trunk or voice application detached by the release is not
-re-attached automatically.
+refunded in full to the account balance. Any trunk or voice application
+detached by the release is not re-attached automatically.
 </dd>
 </dl>
 </dd>

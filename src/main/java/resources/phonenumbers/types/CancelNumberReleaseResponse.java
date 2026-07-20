@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Double;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
@@ -30,17 +31,24 @@ public final class CancelNumberReleaseResponse {
 
   private final CancelNumberReleaseResponseStatus status;
 
-  private final CancelNumberReleaseResponseRefundStatus refundStatus;
+  private final Optional<String> currency;
+
+  private final Optional<Double> refundAmount;
+
+  private final Optional<CancelNumberReleaseResponseRefundStatus> refundStatus;
 
   private final Optional<String> refundError;
 
   private final Map<String, Object> additionalProperties;
 
   private CancelNumberReleaseResponse(String message, CancelNumberReleaseResponseStatus status,
-      CancelNumberReleaseResponseRefundStatus refundStatus, Optional<String> refundError,
+      Optional<String> currency, Optional<Double> refundAmount,
+      Optional<CancelNumberReleaseResponseRefundStatus> refundStatus, Optional<String> refundError,
       Map<String, Object> additionalProperties) {
     this.message = message;
     this.status = status;
+    this.currency = currency;
+    this.refundAmount = refundAmount;
     this.refundStatus = refundStatus;
     this.refundError = refundError;
     this.additionalProperties = additionalProperties;
@@ -56,8 +64,18 @@ public final class CancelNumberReleaseResponse {
     return status;
   }
 
+  @JsonProperty("currency")
+  public Optional<String> getCurrency() {
+    return currency;
+  }
+
+  @JsonProperty("refund_amount")
+  public Optional<Double> getRefundAmount() {
+    return refundAmount;
+  }
+
   @JsonProperty("refund_status")
-  public CancelNumberReleaseResponseRefundStatus getRefundStatus() {
+  public Optional<CancelNumberReleaseResponseRefundStatus> getRefundStatus() {
     return refundStatus;
   }
 
@@ -81,12 +99,12 @@ public final class CancelNumberReleaseResponse {
   }
 
   private boolean equalTo(CancelNumberReleaseResponse other) {
-    return message.equals(other.message) && status.equals(other.status) && refundStatus.equals(other.refundStatus) && refundError.equals(other.refundError);
+    return message.equals(other.message) && status.equals(other.status) && currency.equals(other.currency) && refundAmount.equals(other.refundAmount) && refundStatus.equals(other.refundStatus) && refundError.equals(other.refundError);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.message, this.status, this.refundStatus, this.refundError);
+    return Objects.hash(this.message, this.status, this.currency, this.refundAmount, this.refundStatus, this.refundError);
   }
 
   @java.lang.Override
@@ -105,11 +123,7 @@ public final class CancelNumberReleaseResponse {
   }
 
   public interface StatusStage {
-    RefundStatusStage status(@NotNull CancelNumberReleaseResponseStatus status);
-  }
-
-  public interface RefundStatusStage {
-    _FinalStage refundStatus(@NotNull CancelNumberReleaseResponseRefundStatus refundStatus);
+    _FinalStage status(@NotNull CancelNumberReleaseResponseStatus status);
   }
 
   public interface _FinalStage {
@@ -118,6 +132,18 @@ public final class CancelNumberReleaseResponse {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    _FinalStage currency(Optional<String> currency);
+
+    _FinalStage currency(String currency);
+
+    _FinalStage refundAmount(Optional<Double> refundAmount);
+
+    _FinalStage refundAmount(Double refundAmount);
+
+    _FinalStage refundStatus(Optional<CancelNumberReleaseResponseRefundStatus> refundStatus);
+
+    _FinalStage refundStatus(CancelNumberReleaseResponseRefundStatus refundStatus);
 
     /**
      * <p>Present when the refund could not be processed.</p>
@@ -130,14 +156,18 @@ public final class CancelNumberReleaseResponse {
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements MessageStage, StatusStage, RefundStatusStage, _FinalStage {
+  public static final class Builder implements MessageStage, StatusStage, _FinalStage {
     private String message;
 
     private CancelNumberReleaseResponseStatus status;
 
-    private CancelNumberReleaseResponseRefundStatus refundStatus;
-
     private Optional<String> refundError = Optional.empty();
+
+    private Optional<CancelNumberReleaseResponseRefundStatus> refundStatus = Optional.empty();
+
+    private Optional<Double> refundAmount = Optional.empty();
+
+    private Optional<String> currency = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -149,6 +179,8 @@ public final class CancelNumberReleaseResponse {
     public Builder from(CancelNumberReleaseResponse other) {
       message(other.getMessage());
       status(other.getStatus());
+      currency(other.getCurrency());
+      refundAmount(other.getRefundAmount());
       refundStatus(other.getRefundStatus());
       refundError(other.getRefundError());
       return this;
@@ -163,15 +195,8 @@ public final class CancelNumberReleaseResponse {
 
     @java.lang.Override
     @JsonSetter("status")
-    public RefundStatusStage status(@NotNull CancelNumberReleaseResponseStatus status) {
+    public _FinalStage status(@NotNull CancelNumberReleaseResponseStatus status) {
       this.status = Objects.requireNonNull(status, "status must not be null");
-      return this;
-    }
-
-    @java.lang.Override
-    @JsonSetter("refund_status")
-    public _FinalStage refundStatus(@NotNull CancelNumberReleaseResponseRefundStatus refundStatus) {
-      this.refundStatus = Objects.requireNonNull(refundStatus, "refundStatus must not be null");
       return this;
     }
 
@@ -199,8 +224,57 @@ public final class CancelNumberReleaseResponse {
     }
 
     @java.lang.Override
+    public _FinalStage refundStatus(CancelNumberReleaseResponseRefundStatus refundStatus) {
+      this.refundStatus = Optional.ofNullable(refundStatus);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "refund_status",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage refundStatus(
+        Optional<CancelNumberReleaseResponseRefundStatus> refundStatus) {
+      this.refundStatus = refundStatus;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage refundAmount(Double refundAmount) {
+      this.refundAmount = Optional.ofNullable(refundAmount);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "refund_amount",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage refundAmount(Optional<Double> refundAmount) {
+      this.refundAmount = refundAmount;
+      return this;
+    }
+
+    @java.lang.Override
+    public _FinalStage currency(String currency) {
+      this.currency = Optional.ofNullable(currency);
+      return this;
+    }
+
+    @java.lang.Override
+    @JsonSetter(
+        value = "currency",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage currency(Optional<String> currency) {
+      this.currency = currency;
+      return this;
+    }
+
+    @java.lang.Override
     public CancelNumberReleaseResponse build() {
-      return new CancelNumberReleaseResponse(message, status, refundStatus, refundError, additionalProperties);
+      return new CancelNumberReleaseResponse(message, status, currency, refundAmount, refundStatus, refundError, additionalProperties);
     }
 
     @java.lang.Override
