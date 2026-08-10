@@ -48,6 +48,11 @@ public final class MakeCallRequest {
     return from;
   }
 
+  /**
+   * @return Destination PSTN number or SIP endpoint. Separate multiple destinations with
+   * the <code>&lt;</code> character to fan out a single request to up to 1000 destinations,
+   * for example <code>+919876543210&lt;+919876543211</code>.
+   */
   @JsonProperty("to")
   public String getTo() {
     return to;
@@ -99,6 +104,11 @@ public final class MakeCallRequest {
   }
 
   public interface ToStage {
+    /**
+     * <p>Destination PSTN number or SIP endpoint. Separate multiple destinations with
+     * the <code>&lt;</code> character to fan out a single request to up to 1000 destinations,
+     * for example <code>+919876543210&lt;+919876543211</code>.</p>
+     */
     AnswerUrlStage to(@NotNull String to);
   }
 
@@ -152,6 +162,15 @@ public final class MakeCallRequest {
       return this;
     }
 
+    /**
+     * <p>Destination PSTN number or SIP endpoint. Separate multiple destinations with
+     * the <code>&lt;</code> character to fan out a single request to up to 1000 destinations,
+     * for example <code>+919876543210&lt;+919876543211</code>.</p>
+     * <p>Destination PSTN number or SIP endpoint. Separate multiple destinations with
+     * the <code>&lt;</code> character to fan out a single request to up to 1000 destinations,
+     * for example <code>+919876543210&lt;+919876543211</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("to")
     public AnswerUrlStage to(@NotNull String to) {

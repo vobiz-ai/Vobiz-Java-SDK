@@ -9,6 +9,7 @@ import resources.account.AsyncAccountClient;
 import resources.applications.AsyncApplicationsClient;
 import resources.audiostreams.AsyncAudioStreamsClient;
 import resources.balance.AsyncBalanceClient;
+import resources.bulkoperations.AsyncBulkOperationsClient;
 import resources.calls.AsyncCallsClient;
 import resources.cdr.AsyncCdrClient;
 import resources.conference.AsyncConferenceClient;
@@ -75,6 +76,8 @@ public class AsyncVobizApiClient {
 
   protected final Supplier<AsyncRecordingsClient> recordingsClient;
 
+  protected final Supplier<AsyncBulkOperationsClient> bulkOperationsClient;
+
   protected final Supplier<AsyncCredentialsClient> credentialsClient;
 
   protected final Supplier<AsyncIpAccessControlListClient> ipAccessControlListClient;
@@ -109,6 +112,7 @@ public class AsyncVobizApiClient {
     this.conferenceMembersClient = Suppliers.memoize(() -> new AsyncConferenceMembersClient(clientOptions));
     this.conferenceRecordingClient = Suppliers.memoize(() -> new AsyncConferenceRecordingClient(clientOptions));
     this.recordingsClient = Suppliers.memoize(() -> new AsyncRecordingsClient(clientOptions));
+    this.bulkOperationsClient = Suppliers.memoize(() -> new AsyncBulkOperationsClient(clientOptions));
     this.credentialsClient = Suppliers.memoize(() -> new AsyncCredentialsClient(clientOptions));
     this.ipAccessControlListClient = Suppliers.memoize(() -> new AsyncIpAccessControlListClient(clientOptions));
     this.originationUriClient = Suppliers.memoize(() -> new AsyncOriginationUriClient(clientOptions));
@@ -195,6 +199,10 @@ public class AsyncVobizApiClient {
 
   public AsyncRecordingsClient recordings() {
     return this.recordingsClient.get();
+  }
+
+  public AsyncBulkOperationsClient bulkOperations() {
+    return this.bulkOperationsClient.get();
   }
 
   public AsyncCredentialsClient credentials() {

@@ -143,10 +143,12 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account. By default, the number enters
-     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
-     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
-     * cannot be cancelled.
+     * Release a phone number from your account. Releasing a number incurs the
+     * number-release fee configured for the account; the response returns the
+     * charged amount in <code>release_fee</code>. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. Cancelling during that window
+     * refunds the release fee. Set <code>immediate=true</code> to skip the cooldown; an
+     * immediate release cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
         String e164) {
@@ -154,10 +156,12 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account. By default, the number enters
-     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
-     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
-     * cannot be cancelled.
+     * Release a phone number from your account. Releasing a number incurs the
+     * number-release fee configured for the account; the response returns the
+     * charged amount in <code>release_fee</code>. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. Cancelling during that window
+     * refunds the release fee. Set <code>immediate=true</code> to skip the cooldown; an
+     * immediate release cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
         String e164, RequestOptions requestOptions) {
@@ -165,10 +169,12 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account. By default, the number enters
-     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
-     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
-     * cannot be cancelled.
+     * Release a phone number from your account. Releasing a number incurs the
+     * number-release fee configured for the account; the response returns the
+     * charged amount in <code>release_fee</code>. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. Cancelling during that window
+     * refunds the release fee. Set <code>immediate=true</code> to skip the cooldown; an
+     * immediate release cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
         String e164, UnrentNumberRequest request) {
@@ -176,10 +182,12 @@ public class AsyncRawPhoneNumbersClient {
     }
 
     /**
-     * Release a phone number from your account. By default, the number enters
-     * <code>pending_release</code> for a 24-hour cooldown. You can cancel the release during
-     * that window. Set <code>immediate=true</code> to skip the cooldown; an immediate release
-     * cannot be cancelled.
+     * Release a phone number from your account. Releasing a number incurs the
+     * number-release fee configured for the account; the response returns the
+     * charged amount in <code>release_fee</code>. By default, the number enters
+     * <code>pending_release</code> for a 24-hour cooldown. Cancelling during that window
+     * refunds the release fee. Set <code>immediate=true</code> to skip the cooldown; an
+     * immediate release cannot be cancelled.
      */
     public CompletableFuture<VobizApiHttpResponse<UnrentNumberResponse>> unrentNumber(String authId,
         String e164, UnrentNumberRequest request, RequestOptions requestOptions) {

@@ -9,6 +9,7 @@ import resources.account.AccountClient;
 import resources.applications.ApplicationsClient;
 import resources.audiostreams.AudioStreamsClient;
 import resources.balance.BalanceClient;
+import resources.bulkoperations.BulkOperationsClient;
 import resources.calls.CallsClient;
 import resources.cdr.CdrClient;
 import resources.conference.ConferenceClient;
@@ -75,6 +76,8 @@ public class VobizApiClient {
 
   protected final Supplier<RecordingsClient> recordingsClient;
 
+  protected final Supplier<BulkOperationsClient> bulkOperationsClient;
+
   protected final Supplier<CredentialsClient> credentialsClient;
 
   protected final Supplier<IpAccessControlListClient> ipAccessControlListClient;
@@ -109,6 +112,7 @@ public class VobizApiClient {
     this.conferenceMembersClient = Suppliers.memoize(() -> new ConferenceMembersClient(clientOptions));
     this.conferenceRecordingClient = Suppliers.memoize(() -> new ConferenceRecordingClient(clientOptions));
     this.recordingsClient = Suppliers.memoize(() -> new RecordingsClient(clientOptions));
+    this.bulkOperationsClient = Suppliers.memoize(() -> new BulkOperationsClient(clientOptions));
     this.credentialsClient = Suppliers.memoize(() -> new CredentialsClient(clientOptions));
     this.ipAccessControlListClient = Suppliers.memoize(() -> new IpAccessControlListClient(clientOptions));
     this.originationUriClient = Suppliers.memoize(() -> new OriginationUriClient(clientOptions));
@@ -195,6 +199,10 @@ public class VobizApiClient {
 
   public RecordingsClient recordings() {
     return this.recordingsClient.get();
+  }
+
+  public BulkOperationsClient bulkOperations() {
+    return this.bulkOperationsClient.get();
   }
 
   public CredentialsClient credentials() {

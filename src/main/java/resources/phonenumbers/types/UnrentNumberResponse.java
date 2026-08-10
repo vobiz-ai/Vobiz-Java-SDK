@@ -73,6 +73,9 @@ public final class UnrentNumberResponse {
     return note;
   }
 
+  /**
+   * @return The account-specific fee charged for releasing the number.
+   */
   @JsonProperty("release_fee")
   public double getReleaseFee() {
     return releaseFee;
@@ -127,6 +130,9 @@ public final class UnrentNumberResponse {
   }
 
   public interface ReleaseFeeStage {
+    /**
+     * <p>The account-specific fee charged for releasing the number.</p>
+     */
     StatusStage releaseFee(double releaseFee);
   }
 
@@ -200,6 +206,11 @@ public final class UnrentNumberResponse {
       return this;
     }
 
+    /**
+     * <p>The account-specific fee charged for releasing the number.</p>
+     * <p>The account-specific fee charged for releasing the number.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("release_fee")
     public StatusStage releaseFee(double releaseFee) {
