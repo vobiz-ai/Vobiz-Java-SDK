@@ -333,7 +333,16 @@ client.balance().getBalance(
 <dl>
 <dd>
 
-Retrieve paginated transaction history for the account.
+Retrieve paginated transaction history for the account, ordered by
+`created_at` descending. Filter to a single day by setting `from_date`
+and `to_date` to the same date - a bare `YYYY-MM-DD` in `to_date` is
+expanded to `23:59:59`, so both bounds are inclusive. Bare dates resolve
+in the server timezone (UTC); send an explicit offset such as
+`2026-08-28T00:00:00+05:30` to pin a local calendar day.
+
+`limit` and `offset` are not supported - unknown parameters are silently
+dropped. `total` and `summary` are computed over the whole filtered set
+and ignore pagination, so `per_page=1` returns full-window totals.
 </dd>
 </dl>
 </dd>
@@ -352,6 +361,11 @@ client.balance().listTransactions(
     "MA_XXXXXX",
     ListTransactionsRequest
         .builder()
+        .fromDate("2026-08-25")
+        .toDate("2026-08-25")
+        .type("debit")
+        .currency("INR")
+        .referenceType("cdr")
         .build()
 );
 ```
@@ -376,7 +390,7 @@ client.balance().listTransactions(
 <dl>
 <dd>
 
-**limit:** `Optional<Integer>` 
+**page:** `Optional<Integer>` — Page number, 1-indexed.
     
 </dd>
 </dl>
@@ -384,7 +398,138 @@ client.balance().listTransactions(
 <dl>
 <dd>
 
-**offset:** `Optional<Integer>` 
+**perPage:** `Optional<Integer>` — Records per page. A value above the maximum falls back to the default of 50 rather than clamping.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fromDate:** `Optional<String>` — Start of the window, inclusive. Date-only or full ISO 8601 timestamp. Day boundaries are UTC.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**toDate:** `Optional<String>` — End of the window, inclusive. A date-only value covers the whole day.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<String>` — `credit` or `debit` act as broad classifications and sweep in legacy entry types such as `did_rental`; any other value is an exact match on `transactions[].type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Optional<ListTransactionsRequestStatus>` — Exact match on transaction status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**currency:** `Optional<String>` — Currency code. Uppercased server-side, exact match.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**referenceType:** `Optional<String>` — Spend source, matching `transactions[].reference_type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Case-insensitive substring match on the description.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reference:** `Optional<String>` — Case-insensitive substring match on the reference.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transactionId:** `Optional<String>` — Fetch a single ledger entry by its UUID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.balance.listTransactionReferenceTypes(authId) -> ListTransactionReferenceTypesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the distinct `reference_type` values present on the account's ledger. Use it to discover valid values for the `reference_type` filter on the transactions endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.balance().listTransactionReferenceTypes(
+    "MA_XXXXXX",
+    ListTransactionReferenceTypesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Your account Auth ID
     
 </dd>
 </dl>

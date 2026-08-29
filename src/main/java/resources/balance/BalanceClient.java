@@ -8,8 +8,10 @@ import core.ClientOptions;
 import core.RequestOptions;
 import java.lang.String;
 import resources.balance.requests.GetBalanceRequest;
+import resources.balance.requests.ListTransactionReferenceTypesRequest;
 import resources.balance.requests.ListTransactionsRequest;
 import resources.balance.types.GetBalanceResponse;
+import resources.balance.types.ListTransactionReferenceTypesResponse;
 import resources.balance.types.ListTransactionsResponse;
 
 public class BalanceClient {
@@ -60,31 +62,94 @@ public class BalanceClient {
   }
 
   /**
-   * Retrieve paginated transaction history for the account.
+   * Retrieve paginated transaction history for the account, ordered by
+   * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+   * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+   * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+   * in the server timezone (UTC); send an explicit offset such as
+   * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+   * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+   * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+   * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
    */
   public ListTransactionsResponse listTransactions(String authId) {
     return this.rawClient.listTransactions(authId).body();
   }
 
   /**
-   * Retrieve paginated transaction history for the account.
+   * Retrieve paginated transaction history for the account, ordered by
+   * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+   * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+   * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+   * in the server timezone (UTC); send an explicit offset such as
+   * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+   * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+   * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+   * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
    */
   public ListTransactionsResponse listTransactions(String authId, RequestOptions requestOptions) {
     return this.rawClient.listTransactions(authId, requestOptions).body();
   }
 
   /**
-   * Retrieve paginated transaction history for the account.
+   * Retrieve paginated transaction history for the account, ordered by
+   * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+   * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+   * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+   * in the server timezone (UTC); send an explicit offset such as
+   * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+   * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+   * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+   * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
    */
   public ListTransactionsResponse listTransactions(String authId, ListTransactionsRequest request) {
     return this.rawClient.listTransactions(authId, request).body();
   }
 
   /**
-   * Retrieve paginated transaction history for the account.
+   * Retrieve paginated transaction history for the account, ordered by
+   * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+   * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+   * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+   * in the server timezone (UTC); send an explicit offset such as
+   * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+   * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+   * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+   * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
    */
   public ListTransactionsResponse listTransactions(String authId, ListTransactionsRequest request,
       RequestOptions requestOptions) {
     return this.rawClient.listTransactions(authId, request, requestOptions).body();
+  }
+
+  /**
+   * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+   */
+  public ListTransactionReferenceTypesResponse listTransactionReferenceTypes(String authId) {
+    return this.rawClient.listTransactionReferenceTypes(authId).body();
+  }
+
+  /**
+   * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+   */
+  public ListTransactionReferenceTypesResponse listTransactionReferenceTypes(String authId,
+      RequestOptions requestOptions) {
+    return this.rawClient.listTransactionReferenceTypes(authId, requestOptions).body();
+  }
+
+  /**
+   * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+   */
+  public ListTransactionReferenceTypesResponse listTransactionReferenceTypes(String authId,
+      ListTransactionReferenceTypesRequest request) {
+    return this.rawClient.listTransactionReferenceTypes(authId, request).body();
+  }
+
+  /**
+   * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+   */
+  public ListTransactionReferenceTypesResponse listTransactionReferenceTypes(String authId,
+      ListTransactionReferenceTypesRequest request, RequestOptions requestOptions) {
+    return this.rawClient.listTransactionReferenceTypes(authId, request, requestOptions).body();
   }
 }

@@ -20,33 +20,142 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import resources.balance.types.ListTransactionsRequestStatus;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = ListTransactionsRequest.Builder.class
 )
 public final class ListTransactionsRequest {
-  private final Optional<Integer> limit;
+  private final Optional<Integer> page;
 
-  private final Optional<Integer> offset;
+  private final Optional<Integer> perPage;
+
+  private final Optional<String> fromDate;
+
+  private final Optional<String> toDate;
+
+  private final Optional<String> type;
+
+  private final Optional<ListTransactionsRequestStatus> status;
+
+  private final Optional<String> currency;
+
+  private final Optional<String> referenceType;
+
+  private final Optional<String> description;
+
+  private final Optional<String> reference;
+
+  private final Optional<String> transactionId;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListTransactionsRequest(Optional<Integer> limit, Optional<Integer> offset,
-      Map<String, Object> additionalProperties) {
-    this.limit = limit;
-    this.offset = offset;
+  private ListTransactionsRequest(Optional<Integer> page, Optional<Integer> perPage,
+      Optional<String> fromDate, Optional<String> toDate, Optional<String> type,
+      Optional<ListTransactionsRequestStatus> status, Optional<String> currency,
+      Optional<String> referenceType, Optional<String> description, Optional<String> reference,
+      Optional<String> transactionId, Map<String, Object> additionalProperties) {
+    this.page = page;
+    this.perPage = perPage;
+    this.fromDate = fromDate;
+    this.toDate = toDate;
+    this.type = type;
+    this.status = status;
+    this.currency = currency;
+    this.referenceType = referenceType;
+    this.description = description;
+    this.reference = reference;
+    this.transactionId = transactionId;
     this.additionalProperties = additionalProperties;
   }
 
-  @JsonProperty("limit")
-  public Optional<Integer> getLimit() {
-    return limit;
+  /**
+   * @return Page number, 1-indexed.
+   */
+  @JsonProperty("page")
+  public Optional<Integer> getPage() {
+    return page;
   }
 
-  @JsonProperty("offset")
-  public Optional<Integer> getOffset() {
-    return offset;
+  /**
+   * @return Records per page. A value above the maximum falls back to the default of 50 rather than clamping.
+   */
+  @JsonProperty("per_page")
+  public Optional<Integer> getPerPage() {
+    return perPage;
+  }
+
+  /**
+   * @return Start of the window, inclusive. Date-only or full ISO 8601 timestamp. Day boundaries are UTC.
+   */
+  @JsonProperty("from_date")
+  public Optional<String> getFromDate() {
+    return fromDate;
+  }
+
+  /**
+   * @return End of the window, inclusive. A date-only value covers the whole day.
+   */
+  @JsonProperty("to_date")
+  public Optional<String> getToDate() {
+    return toDate;
+  }
+
+  /**
+   * @return <code>credit</code> or <code>debit</code> act as broad classifications and sweep in legacy entry types such as <code>did_rental</code>; any other value is an exact match on <code>transactions[].type</code>.
+   */
+  @JsonProperty("type")
+  public Optional<String> getType() {
+    return type;
+  }
+
+  /**
+   * @return Exact match on transaction status.
+   */
+  @JsonProperty("status")
+  public Optional<ListTransactionsRequestStatus> getStatus() {
+    return status;
+  }
+
+  /**
+   * @return Currency code. Uppercased server-side, exact match.
+   */
+  @JsonProperty("currency")
+  public Optional<String> getCurrency() {
+    return currency;
+  }
+
+  /**
+   * @return Spend source, matching <code>transactions[].reference_type</code>.
+   */
+  @JsonProperty("reference_type")
+  public Optional<String> getReferenceType() {
+    return referenceType;
+  }
+
+  /**
+   * @return Case-insensitive substring match on the description.
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Case-insensitive substring match on the reference.
+   */
+  @JsonProperty("reference")
+  public Optional<String> getReference() {
+    return reference;
+  }
+
+  /**
+   * @return Fetch a single ledger entry by its UUID.
+   */
+  @JsonProperty("transaction_id")
+  public Optional<String> getTransactionId() {
+    return transactionId;
   }
 
   @java.lang.Override
@@ -61,12 +170,12 @@ public final class ListTransactionsRequest {
   }
 
   private boolean equalTo(ListTransactionsRequest other) {
-    return limit.equals(other.limit) && offset.equals(other.offset);
+    return page.equals(other.page) && perPage.equals(other.perPage) && fromDate.equals(other.fromDate) && toDate.equals(other.toDate) && type.equals(other.type) && status.equals(other.status) && currency.equals(other.currency) && referenceType.equals(other.referenceType) && description.equals(other.description) && reference.equals(other.reference) && transactionId.equals(other.transactionId);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.limit, this.offset);
+    return Objects.hash(this.page, this.perPage, this.fromDate, this.toDate, this.type, this.status, this.currency, this.referenceType, this.description, this.reference, this.transactionId);
   }
 
   @java.lang.Override
@@ -82,9 +191,27 @@ public final class ListTransactionsRequest {
       ignoreUnknown = true
   )
   public static final class Builder {
-    private Optional<Integer> limit = Optional.empty();
+    private Optional<Integer> page = Optional.empty();
 
-    private Optional<Integer> offset = Optional.empty();
+    private Optional<Integer> perPage = Optional.empty();
+
+    private Optional<String> fromDate = Optional.empty();
+
+    private Optional<String> toDate = Optional.empty();
+
+    private Optional<String> type = Optional.empty();
+
+    private Optional<ListTransactionsRequestStatus> status = Optional.empty();
+
+    private Optional<String> currency = Optional.empty();
+
+    private Optional<String> referenceType = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
+
+    private Optional<String> reference = Optional.empty();
+
+    private Optional<String> transactionId = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -93,41 +220,209 @@ public final class ListTransactionsRequest {
     }
 
     public Builder from(ListTransactionsRequest other) {
-      limit(other.getLimit());
-      offset(other.getOffset());
+      page(other.getPage());
+      perPage(other.getPerPage());
+      fromDate(other.getFromDate());
+      toDate(other.getToDate());
+      type(other.getType());
+      status(other.getStatus());
+      currency(other.getCurrency());
+      referenceType(other.getReferenceType());
+      description(other.getDescription());
+      reference(other.getReference());
+      transactionId(other.getTransactionId());
       return this;
     }
 
+    /**
+     * <p>Page number, 1-indexed.</p>
+     */
     @JsonSetter(
-        value = "limit",
+        value = "page",
         nulls = Nulls.SKIP
     )
-    public Builder limit(Optional<Integer> limit) {
-      this.limit = limit;
+    public Builder page(Optional<Integer> page) {
+      this.page = page;
       return this;
     }
 
-    public Builder limit(Integer limit) {
-      this.limit = Optional.ofNullable(limit);
+    public Builder page(Integer page) {
+      this.page = Optional.ofNullable(page);
       return this;
     }
 
+    /**
+     * <p>Records per page. A value above the maximum falls back to the default of 50 rather than clamping.</p>
+     */
     @JsonSetter(
-        value = "offset",
+        value = "per_page",
         nulls = Nulls.SKIP
     )
-    public Builder offset(Optional<Integer> offset) {
-      this.offset = offset;
+    public Builder perPage(Optional<Integer> perPage) {
+      this.perPage = perPage;
       return this;
     }
 
-    public Builder offset(Integer offset) {
-      this.offset = Optional.ofNullable(offset);
+    public Builder perPage(Integer perPage) {
+      this.perPage = Optional.ofNullable(perPage);
+      return this;
+    }
+
+    /**
+     * <p>Start of the window, inclusive. Date-only or full ISO 8601 timestamp. Day boundaries are UTC.</p>
+     */
+    @JsonSetter(
+        value = "from_date",
+        nulls = Nulls.SKIP
+    )
+    public Builder fromDate(Optional<String> fromDate) {
+      this.fromDate = fromDate;
+      return this;
+    }
+
+    public Builder fromDate(String fromDate) {
+      this.fromDate = Optional.ofNullable(fromDate);
+      return this;
+    }
+
+    /**
+     * <p>End of the window, inclusive. A date-only value covers the whole day.</p>
+     */
+    @JsonSetter(
+        value = "to_date",
+        nulls = Nulls.SKIP
+    )
+    public Builder toDate(Optional<String> toDate) {
+      this.toDate = toDate;
+      return this;
+    }
+
+    public Builder toDate(String toDate) {
+      this.toDate = Optional.ofNullable(toDate);
+      return this;
+    }
+
+    /**
+     * <p><code>credit</code> or <code>debit</code> act as broad classifications and sweep in legacy entry types such as <code>did_rental</code>; any other value is an exact match on <code>transactions[].type</code>.</p>
+     */
+    @JsonSetter(
+        value = "type",
+        nulls = Nulls.SKIP
+    )
+    public Builder type(Optional<String> type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder type(String type) {
+      this.type = Optional.ofNullable(type);
+      return this;
+    }
+
+    /**
+     * <p>Exact match on transaction status.</p>
+     */
+    @JsonSetter(
+        value = "status",
+        nulls = Nulls.SKIP
+    )
+    public Builder status(Optional<ListTransactionsRequestStatus> status) {
+      this.status = status;
+      return this;
+    }
+
+    public Builder status(ListTransactionsRequestStatus status) {
+      this.status = Optional.ofNullable(status);
+      return this;
+    }
+
+    /**
+     * <p>Currency code. Uppercased server-side, exact match.</p>
+     */
+    @JsonSetter(
+        value = "currency",
+        nulls = Nulls.SKIP
+    )
+    public Builder currency(Optional<String> currency) {
+      this.currency = currency;
+      return this;
+    }
+
+    public Builder currency(String currency) {
+      this.currency = Optional.ofNullable(currency);
+      return this;
+    }
+
+    /**
+     * <p>Spend source, matching <code>transactions[].reference_type</code>.</p>
+     */
+    @JsonSetter(
+        value = "reference_type",
+        nulls = Nulls.SKIP
+    )
+    public Builder referenceType(Optional<String> referenceType) {
+      this.referenceType = referenceType;
+      return this;
+    }
+
+    public Builder referenceType(String referenceType) {
+      this.referenceType = Optional.ofNullable(referenceType);
+      return this;
+    }
+
+    /**
+     * <p>Case-insensitive substring match on the description.</p>
+     */
+    @JsonSetter(
+        value = "description",
+        nulls = Nulls.SKIP
+    )
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    /**
+     * <p>Case-insensitive substring match on the reference.</p>
+     */
+    @JsonSetter(
+        value = "reference",
+        nulls = Nulls.SKIP
+    )
+    public Builder reference(Optional<String> reference) {
+      this.reference = reference;
+      return this;
+    }
+
+    public Builder reference(String reference) {
+      this.reference = Optional.ofNullable(reference);
+      return this;
+    }
+
+    /**
+     * <p>Fetch a single ledger entry by its UUID.</p>
+     */
+    @JsonSetter(
+        value = "transaction_id",
+        nulls = Nulls.SKIP
+    )
+    public Builder transactionId(Optional<String> transactionId) {
+      this.transactionId = transactionId;
+      return this;
+    }
+
+    public Builder transactionId(String transactionId) {
+      this.transactionId = Optional.ofNullable(transactionId);
       return this;
     }
 
     public ListTransactionsRequest build() {
-      return new ListTransactionsRequest(limit, offset, additionalProperties);
+      return new ListTransactionsRequest(page, perPage, fromDate, toDate, type, status, currency, referenceType, description, reference, transactionId, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

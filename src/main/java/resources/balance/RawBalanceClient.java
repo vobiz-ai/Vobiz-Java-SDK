@@ -21,8 +21,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import resources.balance.requests.GetBalanceRequest;
+import resources.balance.requests.ListTransactionReferenceTypesRequest;
 import resources.balance.requests.ListTransactionsRequest;
 import resources.balance.types.GetBalanceResponse;
+import resources.balance.types.ListTransactionReferenceTypesResponse;
 import resources.balance.types.ListTransactionsResponse;
 
 public class RawBalanceClient {
@@ -95,14 +97,30 @@ public class RawBalanceClient {
     }
 
     /**
-     * Retrieve paginated transaction history for the account.
+     * Retrieve paginated transaction history for the account, ordered by
+     * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+     * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+     * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+     * in the server timezone (UTC); send an explicit offset such as
+     * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+     * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+     * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+     * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
      */
     public VobizApiHttpResponse<ListTransactionsResponse> listTransactions(String authId) {
       return listTransactions(authId,ListTransactionsRequest.builder().build());
     }
 
     /**
-     * Retrieve paginated transaction history for the account.
+     * Retrieve paginated transaction history for the account, ordered by
+     * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+     * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+     * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+     * in the server timezone (UTC); send an explicit offset such as
+     * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+     * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+     * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+     * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
      */
     public VobizApiHttpResponse<ListTransactionsResponse> listTransactions(String authId,
         RequestOptions requestOptions) {
@@ -110,7 +128,15 @@ public class RawBalanceClient {
     }
 
     /**
-     * Retrieve paginated transaction history for the account.
+     * Retrieve paginated transaction history for the account, ordered by
+     * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+     * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+     * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+     * in the server timezone (UTC); send an explicit offset such as
+     * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+     * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+     * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+     * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
      */
     public VobizApiHttpResponse<ListTransactionsResponse> listTransactions(String authId,
         ListTransactionsRequest request) {
@@ -118,7 +144,15 @@ public class RawBalanceClient {
     }
 
     /**
-     * Retrieve paginated transaction history for the account.
+     * Retrieve paginated transaction history for the account, ordered by
+     * <code>created_at</code> descending. Filter to a single day by setting <code>from_date</code>
+     * and <code>to_date</code> to the same date - a bare <code>YYYY-MM-DD</code> in <code>to_date</code> is
+     * expanded to <code>23:59:59</code>, so both bounds are inclusive. Bare dates resolve
+     * in the server timezone (UTC); send an explicit offset such as
+     * <code>2026-08-28T00:00:00+05:30</code> to pin a local calendar day.
+     * <p><code>limit</code> and <code>offset</code> are not supported - unknown parameters are silently
+     * dropped. <code>total</code> and <code>summary</code> are computed over the whole filtered set
+     * and ignore pagination, so <code>per_page=1</code> returns full-window totals.</p>
      */
     public VobizApiHttpResponse<ListTransactionsResponse> listTransactions(String authId,
         ListTransactionsRequest request, RequestOptions requestOptions) {
@@ -126,11 +160,38 @@ public class RawBalanceClient {
 
         .addPathSegments("api/v1/Account")
         .addPathSegment(authId)
-        .addPathSegments("transactions");if (request.getLimit().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "limit", request.getLimit().get(), false);
+        .addPathSegments("transactions");if (request.getPage().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "page", request.getPage().get(), false);
         }
-        if (request.getOffset().isPresent()) {
-          QueryStringMapper.addQueryParameter(httpUrl, "offset", request.getOffset().get(), false);
+        if (request.getPerPage().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "per_page", request.getPerPage().get(), false);
+        }
+        if (request.getFromDate().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "from_date", request.getFromDate().get(), false);
+        }
+        if (request.getToDate().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "to_date", request.getToDate().get(), false);
+        }
+        if (request.getType().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "type", request.getType().get(), false);
+        }
+        if (request.getStatus().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "status", request.getStatus().get(), false);
+        }
+        if (request.getCurrency().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "currency", request.getCurrency().get(), false);
+        }
+        if (request.getReferenceType().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "reference_type", request.getReferenceType().get(), false);
+        }
+        if (request.getDescription().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "description", request.getDescription().get(), false);
+        }
+        if (request.getReference().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "reference", request.getReference().get(), false);
+        }
+        if (request.getTransactionId().isPresent()) {
+          QueryStringMapper.addQueryParameter(httpUrl, "transaction_id", request.getTransactionId().get(), false);
         }
         if (requestOptions != null) {
           requestOptions.getQueryParameters().forEach((_key, _value) -> {
@@ -160,4 +221,68 @@ public class RawBalanceClient {
           throw new VobizApiException("Network error executing HTTP request", e);
         }
       }
-    }
+
+      /**
+       * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+       */
+      public VobizApiHttpResponse<ListTransactionReferenceTypesResponse> listTransactionReferenceTypes(
+          String authId) {
+        return listTransactionReferenceTypes(authId,ListTransactionReferenceTypesRequest.builder().build());
+      }
+
+      /**
+       * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+       */
+      public VobizApiHttpResponse<ListTransactionReferenceTypesResponse> listTransactionReferenceTypes(
+          String authId, RequestOptions requestOptions) {
+        return listTransactionReferenceTypes(authId,ListTransactionReferenceTypesRequest.builder().build(),requestOptions);
+      }
+
+      /**
+       * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+       */
+      public VobizApiHttpResponse<ListTransactionReferenceTypesResponse> listTransactionReferenceTypes(
+          String authId, ListTransactionReferenceTypesRequest request) {
+        return listTransactionReferenceTypes(authId,request,null);
+      }
+
+      /**
+       * Returns the distinct <code>reference_type</code> values present on the account's ledger. Use it to discover valid values for the <code>reference_type</code> filter on the transactions endpoint.
+       */
+      public VobizApiHttpResponse<ListTransactionReferenceTypesResponse> listTransactionReferenceTypes(
+          String authId, ListTransactionReferenceTypesRequest request,
+          RequestOptions requestOptions) {
+        HttpUrl.Builder httpUrl = HttpUrl.parse(this.clientOptions.environment().getUrl()).newBuilder()
+
+          .addPathSegments("api/v1/Account")
+          .addPathSegment(authId)
+          .addPathSegments("transactions")
+          .addPathSegments("reference-types");if (requestOptions != null) {
+            requestOptions.getQueryParameters().forEach((_key, _value) -> {
+              httpUrl.addQueryParameter(_key, _value);
+            } );
+          }
+          Request.Builder _requestBuilder = new Request.Builder()
+            .url(httpUrl.build())
+            .method("GET", null)
+            .headers(Headers.of(clientOptions.headers(requestOptions)))
+            .addHeader("Accept", "application/json");
+          Request okhttpRequest = _requestBuilder.build();
+          OkHttpClient client = clientOptions.httpClient();
+          if (requestOptions != null && requestOptions.getTimeout().isPresent()) {
+            client = clientOptions.httpClientWithTimeout(requestOptions);
+          }
+          try (Response response = client.newCall(okhttpRequest).execute()) {
+            ResponseBody responseBody = response.body();
+            String responseBodyString = responseBody != null ? responseBody.string() : "{}";
+            if (response.isSuccessful()) {
+              return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, ListTransactionReferenceTypesResponse.class), response);
+            }
+            Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
+            throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
+          }
+          catch (IOException e) {
+            throw new VobizApiException("Network error executing HTTP request", e);
+          }
+        }
+      }
