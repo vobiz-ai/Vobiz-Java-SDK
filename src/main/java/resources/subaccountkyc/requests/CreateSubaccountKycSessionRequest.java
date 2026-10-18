@@ -86,7 +86,7 @@ public final class CreateSubaccountKycSessionRequest {
   }
 
   /**
-   * @return HTTPS endpoint VoBiz POSTs the KYC result to. Omit it and no callbacks are sent.
+   * @return HTTPS endpoint Vobiz POSTs the KYC result to. Omit it and no callbacks are sent.
    */
   @JsonProperty("webhook_url")
   public Optional<String> getWebhookUrl() {
@@ -163,7 +163,7 @@ public final class CreateSubaccountKycSessionRequest {
     _FinalStage redirectUrl(String redirectUrl);
 
     /**
-     * <p>HTTPS endpoint VoBiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
+     * <p>HTTPS endpoint Vobiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
      */
     _FinalStage webhookUrl(Optional<String> webhookUrl);
 
@@ -243,7 +243,7 @@ public final class CreateSubaccountKycSessionRequest {
     }
 
     /**
-     * <p>HTTPS endpoint VoBiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
+     * <p>HTTPS endpoint Vobiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -253,7 +253,7 @@ public final class CreateSubaccountKycSessionRequest {
     }
 
     /**
-     * <p>HTTPS endpoint VoBiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
+     * <p>HTTPS endpoint Vobiz POSTs the KYC result to. Omit it and no callbacks are sent.</p>
      */
     @java.lang.Override
     @JsonSetter(

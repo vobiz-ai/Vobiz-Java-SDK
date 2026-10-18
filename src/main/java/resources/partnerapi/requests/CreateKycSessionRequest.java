@@ -99,7 +99,7 @@ public final class CreateKycSessionRequest {
   }
 
   /**
-   * @return VoBiz POSTs the KYC result here.
+   * @return Vobiz POSTs the KYC result here.
    */
   @JsonProperty("webhook_url")
   public Optional<String> getWebhookUrl() {
@@ -199,7 +199,7 @@ public final class CreateKycSessionRequest {
     _FinalStage redirectUrl(String redirectUrl);
 
     /**
-     * <p>VoBiz POSTs the KYC result here.</p>
+     * <p>Vobiz POSTs the KYC result here.</p>
      */
     _FinalStage webhookUrl(Optional<String> webhookUrl);
 
@@ -352,7 +352,7 @@ public final class CreateKycSessionRequest {
     }
 
     /**
-     * <p>VoBiz POSTs the KYC result here.</p>
+     * <p>Vobiz POSTs the KYC result here.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -362,7 +362,7 @@ public final class CreateKycSessionRequest {
     }
 
     /**
-     * <p>VoBiz POSTs the KYC result here.</p>
+     * <p>Vobiz POSTs the KYC result here.</p>
      */
     @java.lang.Override
     @JsonSetter(
