@@ -19,9 +19,7 @@ public class VobizApiClientBuilder {
 
   private final Map<String, String> customHeaders = new HashMap<>();
 
-  private String token = null;
-
-  private String authId = null;
+  private String apiKey = null;
 
   private String authToken = null;
 
@@ -32,18 +30,10 @@ public class VobizApiClientBuilder {
   private Optional<LogConfig> logging = Optional.empty();
 
   /**
-   * Sets token
+   * Sets apiKey
    */
-  public VobizApiClientBuilder token(String token) {
-    this.token = token;
-    return this;
-  }
-
-  /**
-   * Sets authId
-   */
-  public VobizApiClientBuilder authId(String authId) {
-    this.authId = authId;
+  public VobizApiClientBuilder apiKey(String apiKey) {
+    this.apiKey = apiKey;
     return this;
   }
 
@@ -152,9 +142,7 @@ public class VobizApiClientBuilder {
    * }</pre>
    */
   protected void setAuthentication(ClientOptions.Builder builder) {
-    if (this.token != null) {
-      builder.addHeader("Authorization", "Bearer " + this.token);
-    }
+    builder.addHeader("X-Auth-ID", this.apiKey);
   }
 
   /**
@@ -173,7 +161,6 @@ public class VobizApiClientBuilder {
    * }</pre>
    */
   protected void setCustomHeaders(ClientOptions.Builder builder) {
-    builder.addHeader("X-Auth-ID", this.authId);
     builder.addHeader("X-Auth-Token", this.authToken);
   }
 
@@ -264,11 +251,8 @@ public class VobizApiClientBuilder {
   }
 
   public VobizApiClient build() {
-    if (token == null) {
-      throw new RuntimeException("Please provide token");
-    }
-    if (authId == null) {
-      throw new RuntimeException("Please provide authId");
+    if (apiKey == null) {
+      throw new RuntimeException("Please provide apiKey");
     }
     if (authToken == null) {
       throw new RuntimeException("Please provide authToken");

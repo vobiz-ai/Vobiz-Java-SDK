@@ -27,6 +27,7 @@ import resources.phonenumbers.PhoneNumbersClient;
 import resources.playaudio.PlayAudioClient;
 import resources.recordcalls.RecordCallsClient;
 import resources.recordings.RecordingsClient;
+import resources.sms.SmsClient;
 import resources.speaktext.SpeakTextClient;
 import resources.subaccountkyc.SubAccountKycClient;
 import resources.subaccountkyctestmode.SubAccountKycTestModeClient;
@@ -90,6 +91,8 @@ public class VobizApiClient {
 
   protected final Supplier<PartnerApiClient> partnerApiClient;
 
+  protected final Supplier<SmsClient> smsClient;
+
   public VobizApiClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
     this.accountClient = Suppliers.memoize(() -> new AccountClient(clientOptions));
@@ -119,6 +122,7 @@ public class VobizApiClient {
     this.applicationsClient = Suppliers.memoize(() -> new ApplicationsClient(clientOptions));
     this.endpointsClient = Suppliers.memoize(() -> new EndpointsClient(clientOptions));
     this.partnerApiClient = Suppliers.memoize(() -> new PartnerApiClient(clientOptions));
+    this.smsClient = Suppliers.memoize(() -> new SmsClient(clientOptions));
   }
 
   public AccountClient account() {
@@ -227,6 +231,10 @@ public class VobizApiClient {
 
   public PartnerApiClient partnerApi() {
     return this.partnerApiClient.get();
+  }
+
+  public SmsClient sms() {
+    return this.smsClient.get();
   }
 
   public static VobizApiClientBuilder builder() {

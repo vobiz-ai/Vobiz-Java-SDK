@@ -13,9 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public final class RequestOptions {
-  private final String token;
-
-  private final String authId;
+  private final String apiKey;
 
   private final String authToken;
 
@@ -31,12 +29,11 @@ public final class RequestOptions {
 
   private final Map<String, Supplier<String>> queryParameterSuppliers;
 
-  private RequestOptions(String token, String authId, String authToken, Optional<Integer> timeout,
+  private RequestOptions(String apiKey, String authToken, Optional<Integer> timeout,
       TimeUnit timeoutTimeUnit, Map<String, String> headers,
       Map<String, Supplier<String>> headerSuppliers, Map<String, String> queryParameters,
       Map<String, Supplier<String>> queryParameterSuppliers) {
-    this.token = token;
-    this.authId = authId;
+    this.apiKey = apiKey;
     this.authToken = authToken;
     this.timeout = timeout;
     this.timeoutTimeUnit = timeoutTimeUnit;
@@ -56,11 +53,8 @@ public final class RequestOptions {
 
   public Map<String, String> getHeaders() {
     Map<String, String> headers = new HashMap<>();
-    if (this.token != null) {
-      headers.put("Authorization", "Bearer " + this.token);
-    }
-    if (this.authId != null) {
-      headers.put("X-Auth-ID", this.authId);
+    if (this.apiKey != null) {
+      headers.put("X-Auth-ID", this.apiKey);
     }
     if (this.authToken != null) {
       headers.put("X-Auth-Token", this.authToken);
@@ -85,9 +79,7 @@ public final class RequestOptions {
   }
 
   public static class Builder {
-    private String token = null;
-
-    private String authId = null;
+    private String apiKey = null;
 
     private String authToken = null;
 
@@ -103,13 +95,8 @@ public final class RequestOptions {
 
     private final Map<String, Supplier<String>> queryParameterSuppliers = new HashMap<>();
 
-    public Builder token(String token) {
-      this.token = token;
-      return this;
-    }
-
-    public Builder authId(String authId) {
-      this.authId = authId;
+    public Builder apiKey(String apiKey) {
+      this.apiKey = apiKey;
       return this;
     }
 
@@ -150,7 +137,7 @@ public final class RequestOptions {
     }
 
     public RequestOptions build() {
-      return new RequestOptions(token, authId, authToken, timeout, timeoutTimeUnit, headers, headerSuppliers, queryParameters, queryParameterSuppliers);
+      return new RequestOptions(apiKey, authToken, timeout, timeoutTimeUnit, headers, headerSuppliers, queryParameters, queryParameterSuppliers);
     }
   }
 }

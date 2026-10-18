@@ -9736,3 +9736,5840 @@ client.partnerApi().resendKycSession(
 </dl>
 </details>
 
+## Messages
+<details><summary><code>client.sms.messages.listMessages() -> MessageList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the messages on your account, sent and received, newest first. Combine the filters to find a message you did not keep the `id` for, such as the other recipients of a multi-recipient send (filter by `tag` or `to`). Every filter is an exact match, and filters you omit are not applied. Page through results with `limit` and `offset`, and use `total` to know when to stop.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().messages().listMessages(
+    ListMessagesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**status:** `Optional<ListMessagesRequestStatus>` — Only messages with this status: `scheduled`, `sent`, `delivered`, `failed`, `received` (inbound) or `unknown`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<ListMessagesRequestChannel>` — Only messages sent or received on this channel: `sms`, `mms` or `rcs`. This is the channel actually used, so an SMS that was upgraded to MMS appears under `mms`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `Optional<ListMessagesRequestDirection>` — `out` for messages you sent, `in` for messages your numbers received.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `Optional<String>` — Recipient number to filter on, in E.164 format, exact match. For inbound messages this is your number.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `Optional<String>` — Sender to filter on, exact match: one of your numbers in E.164 format (for example `+14155550100`), or the `senderName` of your RCS sender for RCS messages. For inbound messages this is the contact's number.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag:** `Optional<String>` — Only messages whose `tag` equals this value, exact match. Set the same `tag` on related sends to retrieve them together.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**startDate:** `Optional<OffsetDateTime>` — Only messages created at or after this time, as an RFC 3339 / ISO 8601 timestamp such as `2026-10-01T00:00:00Z`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**endDate:** `Optional<OffsetDateTime>` — Only messages created before this time, as an RFC 3339 / ISO 8601 timestamp such as `2026-11-01T00:00:00Z`. Combine with `startDate` for a date range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of messages to return, from `1` to `100`. Defaults to `20`; a value outside that range also returns `20`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of records to skip before the page starts, `0` or greater. Defaults to `0`. Add the page size to it to fetch the next page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.messages.sendMessage(request) -> Message</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends an SMS, MMS or RCS message from one of your numbers or RCS senders to one or more recipients. Each number in `to` becomes its own message, with its own `id`, status and conversation, and the response body is the first recipient's message. Every recipient is checked against your opt-out list first, and a send with a future `scheduledAt` is stored with status `scheduled`.
+
+- `201` when every recipient was accepted, including an idempotent replay and a successful SMS fallback.
+- `202` when at least one recipient was recorded and at least one errored. Find the other recipients with `GET /messages` filtered by `tag` or `to`.
+- `422` when the recipient has opted out and nothing was recorded.
+- `502` when the send was rejected before a message was recorded. Retry with the same `idempotencyKey`.
+
+Track delivery with `GET /messages/{id}`, your webhooks (callbacks) or the WebSocket.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().messages().sendMessage(
+    SendMessageRequest
+        .builder()
+        .from("+14155550100")
+        .to(
+            Arrays.asList("+14155550123")
+        )
+        .channel(SendMessageRequestChannel.SMS)
+        .text("Your verification code is 482913")
+        .idempotencyKey("otp-482913-user-77")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**from:** `String` — The sender. For `sms` and `mms`, one of your Vobiz numbers in E.164 format, for example `+14155550100`. For `rcs`, the `senderName` of your RCS sender (from `GET /senders`); with `failoverToSms`, the SMS copy is sent from a number on your account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `List<String>` — One or more recipient numbers in E.164 format. Each one becomes a separate message with its own `id`; blank entries and duplicates are ignored. At least one recipient is required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<SendMessageRequestChannel>` — Channel to send on: `sms`, `mms` or `rcs`. Defaults to `sms`. An `sms` with `mediaUrls` to US or Canadian recipients is sent as MMS automatically.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `Optional<String>` — Message body. Required for `sms` and `rcs`. A long SMS is split into segments and billed per segment (160 GSM-7 or 70 UCS-2 characters fit in one segment). For `mms`, provide `text`, `mediaUrls` or both, with `text` up to 5000 characters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mediaUrls:** `Optional<List<String>>` — Publicly reachable `https` URLs of media to attach. MMS accepts up to 10. RCS sends the first URL as a file. An SMS to recipients outside the US and Canada is sent as text only.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**title:** `Optional<String>` — Subject line of an MMS. Used only when the message is sent as MMS.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag:** `Optional<String>` — Your own label, stored on every message the request creates. Filter `GET /messages` by it to find all recipients of one send or to group messages for reporting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**idempotencyKey:** `Optional<String>` — A unique string you choose, for example a UUID or your own order ID, scoped to your account. Retrying with the same key returns the original message instead of sending again. With several recipients the key is applied per recipient.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scheduledAt:** `Optional<OffsetDateTime>` — Time to hold the message until, as an RFC 3339 / ISO 8601 timestamp such as `2026-11-01T09:00:00Z`. A future time stores the message with status `scheduled`; a past time or now sends immediately.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**failoverToSms:** `Optional<Boolean>` — Used only when `channel` is `rcs`. When `true` and the RCS send cannot go through, Vobiz sends the same `text` as SMS and the message's `channel` becomes `sms`. Defaults to `false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**rcsSuggestions:** `Optional<List<RcsSuggestion>>` — Suggestion buttons (suggested replies and actions) to show under an RCS message. Used only when `channel` is `rcs`. See the RCS suggestion object for each `type`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dltEntityId:** `Optional<String>` — India (TRAI DLT): the Principal Entity ID you registered on a TRAI DLT portal. Pass it on every message to Indian numbers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dltHeaderId:** `Optional<String>` — India (TRAI DLT): the ID of the sender header you registered on a TRAI DLT portal. Pass it on every message to Indian numbers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dltTemplateId:** `Optional<String>` — India (TRAI DLT): the ID of the content template you registered on a TRAI DLT portal. `text` must match that template with its variables filled in.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.messages.previewMessageCost() -> CostPreview</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Prices a message before you send it, without sending anything. It splits `text` into segments for the chosen channel and returns the segment count, the price per segment and the total in your account currency. Use it to show a cost estimate in your app or to keep long messages within a budget. The figures are for one recipient; multiply `totalCost` by the number of recipients for a multi-recipient send.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().messages().previewMessageCost(
+    PreviewMessageCostRequest
+        .builder()
+        .from("+14155550100")
+        .to("+14155550123")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**from:** `String` — Required. The sender you plan to use: one of your numbers in E.164 format, or the `senderName` of your RCS sender when `channel` is `rcs`. It determines the route the message is priced on.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `String` — Required. One recipient number in E.164 format, for example `+14155550123`. Its destination country determines the price.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<PreviewMessageCostRequestChannel>` — Channel to price: `sms`, `mms` or `rcs`. Defaults to `sms`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**text:** `Optional<String>` — The message body to segment and price, URL-encoded. Pass the exact text you plan to send: the segment count depends on its length and on whether it fits the GSM-7 character set. Defaults to an empty string.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.messages.checkRcsReachability() -> RcsReachability</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Checks whether a phone number can receive RCS messages from your RCS sender, without sending anything. Call it before an RCS send to choose between RCS and SMS for that contact. If `reachable` is `false`, send with `channel: "sms"` instead, or send RCS with `failoverToSms: true` so Vobiz falls back to SMS automatically.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().messages().checkRcsReachability(
+    CheckRcsReachabilityRequest
+        .builder()
+        .from("YOUR_RCS_SENDER_NAME")
+        .to("+14155550123")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**from:** `String` — Required. The `senderName` of your RCS sender, as returned by `GET /senders`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `String` — Required. The recipient number to check, in E.164 format, for example `+14155550123`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.messages.getMessage(id) -> MessageWithHistory</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one message with its full status history. Use it to follow a message from `sent` to `delivered` or `failed`, and to read `errorCode` and `errorMessage` when it fails. The `statusHistory` array lists every status change, oldest first. For real-time updates, subscribe to webhooks (callbacks) or the WebSocket instead of polling.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().messages().getMessage(
+    "9b2e1c40-8a3d-4f5e-9c1a-7d6b2e8f4a01",
+    GetMessageRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The message `id` (UUID) returned by `POST /messages`, `GET /messages`, a conversation, or an event.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Numbers
+<details><summary><code>client.sms.numbers.listNumbers() -> SmsNumberList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns every number on your account that is routed for SMS or MMS, sorted by `countryCode` and then `e164`. Each number carries its US registration state, the last message it sent and a `sendable` summary of where it can send right now. Check `sendable.usDomestic` before you send to US recipients from a US number. To add numbers, search with `GET /numbers/available` and buy with `POST /numbers/purchase`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().listNumbers();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.numbers.listCountries() -> NumberCountries</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the countries where you can buy messaging numbers, with the number types and capabilities in stock in each. The list is a snapshot that refreshes in the background: while `ready` is `false`, `countries` is empty and you retry shortly. India is not listed, because traffic to Indian recipients is sent from DLT-registered sender IDs. Pass a returned `country` to `GET /numbers/available` to see individual numbers.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().listCountries();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.numbers.searchAvailableNumbers() -> AvailableNumbersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Searches the inventory for numbers you can buy in one country, with their setup and monthly prices in your wallet currency. Each search returns up to 10 numbers. Pass the chosen `e164`, the `country` and any non-empty `numberKey` to `POST /numbers/purchase`. For `country=IN` the list is empty and `hint` explains that Indian traffic uses DLT-registered sender IDs. A country outside the set Vobiz sells numbers in returns `422`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().searchAvailableNumbers(
+    SearchAvailableNumbersRequest
+        .builder()
+        .country("US")
+        .capabilities("SMS,MMS")
+        .areaCode("415")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**country:** `String` — Country to search, as an ISO 3166-1 alpha-2 code such as `US`, `CA` or `GB`. Case-insensitive. A value that is not two letters returns `400` with `country must be an ISO 3166-1 alpha-2 code`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**capabilities:** `Optional<String>` — Comma-separated capabilities the number must have: `SMS`, `MMS`, or `SMS,MMS`. Case-insensitive, defaults to `SMS`. Any other value returns `400` with `capabilities must be SMS and/or MMS`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**areaCode:** `Optional<String>` — Three-digit area code to search in, for example `415`. Accepted only when `country` is `US` or `CA`; other countries return `400` with `areaCode is only supported for US and CA`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of results, from `1` to `100`. Defaults to `10`, and each search returns at most 10 numbers whatever you pass. A value outside the range returns `400` with `limit must be between 1 and 100`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.numbers.purchaseNumber(request) -> PurchaseNumberResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Buys a number returned by `GET /numbers/available` and routes it to your account for messaging. This call spends money: it debits the setup fee and the first month's rental from your wallet before the number is bought, and the rental renews monthly until you release the number. If the purchase cannot complete after the debit, your wallet is refunded and the error message says so. Run it only with your own credentials once you have confirmed the number and price. A `numbers.updated` WebSocket event is published when the number goes live; a US number then needs a 10DLC campaign or toll-free verification before it can send to US recipients.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().purchaseNumber(
+    PurchaseNumberRequest
+        .builder()
+        .e164("+14155550100")
+        .country("US")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**e164:** `String` — The number to buy, in E.164 format, exactly as returned in `e164` by `GET /numbers/available`. Required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**country:** `String` — ISO 3166-1 alpha-2 code of the number's country, for example `US`. Required, and must match the number; a mismatch returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**numberKey:** `Optional<String>` — The `numberKey` from `GET /numbers/available`. Required when the search result has a non-empty `numberKey`, as for `CA` and `GB` numbers; omit it for US numbers, which are bought by `e164` alone.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.numbers.listPurchases() -> NumberPurchaseList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the numbers you have bought through Vobiz, newest first, each with its full list of wallet charges. Released numbers stay in the list with `status: released`, so this is the billing history of every number you have owned. Use `nextBillingAt` to see when each active number renews and `charges` to reconcile setup and rental debits.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().listPurchases();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.numbers.releaseNumber(e164) -> ReleaseNumberResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a number you bought through Vobiz and removes it from your account. The number stops sending and receiving messages immediately, and monthly rental stops. The setup fee and the current month are not refunded, and a released number cannot be restored. The call has no request body and returns the purchase with `status: released`. Run it only with your own credentials once you are sure you no longer need the number.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().numbers().releaseNumber(
+    "+14155550100",
+    ReleaseNumberRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**e164:** `String` — The number to release, in E.164 format, for example `+14155550100`. In raw HTTP requests, URL-encode the `+` as `%2B`; the SDKs encode it for you. A value that is not an E.164 number returns `400`, and a number that is not on your account returns `404`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Coverage
+<details><summary><code>client.sms.coverage.listCoverage() -> CoverageList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one summary row per destination country, sorted by country name: the sender types it accepts, whether sender registration is required, two-way support, opt-out rules and whether a sending window applies. Use it to plan where to send and which sender to use before you buy numbers or register. Filters combine, so `region` plus `twoWay=true` returns only two-way countries in that region. For the full record of one country, call `GET /coverage/{country}`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().coverage().listCoverage(
+    ListCoverageRequest
+        .builder()
+        .q("united")
+        .region("Northern America")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**q:** `Optional<String>` — Search text, case-insensitive. Matches a substring of the country name (`united`), an exact ISO 3166-1 alpha-2 code (`GB`) or the start of the dial code (`44` or `+44`); spaces and a leading `+` are ignored.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**region:** `Optional<String>` — Exact region name, case-insensitive, for example `Northern America`, `Western Europe` or `South-central Asia`. Partial names match nothing; read the `region` values from an unfiltered list to see the full set.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**twoWay:** `Optional<Boolean>` — `true` returns only countries where recipients can reply; `false` returns the rest, including countries where two-way support is unknown. Also accepts `1`/`0` and `t`/`f`; any other value returns `400` with `twoWay must be true or false`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**registrationRequired:** `Optional<Boolean>` — `true` returns countries that require sender registration for local or international traffic; `false` returns countries that require neither. Accepts the same values as `twoWay`; anything else returns `400` with `registrationRequired must be true or false`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.coverage.getCoverage(country) -> CoverageDetail</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the full coverage record for one country: accepted sender types, registration requirements and lead time, link rules, prohibited topics, the permitted sending window and free-text market notes. Read it before your first send to a new country so your sender, content and send times match the local rules. An unknown code returns `404` with `country not found`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().coverage().getCoverage(
+    "US",
+    GetCoverageRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**country:** `String` — ISO 3166-1 alpha-2 code of the destination country, for example `US`, `GB` or `IN`. Case-insensitive. Three-letter codes and dial codes return `404`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Conversations
+<details><summary><code>client.sms.conversations.listConversations() -> List&amp;lt;Conversation&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns your conversations, most recently active first (ordered by `lastMessageAt`). A conversation is the thread between one of your numbers and one contact on one channel, and Vobiz creates it with the first message in either direction. The response is a bare JSON array, `[]` when you have none. Page with `limit` and `offset`; when a page returns fewer items than `limit`, you have reached the end.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().conversations().listConversations(
+    ListConversationsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of conversations to return, from `1` to `100`. Defaults to `20`; a value outside that range also returns `20`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of conversations to skip before the page starts, `0` or greater. Defaults to `0`. Add the page size to it to fetch the next page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.conversations.unreadCount() -> UnreadCount</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the total of `unreadCount` across all your conversations. Use it for an inbox badge, then call `GET /conversations` to see which threads are unread. The total drops when you mark a conversation read with `POST /conversations/{id}/read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().conversations().unreadCount();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.conversations.getConversation(id) -> Conversation</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one conversation with its participants, channel and counters. Use it to refresh a thread's `unreadCount` or `lastMessageAt` after a new message arrives. To read the messages themselves, call `GET /conversations/{id}/messages`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().conversations().getConversation(
+    "c7d1e9a3-2b4f-4a6c-8d5e-1f3a9b7c2e04",
+    GetConversationRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The conversation `id` (UUID), from `GET /conversations` or the `conversationId` on any message.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.conversations.listConversationMessages(id) -> List&amp;lt;Message&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the messages in one conversation, in both directions, newest first. Use it to render a chat thread: reverse the page to show it oldest to newest. The response is a bare JSON array of message objects without `statusHistory`; call `GET /messages/{id}` for one message's history. Page with `limit` and `offset`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().conversations().listConversationMessages(
+    "c7d1e9a3-2b4f-4a6c-8d5e-1f3a9b7c2e04",
+    ListConversationMessagesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The conversation `id` (UUID), from `GET /conversations` or the `conversationId` on any message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of messages to return, from `1` to `100`. Defaults to `50`; a value outside that range also returns `50`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of messages to skip before the page starts, `0` or greater. Defaults to `0`. Add the page size to it to load older messages.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.conversations.markConversationRead(id) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Marks a conversation as read: it sets `unreadCount` to `0` and `lastReadAt` to the current time. Call it when a user opens the thread in your inbox. It takes no request body, and calling it on a thread that is already read is harmless. The account-wide total from `GET /conversations/unread-count` drops by the thread's previous `unreadCount`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().conversations().markConversationRead(
+    "c7d1e9a3-2b4f-4a6c-8d5e-1f3a9b7c2e04",
+    MarkConversationReadRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The conversation `id` (UUID) to mark as read.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Opt-outs
+<details><summary><code>client.sms.optOuts.listOptOuts() -> Optional&amp;lt;List&amp;lt;OptOut&amp;gt;&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the numbers on your opt-out list, newest first, including entries created from STOP, START and HELP keyword replies and the ones you added. Pass both `limit` and `offset` on every call: the response is a bare JSON array, and it is `null` when the page has no records (including when `limit` is missing). Page by increasing `offset` until a page returns fewer items than `limit` or `null`. To check a single number, use `GET /opt-outs/{phoneNumber}` instead.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().optOuts().listOptOuts(
+    ListOptOutsRequest
+        .builder()
+        .limit(1)
+        .offset(1)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `Integer` — Required. Maximum number of opt-outs to return, `1` or greater. Without it the response is `null`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Integer` — Required. Number of records to skip before the page starts. Pass `0` for the first page, then add `limit` for each following page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.optOuts.createOptOut(request) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds a phone number to your opt-out list for one channel, so Vobiz stops messages to it. After this, `POST /messages` to that number on that channel returns `422` and broadcasts skip it. An `sms` opt-out also blocks `mms`. Use it to record consent withdrawn outside a keyword reply, for example on a call or a web form. Creating the same number and channel again updates the stored `reason` instead of adding a second record.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().optOuts().createOptOut(
+    CreateOptOutRequest
+        .builder()
+        .phoneNumber("+14155550123")
+        .channel("sms")
+        .reason("customer request")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**phoneNumber:** `String` — Required. The phone number to block, in E.164 format, for example `+14155550123`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<String>` — Channel to block: `sms`, `mms` or `rcs`. Defaults to `sms`. An `sms` opt-out also blocks `mms`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reason:** `Optional<String>` — Free-text note stored on the record, for example `customer request`. Defaults to `manual`. Repeating the request for the same number and channel replaces it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.optOuts.checkOptOut(phoneNumber) -> OptOutCheck</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Tells you whether a phone number is on your opt-out list for a channel. Call it before a send to skip a blocked contact instead of handling a `422` from `POST /messages`. The response is always `200` with `optedOut` set to `true` or `false`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().optOuts().checkOptOut(
+    "+14155550123",
+    CheckOptOutRequest
+        .builder()
+        .channel("sms")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**phoneNumber:** `String` — The number in E.164 format, for example `+14155550123`. In raw HTTP requests, URL-encode the `+` as `%2B` (`/opt-outs/%2B14155550123`); the SDKs encode it for you.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<String>` — Channel to check: `sms`, `mms` or `rcs`. Defaults to `sms`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.optOuts.deleteOptOut(phoneNumber) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes a phone number from your opt-out list for one channel, so you can message it again on that channel. Do this only after the contact has given consent again, for example after they reply `START`. The response is `200` whether or not a record existed, so it is safe to retry. Removing an opt-out on one channel leaves entries on other channels in place; delete each one separately.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().optOuts().deleteOptOut(
+    "+14155550123",
+    DeleteOptOutRequest
+        .builder()
+        .channel("sms")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**phoneNumber:** `String` — The number in E.164 format, for example `+14155550123`. In raw HTTP requests, URL-encode the `+` as `%2B` (`/opt-outs/%2B14155550123`); the SDKs encode it for you.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channel:** `Optional<String>` — Channel to remove the opt-out from: `sms`, `mms` or `rcs`. Defaults to `sms`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Webhooks
+<details><summary><code>client.sms.webhooks.listWebhooks() -> Optional&amp;lt;List&amp;lt;WebhookSubscription&amp;gt;&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns all of your webhook subscriptions, newest first, as a bare JSON array. The body is `null` rather than `[]` when you have none, so treat `null` as an empty list. The response includes each subscription's `secret`, so keep it out of logs and client-side code.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().webhooks().listWebhooks();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.webhooks.createWebhook(request) -> WebhookSubscription</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Registers an HTTPS endpoint that receives the events you subscribe to as signed `POST` requests. Only `url` is required; omit `events` to subscribe to `message.received`, `message.delivered` and `message.failed`. Every delivery carries `X-Webhook-ID`, `X-Webhook-Event` and `X-Webhook-Signature`, a lower-case hex HMAC-SHA256 of the raw body keyed with your `secret`. The subscription is active as soon as it is created; see the Webhooks guide for the payload envelope and a verification example.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().webhooks().createWebhook(
+    CreateWebhookRequest
+        .builder()
+        .url("https://example.com/vobiz/webhooks")
+        .secret("YOUR_WEBHOOK_SECRET")
+        .events(
+            Optional.of(
+                Arrays.asList(WebhookEvent.MESSAGE_RECEIVED, WebhookEvent.MESSAGE_DELIVERED, WebhookEvent.MESSAGE_FAILED)
+            )
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**url:** `String` — The HTTPS URL that receives `POST` deliveries, for example `https://example.com/vobiz/webhooks`. Required; an empty or missing value returns `400` with `url is required`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secret:** `Optional<String>` — Shared secret used to compute `X-Webhook-Signature` on every delivery. Choose a long random value and store it on your server; if you omit it the subscription is created with an empty secret.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Optional<List<WebhookEvent>>` — Event names to deliver to this URL, matched exactly. Defaults to `message.received`, `message.delivered` and `message.failed` when you omit it or send an empty array.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.webhooks.getWebhook(id) -> WebhookSubscription</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one webhook subscription with its URL, events, `active` flag and signing secret. Use it to confirm the result of an update, since `PUT /webhooks/{id}` returns only `{"status":"ok"}`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().webhooks().getWebhook(
+    "2a4c6e8f-1b3d-4f5a-8c7e-9d0b2f4a6c8e",
+    GetWebhookRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The subscription `id` (UUID) returned when you created it or by `GET /webhooks`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.webhooks.updateWebhook(id, request) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes any subset of `url`, `secret`, `events` and `active`. Fields you omit keep their current value; a field you send, including an empty string, replaces it. Set `active` to `false` to pause deliveries without losing the subscription, and back to `true` to resume. The response is `{"status":"ok"}`, so call `GET /webhooks/{id}` to read the updated subscription.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().webhooks().updateWebhook(
+    "2a4c6e8f-1b3d-4f5a-8c7e-9d0b2f4a6c8e",
+    UpdateWebhookRequest
+        .builder()
+        .events(
+            Optional.of(
+                Arrays.asList(WebhookEvent.MESSAGE_DELIVERED, WebhookEvent.MESSAGE_FAILED)
+            )
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The subscription `id` (UUID) to change.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**url:** `Optional<String>` — New HTTPS URL for deliveries. Replaces the current URL as sent, so always send a full valid URL.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**secret:** `Optional<String>` — New signing secret for `X-Webhook-Signature`. Deliveries are signed with the new value from this point, so update your verifier at the same time.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**events:** `Optional<List<WebhookEvent>>` — New list of event names to deliver, matched exactly. Replaces the whole list; it is not merged with the current events.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**active:** `Optional<Boolean>` — `false` pauses deliveries and keeps the subscription; `true` resumes them.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.webhooks.deleteWebhook(id) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes the subscription and stops all deliveries to its URL. The response is `200` with `{"status":"ok"}`. To stop deliveries temporarily and keep the configuration, set `active` to `false` with `PUT /webhooks/{id}` instead.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().webhooks().deleteWebhook(
+    "2a4c6e8f-1b3d-4f5a-8c7e-9d0b2f4a6c8e",
+    DeleteWebhookRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The subscription `id` (UUID) to delete.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Broadcasts
+<details><summary><code>client.sms.broadcasts.listBroadcasts() -> BroadcastList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the broadcasts on your account, newest first, each with freshly counted `stats`. The response wraps the page in `broadcasts` and gives the account-wide count in `total`, so you can page with `limit` and `offset` until `offset` reaches `total`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().listBroadcasts(
+    ListBroadcastsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of broadcasts to return, from 1 to 500. Defaults to 50 when you omit it or pass `0`. A value above 500 returns `400` with `limit must be between 1 and 500`, and a non-integer returns `400` with `limit must be an integer`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of broadcasts to skip before the page starts, for paging through results with `limit`. Defaults to `0`. A negative value returns `400` with `offset must be >= 0`, and a non-integer returns `400` with `offset must be an integer`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.createBroadcast(request) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a broadcast in `draft` status with zero `stats` and no recipients. Only `name` and `from` are required; `channel` defaults to `sms` and `ratePerSecond` to 5. Nothing is sent when you create a broadcast. Next, upload recipients with `POST /broadcasts/{id}/recipients`, check the rendered text with `GET /broadcasts/{id}/preview`, then start sending with `POST /broadcasts/{id}/launch`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().createBroadcast(
+    BroadcastInput
+        .builder()
+        .name("October pricing update")
+        .from("+14155550100")
+        .template("Hi {{name}}, your refund of {{amount}} is on its way.")
+        .ratePerSecond(5)
+        .tag("pricing-oct")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.getBroadcast(id) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one broadcast with its configuration, current `status` and freshly counted `stats`. Poll it while a broadcast runs to follow progress, or subscribe to the `broadcast.updated` WebSocket event. For per-recipient results, use `GET /broadcasts/{id}/recipients` or `GET /broadcasts/{id}/export`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().getBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    GetBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.updateBroadcast(id, request) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes a `draft` broadcast. Send only the fields you want to change; fields you leave out, or send as `null`, keep their value, except `scheduledAt`, where `null` or `""` clears a scheduled start. The same validation as create applies, so `name` and `from` cannot be set to an empty string. A broadcast in any other status returns `409` with `cannot edit a broadcast that is <status>`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().updateBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    UpdateBroadcastRequest
+        .builder()
+        .body(
+            BroadcastUpdateInput
+                .builder()
+                .template("Hi {{name}}, your refund of {{amount}} has been issued.")
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `BroadcastUpdateInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.deleteBroadcast(id)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently removes a `draft` or `cancelled` broadcast together with its recipient list and returns `204` with no body. Any other status returns `409` with `cannot delete a broadcast that is <status>`, so cancel a scheduled, running or paused broadcast first. Completed broadcasts are kept as your sending record.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().deleteBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    DeleteBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.listRecipients(id) -> BroadcastRecipientList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the broadcast's recipients in upload order, each with its template `variables` and per-recipient send state. Filter by `status` to find failures, opted-out numbers or rows still waiting to send. The response gives the page in `recipients` and the count matching your filter in `total`. For a downloadable file of the same data, use `GET /broadcasts/{id}/export`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().listRecipients(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    ListRecipientsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `Optional<ListRecipientsRequestStatus>` — Return only recipients in this state, matched case-insensitively. `pending` waits to send, `sending` is in progress, `sent` and `delivered` track the message, `failed` has an `errorCode`, `opted_out` was excluded because the number opted out, and `skipped` was still pending when the broadcast was cancelled. Omit it to return every recipient; any other value returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of recipients to return, from 1 to 500. Defaults to 50 when you omit it or pass `0`. A value above 500 returns `400` with `limit must be between 1 and 500`, and a non-integer returns `400` with `limit must be an integer`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of recipients to skip before the page starts, for paging through results with `limit`. Defaults to `0`. A negative value returns `400` with `offset must be >= 0`, and a non-integer returns `400` with `offset must be an integer`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.uploadRecipients(id, request) -> UploadResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets the recipient list of a `draft` broadcast; each upload replaces the previous list. Send `multipart/form-data` with a `.csv` or `.xlsx` `file` (10 MB maximum) to use template variables from extra columns, or JSON with a `numbers` array for a plain list. Numbers without a country code are normalised to E.164 with `defaultCountry` (default `US`). Duplicates are dropped, invalid rows are reported in `invalid`, and numbers that opted out of SMS from you are kept with status `opted_out` and never sent. A broadcast can hold up to 10,000 recipients; a larger list returns `422`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().uploadRecipients(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    UploadRecipientsJson
+        .builder()
+        .numbers(
+            Arrays.asList("+14155550123", "+14155550124", "415 555 0125")
+        )
+        .defaultCountry(UploadRecipientsJsonDefaultCountry.US)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**numbers:** `List<String>` — Phone numbers, one per recipient, up to 10,000. Numbers without a country code are normalised with `defaultCountry`. An empty array clears the list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**defaultCountry:** `Optional<UploadRecipientsJsonDefaultCountry>` — ISO 3166-1 alpha-2 country code, matched case-insensitively, used to normalise numbers that have no country code. Defaults to `US`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.previewBroadcast(id) -> BroadcastPreview</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Renders the template for the first pending recipients so you can check personalisation, encoding and segment counts before you launch. Nothing is sent and nothing is charged. `missingVariables` lists placeholders that have no matching upload column; they render as empty text, so fix the template or re-upload before launching. `estimatedSegments` totals the segments across every pending recipient, not only the samples shown.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().previewBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    PreviewBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Number of pending recipients to render in `samples`, from 1 to 50. Defaults to 5 when you omit it or pass `0`. A value above 50 returns `400` with `limit must be between 1 and 50`, and a non-integer returns `400` with `limit must be an integer`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.exportBroadcast(id) -> String</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Downloads every recipient with its send result as a CSV file (`text/csv`), named `broadcast-<id>.csv`. The columns are `row`, `to`, `status`, `message_id`, `error_code`, `error_message` and `sent_at`, followed by one column per column of your upload. Text cells that start with `=`, `+`, `-`, `@`, a tab or a carriage return are prefixed with `'` so they open safely in spreadsheet applications. You can export a broadcast in any status, including a draft, to check the parsed list.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().exportBroadcast(
+    "id",
+    ExportBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.launchBroadcast(id) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts sending. This sends real SMS to every `pending` recipient and charges your account per segment, so call it only with your own credentials on a list you have consent to message. Only a `draft` can be launched; it moves to `running`, or to `scheduled` when `scheduledAt` is in the future. Launch returns `422` when the template is empty, when no recipient is pending, or when a phone-number `from` is not an SMS number on your account. Each recipient is sent like `POST /messages` with the broadcast's `tag` and DLT IDs and the idempotency key `broadcast:<broadcastId>:<recipientId>`, so no recipient is messaged twice.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().launchBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    LaunchBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.pauseBroadcast(id) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pauses a `running` broadcast. Sending stops after the messages already in flight, and pending recipients stay `pending` until you resume or cancel. Any other status returns `409` with `cannot pause a broadcast that is <status>`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().pauseBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    PauseBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.resumeBroadcast(id) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Continues sending to the pending recipients of a `paused` broadcast and moves it back to `running`. This sends real messages and charges your account per segment. It also resumes a broadcast paused with `pauseReason` `insufficient_balance` once you have topped up. Any other status returns `409` with `cannot resume a broadcast that is <status>`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().resumeBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    ResumeBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.broadcasts.cancelBroadcast(id) -> Broadcast</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops a broadcast for good and sets `completedAt`. You can cancel from `draft`, `scheduled`, `running` or `paused`; a `completed`, `failed` or already `cancelled` broadcast returns `409`. Pending recipients become `skipped`, and messages already sent are unaffected. A cancelled broadcast cannot be resumed or edited, but it can be deleted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().broadcasts().cancelBroadcast(
+    "3f8d2a6e-5b1c-4e7f-a9d0-2c4b6e8f1a35",
+    CancelBroadcastRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The broadcast's `id` (UUID), as returned by `POST /broadcasts` or `GET /broadcasts`. An id that is not a UUID, or that belongs to another account, returns `404` with `broadcast not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## RCS Senders
+<details><summary><code>client.sms.rcsSenders.listSenders() -> List&amp;lt;Sender&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the RCS senders on your account as a bare JSON array, without a total count. Page through them with `limit` and `offset`; an empty array means you have reached the end. `status` here is the last stored value, so call `GET /senders/{id}/status` for the latest state.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().listSenders(
+    ListSendersRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of items to return, from 1 to 100. Defaults to 20; a value outside that range or a non-integer is replaced by the default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of items to skip before the page starts. Defaults to `0`. Pass a whole number of 0 or more.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.createSender(request) -> Sender</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Registers a new RCS sender (agent) with the RCS platform and stores it on your account with status `pending`. `provider` and `senderName` are required; the profile fields are reviewed by the RCS platform and the carriers before the sender can reach real users. Poll `GET /senders/{id}/status` until the platform reports it as launched, then send with its `senderName` as `from` and `channel: rcs` on `POST /messages`. A rejected request returns `400` with the platform's reason in `error`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().createSender(
+    CreateSenderRequest
+        .builder()
+        .provider("YOUR_ROUTING_IDENTIFIER")
+        .senderName("example-brand")
+        .displayName("Example Brand")
+        .description("Order updates and support for Example Brand customers.")
+        .billingCategory("CONVERSATIONAL")
+        .useCase("TRANSACTIONAL")
+        .hostingRegion("NORTH_AMERICA")
+        .brand(
+            SenderBrand
+                .builder()
+                .brandName("Example Brand")
+                .build()
+        )
+        .color("#1A73E8")
+        .phones(
+            Optional.of(
+                Arrays.asList(
+                    SenderPhone
+                        .builder()
+                        .phoneNumber("+14155550100")
+                        .label("Support")
+                        .build()
+                )
+            )
+        )
+        .emails(
+            Optional.of(
+                Arrays.asList(
+                    SenderEmail
+                        .builder()
+                        .address("support@example.com")
+                        .label("Support")
+                        .build()
+                )
+            )
+        )
+        .websites(
+            Optional.of(
+                Arrays.asList(
+                    SenderWebsite
+                        .builder()
+                        .url("https://example.com")
+                        .label("Website")
+                        .build()
+                )
+            )
+        )
+        .bannerUrl("https://example.com/rcs/banner.jpg")
+        .logoUrl("https://example.com/rcs/logo.png")
+        .privacy(
+            SenderLink
+                .builder()
+                .url("https://example.com/privacy")
+                .label("Privacy policy")
+                .build()
+        )
+        .termsOfService(
+            SenderLink
+                .builder()
+                .url("https://example.com/terms")
+                .label("Terms of service")
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**provider:** `String` — The routing identifier your account was provisioned with for RCS. Contact support if you are unsure which value to use; an unknown value returns `400`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**senderName:** `String` — Unique technical name of the sender on the RCS platform. You pass it as `from` when you send RCS, and it cannot be changed later.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**displayName:** `Optional<String>` — The brand name recipients see at the top of the conversation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Short description of your business or the sender's purpose, shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingCategory:** `Optional<String>` — How the RCS platform bills conversations from this sender. Values accepted by the platform include `CONVERSATIONAL` and `NON_CONVERSATIONAL`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**useCase:** `Optional<String>` — The kind of traffic the sender carries, reviewed by the RCS platform. Values accepted by the platform include `OTP`, `TRANSACTIONAL`, `PROMOTIONAL` and `MULTI_USE`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hostingRegion:** `Optional<String>` — The region where the RCS platform hosts the sender. Values accepted by the platform include `NORTH_AMERICA`, `EUROPE` and `ASIA_PACIFIC`. Cannot be changed later.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**brand:** `Optional<SenderBrand>` — The brand the sender represents.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**color:** `Optional<String>` — Accent colour for the sender's buttons and header, as a hex code such as `#1A73E8`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phones:** `Optional<List<SenderPhone>>` — Contact phone numbers shown on the sender's info page, each with a label.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emails:** `Optional<List<SenderEmail>>` — Contact email addresses shown on the sender's info page, each with a label.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**websites:** `Optional<List<SenderWebsite>>` — Websites shown on the sender's info page, each with a label.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bannerUrl:** `Optional<String>` — Publicly reachable HTTPS URL of the banner image shown at the top of the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**logoUrl:** `Optional<String>` — Publicly reachable HTTPS URL of the logo shown next to every message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**privacy:** `Optional<SenderLink>` — Link to your privacy policy, shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**termsOfService:** `Optional<SenderLink>` — Link to your terms of service, shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `Optional<SenderPlatform>` — Identifiers the RCS platform has already assigned to your agent, if you have any.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.getSender(id) -> Sender</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one RCS sender as stored on your account, including its full profile. `status` is the last value stored on your account; call `GET /senders/{id}/status` to refresh it from the RCS platform. An unknown id returns `404`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().getSender(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    GetSenderRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The sender's `id` (UUID), as returned by `POST /senders` or `GET /senders`. An unknown id returns `sender not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.updateSender(id, request) -> Sender</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates the sender's profile on the RCS platform and then on your account, and returns the updated sender. Send only the fields you want to change; fields you leave out keep their value. `provider`, `senderName` and `hostingRegion` are fixed after creation. Every failure, including an unknown id, returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().updateSender(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    UpdateSenderRequest
+        .builder()
+        .displayName("Example Brand Support")
+        .description("Order updates, returns and support for Example Brand customers.")
+        .websites(
+            Optional.of(
+                Arrays.asList(
+                    SenderWebsite
+                        .builder()
+                        .url("https://example.com/help")
+                        .label("Help centre")
+                        .build()
+                )
+            )
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The sender's `id` (UUID), as returned by `POST /senders` or `GET /senders`. An unknown id returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**displayName:** `Optional<String>` — The brand name recipients see at the top of the conversation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `Optional<String>` — Short description of your business or the sender's purpose, shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**billingCategory:** `Optional<String>` — How the RCS platform bills conversations from this sender, for example `CONVERSATIONAL` or `NON_CONVERSATIONAL`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**useCase:** `Optional<String>` — The kind of traffic the sender carries, for example `OTP`, `TRANSACTIONAL`, `PROMOTIONAL` or `MULTI_USE`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**brand:** `Optional<SenderBrand>` — The brand the sender represents.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**color:** `Optional<String>` — Accent colour for the sender's buttons and header, as a hex code such as `#1A73E8`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**phones:** `Optional<List<SenderPhone>>` — Contact phone numbers shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emails:** `Optional<List<SenderEmail>>` — Contact email addresses shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**websites:** `Optional<List<SenderWebsite>>` — Websites shown on the sender's info page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bannerUrl:** `Optional<String>` — Publicly reachable HTTPS URL of the banner image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**logoUrl:** `Optional<String>` — Publicly reachable HTTPS URL of the logo image.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**privacy:** `Optional<SenderLink>` — Link to your privacy policy.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**termsOfService:** `Optional<SenderLink>` — Link to your terms of service.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `Optional<SenderPlatform>` — Identifiers the RCS platform has assigned to your agent.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.getSenderStatus(id) -> Sender</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks the RCS platform for the sender's current launch status, stores it on the sender and returns the full sender. Poll it after `POST /senders` or a profile update until `status` shows the sender is live, then start sending. Every failure, including an unknown id, returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().getSenderStatus(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    GetSenderStatusRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The sender's `id` (UUID), as returned by `POST /senders` or `GET /senders`. An unknown id returns `sender not found`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.listTemplates(senderId) -> List&amp;lt;Template&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the templates registered on one RCS sender as a bare JSON array, without a total count. Page through them with `limit` and `offset`. `status` is the last stored value; refresh one template with its `/status` endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().listTemplates(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    ListTemplatesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**senderId:** `String` — The `id` (UUID) of the RCS sender that owns the templates. An unknown sender returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `Optional<Integer>` — Maximum number of items to return, from 1 to 100. Defaults to 20; a value outside that range or a non-integer is replaced by the default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `Optional<Integer>` — Number of items to skip before the page starts. Defaults to `0`. Pass a whole number of 0 or more.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.createTemplate(senderId, request) -> Template</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Registers a message template on an RCS sender with the RCS platform and returns it with status `pending`. `templateName`, `type` and `content` are passed to the platform unchanged, so use the template types and content shapes the RCS platform defines. Call `GET /senders/{senderId}/templates/{templateName}/status` to follow approval. An unknown sender or a platform rejection returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().createTemplate(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    CreateTemplateRequest
+        .builder()
+        .templateName("order-shipped")
+        .type("TEXT")
+        .content(
+            new HashMap<String, Object>() {{
+                put("text", "Your order {{orderId}} has shipped and arrives on {{eta}}.");
+            }}
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**senderId:** `String` — The `id` (UUID) of the RCS sender that owns the templates. An unknown sender returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateName:** `String` — Unique name for the template on this sender. You use it in the path of every template endpoint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `String` — Template type as defined by the RCS platform. It decides which `content` shape the platform expects.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**content:** `Map<String, Object>` — Template content as a JSON object in the shape the RCS platform defines for the chosen `type`. Stored and returned exactly as you submit it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.getTemplate(senderId, templateName) -> Template</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one template as stored on your account, including the `content` you submitted. For the latest approval state from the RCS platform, call `GET /senders/{senderId}/templates/{templateName}/status`. An unknown sender or template returns `404`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().getTemplate(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    "appointment_reminder",
+    GetTemplateRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**senderId:** `String` — The `id` (UUID) of the RCS sender that owns the templates. An unknown sender returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateName:** `String` — The template's `templateName`, exactly as you set it when you created the template on this sender.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.deleteTemplate(senderId, templateName)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes the template from the RCS platform and from your account, and returns `204` with no body. You cannot send with the template afterwards. An unknown sender or template returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().deleteTemplate(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    "appointment_reminder",
+    DeleteTemplateRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**senderId:** `String` — The `id` (UUID) of the RCS sender that owns the templates. An unknown sender returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateName:** `String` — The template's `templateName`, exactly as you set it when you created the template on this sender.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.rcsSenders.getTemplateStatus(senderId, templateName) -> Template</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks the RCS platform for the template's current approval status, stores it on the template and returns the full template. Poll it after `POST /senders/{senderId}/templates` until the template is approved. Every failure, including an unknown sender or template, returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().rcsSenders().getTemplateStatus(
+    "5d7f9b1c-3e5a-4c7e-9f1b-3d5f7a9c1e3b",
+    "appointment_reminder",
+    GetTemplateStatusRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**senderId:** `String` — The `id` (UUID) of the RCS sender that owns the templates. An unknown sender returns `sender not found`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateName:** `String` — The template's `templateName`, exactly as you set it when you created the template on this sender.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Brands
+<details><summary><code>client.sms.brands.listBrands() -> List&amp;lt;Brand&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns every brand on your account as a bare JSON array, newest first. The list is not paginated and reads the records stored on your account without contacting the registry; deleted brands are left out. Call `GET /10dlc/brands/{id}` for the latest registry state of one brand.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().listBrands();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.createBrand(request) -> Brand</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a brand, the business identity that US carriers associate with your 10DLC traffic, and mirrors it to the US 10DLC registry in `DRAFT` stage. `name` and `brandType` are required; send every other field your business has, because the registry reviews them when you register. Nothing is submitted for review until you call `POST /10dlc/brands/{id}/register`. Pass a `referenceId` so that a retried request (for example after a `502`) reconciles to the same brand instead of creating a second one. Next, register the brand, then create a campaign under it with `POST /10dlc/campaigns`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().createBrand(
+    CreateBrandRequest
+        .builder()
+        .name("Example Corp")
+        .brandType(CreateBrandRequestBrandType.TENDLC_PRIVATE_COMPANY)
+        .referenceId("brand-example-corp-01")
+        .legalName("Example Corporation Inc.")
+        .website("https://example.com")
+        .supportEmail("support@example.com")
+        .supportPhone("+14155550100")
+        .vertical("TECHNOLOGY")
+        .taxId("12-3456789")
+        .taxIdIssuingCountry("US")
+        .countryCode("US")
+        .address(
+            BrandAddress
+                .builder()
+                .street("100 Example Street")
+                .city("San Francisco")
+                .state("CA")
+                .zipCode("94105")
+                .build()
+        )
+        .businessContactFirstName("Alex")
+        .businessContactLastName("Doe")
+        .businessContactEmail("alex.doe@example.com")
+        .legalEntityType("PRIVATE_COMPANY")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `CreateBrandRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.getBrand(id) -> Brand</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one brand after refreshing its `stage`, `registrationStatus`, `brandIdentityStatus` and `rejectionReasons` from the US 10DLC registry. The refresh is best-effort: if the registry is slow to answer, you get the stored record and `lastSyncedAt` tells you how fresh it is. Poll this endpoint (or listen for the `10dlc.brand.updated` WebSocket event) after registering to follow the review.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().getBrand(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    GetBrandRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.updateBrand(id, request) -> Brand</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Replaces the brand with the body you send and pushes the change to the US 10DLC registry. This is a full replacement, not a patch: send the same shape as create, including `name` and `brandType`, and any field you leave out is cleared. `referenceId` is ignored on update. Use it to correct a brand before registering it, or to fix the points listed in `rejectionReasons` before resubmitting.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().updateBrand(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    UpdateBrandRequest
+        .builder()
+        .body(
+            CreateBrandRequest
+                .builder()
+                .name("Example Corp")
+                .brandType(CreateBrandRequestBrandType.TENDLC_PRIVATE_COMPANY)
+                .legalName("Example Corporation Inc.")
+                .website("https://example.com")
+                .supportEmail("help@example.com")
+                .supportPhone("+14155550100")
+                .vertical("TECHNOLOGY")
+                .taxId("12-3456789")
+                .taxIdIssuingCountry("US")
+                .countryCode("US")
+                .address(
+                    BrandAddress
+                        .builder()
+                        .street("100 Example Street")
+                        .city("San Francisco")
+                        .state("CA")
+                        .zipCode("94105")
+                        .build()
+                )
+                .businessContactFirstName("Alex")
+                .businessContactLastName("Doe")
+                .businessContactEmail("alex.doe@example.com")
+                .legalEntityType("PRIVATE_COMPANY")
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `CreateBrandRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.deleteBrand(id)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the brand from your account and from the US 10DLC registry and returns `204` with no body. A brand that still owns campaigns returns `409` with `conflict: brand still has N campaign(s); delete them first`, so delete or deregister its campaigns first. Deletion cannot be undone; a new brand needs a new registration.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().deleteBrand(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    DeleteBrandRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.registerBrand(id) -> Brand</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Submits the brand to the US 10DLC registry for identity verification. The brand moves from `DRAFT` to `SUBMITTED` and `registrationStatus` starts tracking the registrar's decision (`PENDING`, then `ACTIVE` or `REJECTED`). The request has no body and returns the refreshed brand. Submit only when the brand details are final and you intend to register this business. Follow progress with `GET /10dlc/brands/{id}` or `GET /10dlc/brands/{id}/registrar-statuses`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().registerBrand(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    RegisterBrandRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.brandRegistrarStatuses(id) -> List&amp;lt;BrandRegistrarStatus&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the brand's state at each registrar that has reviewed it, read live from the US 10DLC registry. Each entry carries the registrar's `state` and, when the registrar reports them, the identity result, the authentication status and a rejection reason. An empty array means no registrar has recorded a state yet. Use it to see why a brand is pending or rejected.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().brandRegistrarStatuses(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    BrandRegistrarStatusesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.brandAuthVerification(id) -> BrandAuthRequested</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts the registry's brand authentication for a brand whose `brandType` is `TENDLC_PUBLIC_COMPANY`. The registry sends a two-factor verification request to the brand's `businessContactEmail`, and the brand shows `registrationStatus` `PENDING_2FA` until the contact completes it. The request has no body and returns `202` with `{"status":"requested"}`. Any other brand type returns `400` with `invalid request: brand authentication is only available for TENDLC_PUBLIC_COMPANY brands`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().brandAuthVerification(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    BrandAuthVerificationRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.resend2Fa(id) -> BrandAuthRequested</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks the registry to send the brand-authentication verification again to the brand's `businessContactEmail`. Use it when a `TENDLC_PUBLIC_COMPANY` brand is `PENDING_2FA` and the contact did not receive or let the first request expire. The request has no body and returns `202` with `{"status":"requested"}`. Any other brand type returns `400`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().resend2Fa(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    Resend2FaRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.vetBrand(id, request) -> Map&amp;lt;String, Object&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requests an external vet of a registered brand from the US 10DLC registry. A successful vet can raise the brand's trust tier and, with it, the throughput carriers grant its campaigns. `type` defaults to `STANDARD`; any value other than `STANDARD`, `ENHANCED` or `POLITICAL` returns `400`. Every call files a new vetting request, so send it only when you intend to. The response is the registry's vetting record, returned as received; list past vets with `GET /10dlc/brands/{id}/vets`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().vetBrand(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    BrandVetRequest
+        .builder()
+        .type(BrandVetRequestType.STANDARD)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type:** `Optional<BrandVetRequestType>` — Kind of vet to request: `STANDARD` (the default), `ENHANCED` (a deeper review) or `POLITICAL` (for political organisations). Case-insensitive; any other value returns `400` with `invalid request: type must be one of STANDARD, ENHANCED, POLITICAL`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.brands.listBrandVets(id) -> BrandVetList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the brand's vetting records from the US 10DLC registry, one page at a time. The body is `{"results": [...], "paging": {...}}`, where each result is a registry vetting record passed through as received. `page` must be 0 or more and `size` between 0 and 100; other values return `400` with `page must be >= 0 and size between 0 and 100`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().brands().listBrandVets(
+    "8e6c4a2f-0d9b-4b7a-a5c3-1e9f7d5b3a10",
+    ListBrandVetsRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Brand ID (UUID) returned by `POST /10dlc/brands`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `Optional<Integer>` — Zero-based page index. Defaults to `0`. Must be 0 or more; a negative value returns `400`. A value that is not an integer is treated as `0`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**size:** `Optional<Integer>` — Records per page, from 0 to 100. Defaults to `20`; `0` or a value that is not an integer also gives the default page size. A value above 100 returns `400`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Campaigns
+<details><summary><code>client.sms.campaigns.listCampaigns() -> List&amp;lt;Campaign&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns every 10DLC and toll-free campaign on your account as a bare JSON array, newest first. The list is not paginated and reads the records stored on your account without contacting the registry. Toll-free campaigns have `campaignType` `TOLL_FREE_UNIFIED_NUMBER` and no `brandId`. Call `GET /10dlc/campaigns/{id}` for the latest registry state of one campaign.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().listCampaigns();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.createCampaign(request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a 10DLC campaign, the messaging program you run under one of your brands, and mirrors it to the US 10DLC registry in `DRAFT` stage. `name` and `brandId` are required; `campaignType` defaults to `TEN_DIGIT_LONG_CODE`. Upload any `supportingDocuments` or `mmsSampleFiles` with `POST /10dlc/documents` first. Pass a `referenceId` so a retried request reconciles to the same campaign. Next, submit the campaign with `POST /10dlc/campaigns/{id}/register`; toll-free verification uses `POST /10dlc/campaigns/toll-free` instead.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().createCampaign(
+    CreateCampaignRequest
+        .builder()
+        .brandId("5f1c3a2e-7b4d-4e8f-9a0b-1c2d3e4f5a60")
+        .name("Example Corp account alerts")
+        .programSummary("Example Corp sends account and support alerts to customers who opted in on the sign-up form. Reply STOP to opt out, HELP for help.")
+        .confirmationMessage("Example Corp: You are subscribed to account alerts. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.")
+        .helpMessage("Example Corp: For help email support@example.com. Reply STOP to opt out.")
+        .stopMessage("Example Corp: You have been unsubscribed. Reply HELP for help.")
+        .customerCarePhone("+14155550100")
+        .customerCareEmail("support@example.com")
+        .termsAndConditionsUrl("https://example.com/terms")
+        .privacyPolicyUrl("https://example.com/privacy")
+        .exampleMessages(
+            Optional.of(
+                Arrays.asList("Example Corp: Your support ticket #48213 was updated. View it at https://example.com/support. Reply STOP to opt out.", "Example Corp: Your account balance is low. Add funds at https://example.com/wallet. Reply STOP to opt out.")
+            )
+        )
+        .useCases(
+            Optional.of(
+                Arrays.asList("ALERTS")
+            )
+        )
+        .messageTypes(
+            Optional.of(
+                Arrays.asList("SMS")
+            )
+        )
+        .optIns(
+            new HashMap<String, Object>() {{
+                put("web", new 
+                HashMap<String, Object>() {{put("url", "https://example.com/signup");
+                    put("callToAction", "By checking this box you agree to receive account alerts from Example Corp. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help.");
+                }});
+            }}
+        )
+        .lowVolume(true)
+        .embeddedLink(true)
+        .numbers(
+            Optional.of(
+                Arrays.asList("14155550100")
+            )
+        )
+        .referenceId("campaign-account-alerts-01")
+        .campaignType(CreateCampaignRequestCampaignType.TEN_DIGIT_LONG_CODE)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**referenceId:** `Optional<String>` — Your own idempotency reference. Repeating a create with the same value reconciles to the same campaign instead of creating a second one. Ignored on update.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**brandId:** `String` — Required. ID of the brand from `POST /10dlc/brands` that runs this campaign. A missing, unknown or non-UUID value returns `404` with `{"error":"brand not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignType:** `Optional<CreateCampaignRequestCampaignType>` — Kind of campaign. Defaults to `TEN_DIGIT_LONG_CODE`, the standard 10DLC campaign. Toll-free types return `400`; use `POST /10dlc/campaigns/toll-free` for those.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.createTollFreeCampaign(request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts toll-free verification for one or more toll-free numbers. The business details travel inside the request, so no brand is needed; only `name` is required, but the registry reviews every field you send. The campaign is created with `campaignType` `TOLL_FREE_UNIFIED_NUMBER` and no `brandId`. Pass a `referenceId` so a retried request reconciles to the same campaign, then submit it with `POST /10dlc/campaigns/{id}/register`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().createTollFreeCampaign(
+    TollFreeCampaignRequest
+        .builder()
+        .name("Example Corp toll-free notifications")
+        .referenceId("tollfree-notifications-01")
+        .privacyPolicyUrl("https://example.com/privacy")
+        .termsAndConditionsUrl("https://example.com/terms")
+        .messageVolume("TEN_THOUSAND")
+        .numbers(
+            Optional.of(
+                Arrays.asList("+18335550100")
+            )
+        )
+        .useCase("NOTIFICATIONS")
+        .programSummary("Example Corp sends account and support notifications to customers who opted in on the contact form. Reply STOP to opt out, HELP for help.")
+        .exampleMessage("Example Corp: Your account balance is low. Add funds at https://example.com/wallet. Reply STOP to opt out, HELP for help.")
+        .optIns(
+            new HashMap<String, Object>() {{
+                put("web", new 
+                HashMap<String, Object>() {{put("url", "https://example.com/contact");
+                    put("callToAction", "By checking this box you agree to receive account notifications from Example Corp. Reply STOP to opt out, HELP for help.");
+                }});
+            }}
+        )
+        .optInImageUrLs(
+            Optional.of(
+                Arrays.asList("https://example.com/opt-in-screenshot.png")
+            )
+        )
+        .countryCode("US")
+        .address(
+            BrandAddress
+                .builder()
+                .street("100 Example Street")
+                .city("San Francisco")
+                .state("CA")
+                .zipCode("94105")
+                .build()
+        )
+        .supportPhone("+14155550100")
+        .supportEmail("support@example.com")
+        .businessContactFirstName("Alex")
+        .businessContactLastName("Doe")
+        .legalName("Example Corporation Inc.")
+        .businessName("Example Corp")
+        .businessWebsite("https://example.com")
+        .customerCareEmail("support@example.com")
+        .taxId("12-3456789")
+        .taxIdIssuingCountry("US")
+        .legalEntityType("PRIVATE_COMPANY")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**referenceId:** `Optional<String>` — Your own idempotency reference. Repeating a create with the same value reconciles to the same campaign instead of creating a second one.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `String` — Name for the toll-free campaign, for your reference. Required (`400` with `invalid request: name is required` otherwise).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**privacyPolicyUrl:** `Optional<String>` — Public URL of your privacy policy.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**termsAndConditionsUrl:** `Optional<String>` — Public URL of the terms and conditions that cover the program.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**messageVolume:** `Optional<String>` — Expected monthly message volume. Values accepted by the US 10DLC registry: `HUNDRED`, `TEN_THOUSAND`, `TWO_HUNDRED_FIFTY_THOUSAND`, `SEVEN_HUNDRED_FIFTY_THOUSAND`, `FIVE_MILLION`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**numbers:** `Optional<List<String>>` — Toll-free numbers on your account to verify, in E.164 format (for example `+18885550100`).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**numberKeys:** `Optional<List<String>>` — Registry number keys of the numbers to verify, as an alternative to `numbers`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**useCase:** `Optional<String>` — Main use case of the program. Values accepted by the US 10DLC registry: `TWO_FACTOR_AUTH`, `NOTIFICATIONS`, `SYSTEM_ALERTS`, `APP_NOTIFICATIONS`, `BANKING`, `BOOKING_CONFIRMATIONS`, `CHATBOT`, `COURIER_SERVICES_DELIVERIES`, `EMERGENCY_ALERTS`, `EVENTS_PLANNING`, `FRAUD_ALERTS`, `GENERAL_MARKETING`, `HEALTHCARE`, `INSURANCE_SERVICES`, `LEGAL_SERVICES`, `MOTIVATIONAL_REMINDERS`, `POLITICAL`, `REAL_ESTATE_SERVICES`, `RELIGIOUS_SERVICES`, `REWARDS_PROGRAM`, `WEBINAR_REMINDERS`, `AUCTIONS`, `COVID_19_ALERTS`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**programSummary:** `Optional<String>` — Plain-language description of the program: what you send, to whom, how often and how recipients opt in.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**exampleMessage:** `Optional<String>` — A sample message exactly as you will send it, including your brand name and opt-out language.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**optIns:** `Optional<Map<String, Object>>` — How recipients give consent, as an object keyed by opt-in channel (for example `web` with `url` and `callToAction`). Passed to the registry as given.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**optInImageUrLs:** `Optional<List<String>>` — Public URLs of screenshots or images that show the opt-in flow to the reviewer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**additionalInformation:** `Optional<String>` — Anything else the reviewer should know about the program, in plain text.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**countryCode:** `Optional<String>` — ISO 3166-1 alpha-2 code of the country where the business is registered.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**address:** `Optional<BrandAddress>` — Postal address of the business as it appears on its registration records.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**supportPhone:** `Optional<String>` — Support phone number for the business, in E.164 format.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**supportEmail:** `Optional<String>` — Support email address for the business.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessContactFirstName:** `Optional<String>` — First name of the person the reviewer can contact about the business.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessContactLastName:** `Optional<String>` — Last name of the person the reviewer can contact about the business.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**legalName:** `Optional<String>` — Registered legal name of the business, exactly as it appears on tax records.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessDba:** `Optional<String>` — Trading name ("doing business as") when it differs from `legalName`. Note the casing `businessDBA` on this endpoint, unlike `businessDba` on brands.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessName:** `Optional<String>` — Business name customers know you by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessWebsite:** `Optional<String>` — Business website. It must be live and match the business.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerCareEmail:** `Optional<String>` — Customer care email address for the program.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxId:** `Optional<String>` — Tax identifier of the business, for example the US EIN.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**taxIdIssuingCountry:** `Optional<String>` — ISO 3166-1 alpha-2 code of the country that issued `taxId`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**legalEntityType:** `Optional<String>` — Legal form of the business. Values accepted by the US 10DLC registry: `PRIVATE_COMPANY`, `PUBLIC_COMPANY`, `NON_PROFIT`, `GOVERNMENT`, `SOLE_PROPRIETOR`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**businessRegistrationType:** `Optional<String>` — Type of registration number for a business outside the US. Values accepted by the US 10DLC registry: `VAT`, `CBN`, `PROVINCIAL_NUMBER`, `ABN`, `SIREN`, `NZBN`, `CIF`, `CNPJ`, `OTHER`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**campaignVerifyToken:** `Optional<String>` — Campaign Verify token for a US political program. Omit it for every other program.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priorityId:** `Optional<String>` — ID (UUID) of a priority option from `GET /10dlc/campaigns/priorities`. A value that is not a UUID returns `400`; omit it when the list is empty.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.campaignPriorities() -> List&amp;lt;PriorityOption&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the priority options available to your account at the US 10DLC registry, as a JSON array. Pass an option's `id` as `priorityId` when you create or register a toll-free campaign. An empty array means no priority options apply to your account, and you can omit `priorityId`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().campaignPriorities();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.getCampaign(id) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one campaign after refreshing its `stage` and review feedback (`rejectionReasons`) from the US 10DLC registry. If the registry is slow to answer, you get the stored record and `lastSyncedAt` tells you how fresh it is. Poll this endpoint (or listen for the `10dlc.campaign.updated` WebSocket event) after registering until `stage` settles at `REGISTERED` or `REJECTED`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().getCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    GetCampaignRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.updateCampaign(id, request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Replaces the editable fields of a 10DLC campaign and pushes the change to the US 10DLC registry. This is a full replacement: `name` is required and any field you leave out is cleared. `campaignType` and the brand stay as created, and `referenceId` is ignored. The registry accepts updates while the campaign is `DRAFT` or `REJECTED`. Toll-free campaigns return `400` on this endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().updateCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    UpdateCampaignRequest
+        .builder()
+        .name("Example Corp account alerts")
+        .programSummary("Example Corp sends account, billing and support alerts to customers who opted in on the sign-up form. Reply STOP to opt out, HELP for help.")
+        .confirmationMessage("Example Corp: You are subscribed to account alerts. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to opt out.")
+        .helpMessage("Example Corp: For help email support@example.com. Reply STOP to opt out.")
+        .stopMessage("Example Corp: You have been unsubscribed. Reply HELP for help.")
+        .customerCarePhone("+14155550100")
+        .customerCareEmail("support@example.com")
+        .termsAndConditionsUrl("https://example.com/terms")
+        .privacyPolicyUrl("https://example.com/privacy")
+        .exampleMessages(
+            Optional.of(
+                Arrays.asList("Example Corp: Your support ticket #48213 was updated. View it at https://example.com/support. Reply STOP to opt out.")
+            )
+        )
+        .useCases(
+            Optional.of(
+                Arrays.asList("ALERTS")
+            )
+        )
+        .messageTypes(
+            Optional.of(
+                Arrays.asList("SMS")
+            )
+        )
+        .optIns(
+            new HashMap<String, Object>() {{
+                put("web", new 
+                HashMap<String, Object>() {{put("url", "https://example.com/signup");
+                    put("callToAction", "By checking this box you agree to receive account alerts from Example Corp. Msg frequency varies. Msg & data rates may apply. Reply STOP to opt out, HELP for help.");
+                }});
+            }}
+        )
+        .lowVolume(true)
+        .embeddedLink(true)
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.deleteCampaign(id)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the campaign from your account and from the US 10DLC registry and returns `204` with no body. The registry accepts deletion while the campaign is `DRAFT`, `DEREGISTERED` or `REJECTED`; deregister a registered campaign with `POST /10dlc/campaigns/{id}/deregister` first. Delete all of a brand's campaigns before you delete the brand.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().deleteCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    DeleteCampaignRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.registerCampaign(id, request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Submits the campaign to the US 10DLC registry for review and returns the refreshed campaign. The `stage` moves out of `DRAFT`; poll `GET /10dlc/campaigns/{id}` until it settles at `REGISTERED` or `REJECTED`. The body is optional and carries a `priorityId` from `GET /10dlc/campaigns/priorities` for toll-free campaigns; a value that is not a UUID returns `400`. Submit only when the campaign details are final and you intend to run this program.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().registerCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    CampaignRegisterRequest
+        .builder()
+        .priorityId("2c9e4b7a-1d3f-4a5b-8c6d-0e9f8a7b6c5d")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priorityId:** `Optional<String>` — ID (UUID) of a priority option from `GET /10dlc/campaigns/priorities`, for toll-free campaigns. A value that is not a UUID returns `400` with `invalid request: priorityId must be a UUID`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.deregisterCampaign(id) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Withdraws a registered campaign from the US 10DLC registry and returns the campaign. Once deregistration completes, traffic on the campaign's numbers is no longer covered by this registration, so move the numbers to another registered campaign first if you keep sending. The request has no body. A deregistered campaign can then be deleted with `DELETE /10dlc/campaigns/{id}`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().deregisterCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    DeregisterCampaignRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.appealCampaign(id, request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks the US 10DLC registry to reconsider a `REJECTED` campaign and returns the campaign after the appeal is filed. Fix the campaign with `PUT /10dlc/campaigns/{id}` first, then explain what changed in `reason`, which is required (`400` with `invalid request: reason is required` otherwise). Follow the outcome with `GET /10dlc/campaigns/{id}`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().appealCampaign(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    CampaignAppealRequest
+        .builder()
+        .reason("Updated the program summary and opt-in call to action to match the brand's registered details.")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reason:** `String` — Required. Explains why the campaign should be reconsidered and what you changed; address every point in the campaign's `rejectionReasons`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.updateCampaignRegistration(id, request) -> Campaign</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks the US 10DLC registry to update the set of numbers covered by a registered campaign, without deregistering it. Provide `numbers`, `numberKeys`, or both; if both are empty the call returns `400` with `invalid request: numbers or numberKeys is required`. The response is the campaign; the `numbers` list stored on your account is left as it was. Use `POST` and `DELETE /10dlc/campaigns/{id}/numbers` for incremental changes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().updateCampaignRegistration(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    UpdateCampaignRegistrationRequest
+        .builder()
+        .body(
+            CampaignNumbersRequest
+                .builder()
+                .numbers(
+                    Optional.of(
+                        Arrays.asList("14155550100", "14155550101")
+                    )
+                )
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `CampaignNumbersRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.campaignNetworkStatuses(id) -> List&amp;lt;CampaignNetworkStatus&amp;gt;</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the campaign's status at each US carrier network, read live from the US 10DLC registry. Each entry names the network and its `state`, plus the message class, throughput and brand tier when the network reports them. Use it after the campaign reaches `REGISTERED` to see which networks have provisioned it and what throughput they grant.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().campaignNetworkStatuses(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    CampaignNetworkStatusesRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.listCampaignNumbers(id) -> CampaignNumberList</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the numbers attached to the campaign at the US 10DLC registry, as `{"numberPreviews": [...]}`. Each entry gives the number, its country and the registry `numberKey`, which you can pass in `numberKeys` on the number endpoints. Use it to confirm which numbers the registry associates with the campaign.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().listCampaignNumbers(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    ListCampaignNumbersRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.addCampaignNumbers(id, request) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Attaches numbers to the campaign at the US 10DLC registry and adds the `numbers` values to the campaign's `numbers` list on your account. Provide `numbers`, `numberKeys`, or both; if both are empty the call returns `400`. Returns `200` with `{"status":"ok"}`. Attach only numbers on your account that you send this program from.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().addCampaignNumbers(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    AddCampaignNumbersRequest
+        .builder()
+        .body(
+            CampaignNumbersRequest
+                .builder()
+                .numbers(
+                    Optional.of(
+                        Arrays.asList("14155550101")
+                    )
+                )
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `CampaignNumbersRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.removeCampaignNumbers(id, request) -> StatusOk</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Detaches numbers from the campaign at the US 10DLC registry and removes the `numbers` values from the campaign's `numbers` list on your account. Send `numbers`, `numberKeys`, or both in the `DELETE` request body; if both are empty the call returns `400`. Returns `200` with `{"status":"ok"}`. Messages from a detached number are no longer covered by this campaign.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().removeCampaignNumbers(
+    "4c2a0e8d-6b4f-4d2c-b0a8-9e7c5a3f1d24",
+    RemoveCampaignNumbersRequest
+        .builder()
+        .body(
+            CampaignNumbersRequest
+                .builder()
+                .numbers(
+                    Optional.of(
+                        Arrays.asList("14155550101")
+                    )
+                )
+                .build()
+        )
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — Campaign ID (UUID) returned by `POST /10dlc/campaigns` or `POST /10dlc/campaigns/toll-free`. An unknown ID, an ID from another account, or a value that is not a UUID returns `404` with `{"error":"campaign not found"}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `CampaignNumbersRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.uploadDocument(request) -> Document</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Uploads a supporting document or MMS sample file for campaign registration and stores it at the US 10DLC registry. Send `multipart/form-data` with the file in a part named `document` that carries a filename; the file can be up to 10 MB (`413` above that). The response is the document record; reference its `documentId` in a campaign's `supportingDocuments` or `mmsSampleFiles`, and use the same value to download it again.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().uploadDocument(
+    null,
+    UploadDocumentRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.sms.campaigns.getDocument(id) -> InputStream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Downloads a document you uploaded with `POST /10dlc/documents`. The response body is the file itself, with the file's own `Content-Type` and a `Content-Disposition: attachment` header that carries the original filename. Look the file up by its `documentId`, not by the record `id`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.sms().campaigns().getDocument(
+    "id",
+    GetDocumentRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `String` — The `documentId` (UUID) returned by `POST /10dlc/documents`, not the record `id`. A value that is not a UUID, or a document that is not on your account, returns `404` with `{"error":"document not found"}`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+

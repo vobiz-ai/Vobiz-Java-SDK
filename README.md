@@ -38,8 +38,7 @@ public class Example {
     public static void main(String[] args) {
         VobizApiClient client = VobizApiClient
             .builder()
-            .token("<token>")
-            .authId("<X-Auth-ID>")
+            .apiKey("<value>")
             .authToken("<X-Auth-Token>")
             .build();
 

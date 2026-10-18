@@ -27,6 +27,7 @@ import resources.phonenumbers.AsyncPhoneNumbersClient;
 import resources.playaudio.AsyncPlayAudioClient;
 import resources.recordcalls.AsyncRecordCallsClient;
 import resources.recordings.AsyncRecordingsClient;
+import resources.sms.AsyncSmsClient;
 import resources.speaktext.AsyncSpeakTextClient;
 import resources.subaccountkyc.AsyncSubAccountKycClient;
 import resources.subaccountkyctestmode.AsyncSubAccountKycTestModeClient;
@@ -90,6 +91,8 @@ public class AsyncVobizApiClient {
 
   protected final Supplier<AsyncPartnerApiClient> partnerApiClient;
 
+  protected final Supplier<AsyncSmsClient> smsClient;
+
   public AsyncVobizApiClient(ClientOptions clientOptions) {
     this.clientOptions = clientOptions;
     this.accountClient = Suppliers.memoize(() -> new AsyncAccountClient(clientOptions));
@@ -119,6 +122,7 @@ public class AsyncVobizApiClient {
     this.applicationsClient = Suppliers.memoize(() -> new AsyncApplicationsClient(clientOptions));
     this.endpointsClient = Suppliers.memoize(() -> new AsyncEndpointsClient(clientOptions));
     this.partnerApiClient = Suppliers.memoize(() -> new AsyncPartnerApiClient(clientOptions));
+    this.smsClient = Suppliers.memoize(() -> new AsyncSmsClient(clientOptions));
   }
 
   public AsyncAccountClient account() {
@@ -227,6 +231,10 @@ public class AsyncVobizApiClient {
 
   public AsyncPartnerApiClient partnerApi() {
     return this.partnerApiClient.get();
+  }
+
+  public AsyncSmsClient sms() {
+    return this.smsClient.get();
   }
 
   public static AsyncVobizApiClientBuilder builder() {
