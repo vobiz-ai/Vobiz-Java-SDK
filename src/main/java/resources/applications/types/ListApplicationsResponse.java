@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.PaginationMeta;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -29,13 +30,13 @@ import org.jetbrains.annotations.NotNull;
 public final class ListApplicationsResponse {
   private final String apiId;
 
-  private final ListApplicationsResponseMeta meta;
+  private final PaginationMeta meta;
 
   private final List<ListApplicationsResponseObjectsItem> objects;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListApplicationsResponse(String apiId, ListApplicationsResponseMeta meta,
+  private ListApplicationsResponse(String apiId, PaginationMeta meta,
       List<ListApplicationsResponseObjectsItem> objects, Map<String, Object> additionalProperties) {
     this.apiId = apiId;
     this.meta = meta;
@@ -49,7 +50,7 @@ public final class ListApplicationsResponse {
   }
 
   @JsonProperty("meta")
-  public ListApplicationsResponseMeta getMeta() {
+  public PaginationMeta getMeta() {
     return meta;
   }
 
@@ -94,7 +95,7 @@ public final class ListApplicationsResponse {
   }
 
   public interface MetaStage {
-    _FinalStage meta(@NotNull ListApplicationsResponseMeta meta);
+    _FinalStage meta(@NotNull PaginationMeta meta);
   }
 
   public interface _FinalStage {
@@ -117,7 +118,7 @@ public final class ListApplicationsResponse {
   public static final class Builder implements ApiIdStage, MetaStage, _FinalStage {
     private String apiId;
 
-    private ListApplicationsResponseMeta meta;
+    private PaginationMeta meta;
 
     private List<ListApplicationsResponseObjectsItem> objects = new ArrayList<>();
 
@@ -144,7 +145,7 @@ public final class ListApplicationsResponse {
 
     @java.lang.Override
     @JsonSetter("meta")
-    public _FinalStage meta(@NotNull ListApplicationsResponseMeta meta) {
+    public _FinalStage meta(@NotNull PaginationMeta meta) {
       this.meta = Objects.requireNonNull(meta, "meta must not be null");
       return this;
     }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.PaginationMeta;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -29,13 +30,13 @@ import org.jetbrains.annotations.NotNull;
 public final class ListEndpointsResponse {
   private final String apiId;
 
-  private final ListEndpointsResponseMeta meta;
+  private final PaginationMeta meta;
 
   private final List<ListEndpointsResponseObjectsItem> objects;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListEndpointsResponse(String apiId, ListEndpointsResponseMeta meta,
+  private ListEndpointsResponse(String apiId, PaginationMeta meta,
       List<ListEndpointsResponseObjectsItem> objects, Map<String, Object> additionalProperties) {
     this.apiId = apiId;
     this.meta = meta;
@@ -49,7 +50,7 @@ public final class ListEndpointsResponse {
   }
 
   @JsonProperty("meta")
-  public ListEndpointsResponseMeta getMeta() {
+  public PaginationMeta getMeta() {
     return meta;
   }
 
@@ -94,7 +95,7 @@ public final class ListEndpointsResponse {
   }
 
   public interface MetaStage {
-    _FinalStage meta(@NotNull ListEndpointsResponseMeta meta);
+    _FinalStage meta(@NotNull PaginationMeta meta);
   }
 
   public interface _FinalStage {
@@ -117,7 +118,7 @@ public final class ListEndpointsResponse {
   public static final class Builder implements ApiIdStage, MetaStage, _FinalStage {
     private String apiId;
 
-    private ListEndpointsResponseMeta meta;
+    private PaginationMeta meta;
 
     private List<ListEndpointsResponseObjectsItem> objects = new ArrayList<>();
 
@@ -144,7 +145,7 @@ public final class ListEndpointsResponse {
 
     @java.lang.Override
     @JsonSetter("meta")
-    public _FinalStage meta(@NotNull ListEndpointsResponseMeta meta) {
+    public _FinalStage meta(@NotNull PaginationMeta meta) {
       this.meta = Objects.requireNonNull(meta, "meta must not be null");
       return this;
     }

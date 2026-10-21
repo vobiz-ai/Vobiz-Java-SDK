@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.CdrPagination;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -35,7 +36,7 @@ public final class SearchCdrsResponse {
 
   private final SearchCdrsResponseFilters filters;
 
-  private final SearchCdrsResponsePagination pagination;
+  private final CdrPagination pagination;
 
   private final boolean success;
 
@@ -44,7 +45,7 @@ public final class SearchCdrsResponse {
   private final Map<String, Object> additionalProperties;
 
   private SearchCdrsResponse(String accountId, int count, List<SearchCdrsResponseDataItem> data,
-      SearchCdrsResponseFilters filters, SearchCdrsResponsePagination pagination, boolean success,
+      SearchCdrsResponseFilters filters, CdrPagination pagination, boolean success,
       SearchCdrsResponseSummary summary, Map<String, Object> additionalProperties) {
     this.accountId = accountId;
     this.count = count;
@@ -77,7 +78,7 @@ public final class SearchCdrsResponse {
   }
 
   @JsonProperty("pagination")
-  public SearchCdrsResponsePagination getPagination() {
+  public CdrPagination getPagination() {
     return pagination;
   }
 
@@ -135,7 +136,7 @@ public final class SearchCdrsResponse {
   }
 
   public interface PaginationStage {
-    SuccessStage pagination(@NotNull SearchCdrsResponsePagination pagination);
+    SuccessStage pagination(@NotNull CdrPagination pagination);
   }
 
   public interface SuccessStage {
@@ -170,7 +171,7 @@ public final class SearchCdrsResponse {
 
     private SearchCdrsResponseFilters filters;
 
-    private SearchCdrsResponsePagination pagination;
+    private CdrPagination pagination;
 
     private boolean success;
 
@@ -219,7 +220,7 @@ public final class SearchCdrsResponse {
 
     @java.lang.Override
     @JsonSetter("pagination")
-    public SuccessStage pagination(@NotNull SearchCdrsResponsePagination pagination) {
+    public SuccessStage pagination(@NotNull CdrPagination pagination) {
       this.pagination = Objects.requireNonNull(pagination, "pagination must not be null");
       return this;
     }

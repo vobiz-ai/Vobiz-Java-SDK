@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.CdrPagination;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -33,7 +34,7 @@ public final class ListCustomerCdrsResponse {
 
   private final List<Object> data;
 
-  private final ListCustomerCdrsResponsePagination pagination;
+  private final CdrPagination pagination;
 
   private final boolean success;
 
@@ -44,9 +45,8 @@ public final class ListCustomerCdrsResponse {
   private final Map<String, Object> additionalProperties;
 
   private ListCustomerCdrsResponse(String accountId, int count, List<Object> data,
-      ListCustomerCdrsResponsePagination pagination, boolean success,
-      ListCustomerCdrsResponseSummary summary, String accountAuthId,
-      Map<String, Object> additionalProperties) {
+      CdrPagination pagination, boolean success, ListCustomerCdrsResponseSummary summary,
+      String accountAuthId, Map<String, Object> additionalProperties) {
     this.accountId = accountId;
     this.count = count;
     this.data = data;
@@ -73,7 +73,7 @@ public final class ListCustomerCdrsResponse {
   }
 
   @JsonProperty("pagination")
-  public ListCustomerCdrsResponsePagination getPagination() {
+  public CdrPagination getPagination() {
     return pagination;
   }
 
@@ -132,7 +132,7 @@ public final class ListCustomerCdrsResponse {
   }
 
   public interface PaginationStage {
-    SuccessStage pagination(@NotNull ListCustomerCdrsResponsePagination pagination);
+    SuccessStage pagination(@NotNull CdrPagination pagination);
   }
 
   public interface SuccessStage {
@@ -169,7 +169,7 @@ public final class ListCustomerCdrsResponse {
 
     private int count;
 
-    private ListCustomerCdrsResponsePagination pagination;
+    private CdrPagination pagination;
 
     private boolean success;
 
@@ -213,7 +213,7 @@ public final class ListCustomerCdrsResponse {
 
     @java.lang.Override
     @JsonSetter("pagination")
-    public SuccessStage pagination(@NotNull ListCustomerCdrsResponsePagination pagination) {
+    public SuccessStage pagination(@NotNull CdrPagination pagination) {
       this.pagination = Objects.requireNonNull(pagination, "pagination must not be null");
       return this;
     }

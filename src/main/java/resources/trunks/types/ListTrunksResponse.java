@@ -21,27 +21,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.TrunkListMeta;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = ListTrunksResponse.Builder.class
 )
 public final class ListTrunksResponse {
-  private final ListTrunksResponseMeta meta;
+  private final TrunkListMeta meta;
 
   private final List<ListTrunksResponseObjectsItem> objects;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListTrunksResponse(ListTrunksResponseMeta meta,
-      List<ListTrunksResponseObjectsItem> objects, Map<String, Object> additionalProperties) {
+  private ListTrunksResponse(TrunkListMeta meta, List<ListTrunksResponseObjectsItem> objects,
+      Map<String, Object> additionalProperties) {
     this.meta = meta;
     this.objects = objects;
     this.additionalProperties = additionalProperties;
   }
 
   @JsonProperty("meta")
-  public ListTrunksResponseMeta getMeta() {
+  public TrunkListMeta getMeta() {
     return meta;
   }
 
@@ -80,7 +81,7 @@ public final class ListTrunksResponse {
   }
 
   public interface MetaStage {
-    _FinalStage meta(@NotNull ListTrunksResponseMeta meta);
+    _FinalStage meta(@NotNull TrunkListMeta meta);
 
     Builder from(ListTrunksResponse other);
   }
@@ -103,7 +104,7 @@ public final class ListTrunksResponse {
       ignoreUnknown = true
   )
   public static final class Builder implements MetaStage, _FinalStage {
-    private ListTrunksResponseMeta meta;
+    private TrunkListMeta meta;
 
     private List<ListTrunksResponseObjectsItem> objects = new ArrayList<>();
 
@@ -122,7 +123,7 @@ public final class ListTrunksResponse {
 
     @java.lang.Override
     @JsonSetter("meta")
-    public _FinalStage meta(@NotNull ListTrunksResponseMeta meta) {
+    public _FinalStage meta(@NotNull TrunkListMeta meta) {
       this.meta = Objects.requireNonNull(meta, "meta must not be null");
       return this;
     }

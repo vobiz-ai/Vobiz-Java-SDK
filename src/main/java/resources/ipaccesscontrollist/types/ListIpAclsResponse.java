@@ -21,27 +21,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.TrunkListMeta;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = ListIpAclsResponse.Builder.class
 )
 public final class ListIpAclsResponse {
-  private final ListIpAclsResponseMeta meta;
+  private final TrunkListMeta meta;
 
   private final List<ListIpAclsResponseObjectsItem> objects;
 
   private final Map<String, Object> additionalProperties;
 
-  private ListIpAclsResponse(ListIpAclsResponseMeta meta,
-      List<ListIpAclsResponseObjectsItem> objects, Map<String, Object> additionalProperties) {
+  private ListIpAclsResponse(TrunkListMeta meta, List<ListIpAclsResponseObjectsItem> objects,
+      Map<String, Object> additionalProperties) {
     this.meta = meta;
     this.objects = objects;
     this.additionalProperties = additionalProperties;
   }
 
   @JsonProperty("meta")
-  public ListIpAclsResponseMeta getMeta() {
+  public TrunkListMeta getMeta() {
     return meta;
   }
 
@@ -80,7 +81,7 @@ public final class ListIpAclsResponse {
   }
 
   public interface MetaStage {
-    _FinalStage meta(@NotNull ListIpAclsResponseMeta meta);
+    _FinalStage meta(@NotNull TrunkListMeta meta);
 
     Builder from(ListIpAclsResponse other);
   }
@@ -103,7 +104,7 @@ public final class ListIpAclsResponse {
       ignoreUnknown = true
   )
   public static final class Builder implements MetaStage, _FinalStage {
-    private ListIpAclsResponseMeta meta;
+    private TrunkListMeta meta;
 
     private List<ListIpAclsResponseObjectsItem> objects = new ArrayList<>();
 
@@ -122,7 +123,7 @@ public final class ListIpAclsResponse {
 
     @java.lang.Override
     @JsonSetter("meta")
-    public _FinalStage meta(@NotNull ListIpAclsResponseMeta meta) {
+    public _FinalStage meta(@NotNull TrunkListMeta meta) {
       this.meta = Objects.requireNonNull(meta, "meta must not be null");
       return this;
     }

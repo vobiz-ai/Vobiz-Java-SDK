@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import types.CdrPagination;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
@@ -33,7 +34,7 @@ public final class ListCdrsResponse {
 
   private final List<ListCdrsResponseDataItem> data;
 
-  private final ListCdrsResponsePagination pagination;
+  private final CdrPagination pagination;
 
   private final boolean success;
 
@@ -42,7 +43,7 @@ public final class ListCdrsResponse {
   private final Map<String, Object> additionalProperties;
 
   private ListCdrsResponse(String accountId, int count, List<ListCdrsResponseDataItem> data,
-      ListCdrsResponsePagination pagination, boolean success, ListCdrsResponseSummary summary,
+      CdrPagination pagination, boolean success, ListCdrsResponseSummary summary,
       Map<String, Object> additionalProperties) {
     this.accountId = accountId;
     this.count = count;
@@ -69,7 +70,7 @@ public final class ListCdrsResponse {
   }
 
   @JsonProperty("pagination")
-  public ListCdrsResponsePagination getPagination() {
+  public CdrPagination getPagination() {
     return pagination;
   }
 
@@ -123,7 +124,7 @@ public final class ListCdrsResponse {
   }
 
   public interface PaginationStage {
-    SuccessStage pagination(@NotNull ListCdrsResponsePagination pagination);
+    SuccessStage pagination(@NotNull CdrPagination pagination);
   }
 
   public interface SuccessStage {
@@ -156,7 +157,7 @@ public final class ListCdrsResponse {
 
     private int count;
 
-    private ListCdrsResponsePagination pagination;
+    private CdrPagination pagination;
 
     private boolean success;
 
@@ -197,7 +198,7 @@ public final class ListCdrsResponse {
 
     @java.lang.Override
     @JsonSetter("pagination")
-    public SuccessStage pagination(@NotNull ListCdrsResponsePagination pagination) {
+    public SuccessStage pagination(@NotNull CdrPagination pagination) {
       this.pagination = Objects.requireNonNull(pagination, "pagination must not be null");
       return this;
     }
