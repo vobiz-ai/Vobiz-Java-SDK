@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
 import java.lang.Object;
@@ -17,6 +18,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -30,13 +32,20 @@ public final class CreateApplicationRequest {
 
   private final String answerMethod;
 
+  private final Optional<String> hangupUrl;
+
+  private final Optional<String> hangupMethod;
+
   private final Map<String, Object> additionalProperties;
 
   private CreateApplicationRequest(String appName, String answerUrl, String answerMethod,
+      Optional<String> hangupUrl, Optional<String> hangupMethod,
       Map<String, Object> additionalProperties) {
     this.appName = appName;
     this.answerUrl = answerUrl;
     this.answerMethod = answerMethod;
+    this.hangupUrl = hangupUrl;
+    this.hangupMethod = hangupMethod;
     this.additionalProperties = additionalProperties;
   }
 
@@ -55,6 +64,22 @@ public final class CreateApplicationRequest {
     return answerMethod;
   }
 
+  /**
+   * @return URL Vobiz notifies when a call on this application ends. If omitted, it defaults to <code>answer_url</code>.
+   */
+  @JsonProperty("hangup_url")
+  public Optional<String> getHangupUrl() {
+    return hangupUrl;
+  }
+
+  /**
+   * @return HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.
+   */
+  @JsonProperty("hangup_method")
+  public Optional<String> getHangupMethod() {
+    return hangupMethod;
+  }
+
   @java.lang.Override
   public boolean equals(Object other) {
     if (this == other) return true;
@@ -67,12 +92,12 @@ public final class CreateApplicationRequest {
   }
 
   private boolean equalTo(CreateApplicationRequest other) {
-    return appName.equals(other.appName) && answerUrl.equals(other.answerUrl) && answerMethod.equals(other.answerMethod);
+    return appName.equals(other.appName) && answerUrl.equals(other.answerUrl) && answerMethod.equals(other.answerMethod) && hangupUrl.equals(other.hangupUrl) && hangupMethod.equals(other.hangupMethod);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.appName, this.answerUrl, this.answerMethod);
+    return Objects.hash(this.appName, this.answerUrl, this.answerMethod, this.hangupUrl, this.hangupMethod);
   }
 
   @java.lang.Override
@@ -104,6 +129,20 @@ public final class CreateApplicationRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>URL Vobiz notifies when a call on this application ends. If omitted, it defaults to <code>answer_url</code>.</p>
+     */
+    _FinalStage hangupUrl(Optional<String> hangupUrl);
+
+    _FinalStage hangupUrl(String hangupUrl);
+
+    /**
+     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
+     */
+    _FinalStage hangupMethod(Optional<String> hangupMethod);
+
+    _FinalStage hangupMethod(String hangupMethod);
   }
 
   @JsonIgnoreProperties(
@@ -116,6 +155,10 @@ public final class CreateApplicationRequest {
 
     private String answerMethod;
 
+    private Optional<String> hangupMethod = Optional.empty();
+
+    private Optional<String> hangupUrl = Optional.empty();
+
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -127,6 +170,8 @@ public final class CreateApplicationRequest {
       appName(other.getAppName());
       answerUrl(other.getAnswerUrl());
       answerMethod(other.getAnswerMethod());
+      hangupUrl(other.getHangupUrl());
+      hangupMethod(other.getHangupMethod());
       return this;
     }
 
@@ -151,9 +196,55 @@ public final class CreateApplicationRequest {
       return this;
     }
 
+    /**
+     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage hangupMethod(String hangupMethod) {
+      this.hangupMethod = Optional.ofNullable(hangupMethod);
+      return this;
+    }
+
+    /**
+     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "hangup_method",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage hangupMethod(Optional<String> hangupMethod) {
+      this.hangupMethod = hangupMethod;
+      return this;
+    }
+
+    /**
+     * <p>URL Vobiz notifies when a call on this application ends. If omitted, it defaults to <code>answer_url</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage hangupUrl(String hangupUrl) {
+      this.hangupUrl = Optional.ofNullable(hangupUrl);
+      return this;
+    }
+
+    /**
+     * <p>URL Vobiz notifies when a call on this application ends. If omitted, it defaults to <code>answer_url</code>.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "hangup_url",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage hangupUrl(Optional<String> hangupUrl) {
+      this.hangupUrl = hangupUrl;
+      return this;
+    }
+
     @java.lang.Override
     public CreateApplicationRequest build() {
-      return new CreateApplicationRequest(appName, answerUrl, answerMethod, additionalProperties);
+      return new CreateApplicationRequest(appName, answerUrl, answerMethod, hangupUrl, hangupMethod, additionalProperties);
     }
 
     @java.lang.Override

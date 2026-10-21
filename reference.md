@@ -3640,6 +3640,159 @@ client.phoneNumbers().unassignNumberFromTrunk(
 </dl>
 </details>
 
+<details><summary><code>client.phoneNumbers.linkNumberToApplication(authId, e164, request)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Link a phone number to a voice application. Once linked, inbound
+calls to that number fetch VobizXML from the application's
+`answer_url`. A number routes through either an application or a
+SIP trunk, not both: unassign the number from its trunk first
+(`DELETE /api/v1/Account/{auth_id}/numbers/{phone_number}/assign`).
+URL-encode the phone number (use `%2B` instead of `+`).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.phoneNumbers().linkNumberToApplication(
+    "MA_XXXXXX",
+    "%2B912271264217",
+    LinkNumberToApplicationRequest
+        .builder()
+        .applicationId("12345678901234567")
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Your account Auth ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**e164:** `String` — The phone number, URL-encoded (use %2B instead of +).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**applicationId:** `String` — The `app_id` of the application to link this number to.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.phoneNumbers.unlinkNumberFromApplication(authId, e164)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove the link between a phone number and its voice application.
+The number stays in your account inventory but inbound calls no
+longer fetch VobizXML from that application.
+URL-encode the phone number (use `%2B` instead of `+`).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```java
+client.phoneNumbers().unlinkNumberFromApplication(
+    "MA_XXXXXX",
+    "%2B912271264217",
+    UnlinkNumberFromApplicationRequest
+        .builder()
+        .build()
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**authId:** `String` — Your account Auth ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**e164:** `String` — The phone number, URL-encoded (use %2B instead of +).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.phoneNumbers.getNumberHealth(authId, e164) -> GetNumberHealthResponse</code></summary>
 <dl>
 <dd>
@@ -7952,6 +8105,8 @@ client.applications().createApplication(
         .appName("My Voice Application")
         .answerUrl("https://example.com/answer")
         .answerMethod("POST")
+        .hangupUrl("https://example.com/hangup")
+        .hangupMethod("POST")
         .build()
 );
 ```
@@ -7993,6 +8148,22 @@ client.applications().createApplication(
 <dd>
 
 **answerMethod:** `String` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupUrl:** `Optional<String>` — URL Vobiz notifies when a call on this application ends. If omitted, it defaults to `answer_url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupMethod:** `Optional<String>` — HTTP method used for `hangup_url`, `GET` or `POST`.
     
 </dd>
 </dl>
@@ -8107,6 +8278,10 @@ client.applications().updateApplication(
         .builder()
         .appName("Updated Application Name")
         .defaultNumberApp(true)
+        .answerUrl("https://example.com/answer")
+        .answerMethod("POST")
+        .hangupUrl("https://example.com/hangup")
+        .hangupMethod("POST")
         .build()
 );
 ```
@@ -8148,6 +8323,38 @@ client.applications().updateApplication(
 <dd>
 
 **defaultNumberApp:** `Boolean` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**answerUrl:** `Optional<String>` — URL Vobiz fetches VobizXML from when a call reaches a number or endpoint linked to this application.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**answerMethod:** `Optional<String>` — HTTP method used for `answer_url`, `GET` or `POST`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupUrl:** `Optional<String>` — URL Vobiz notifies when a call on this application ends.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hangupMethod:** `Optional<String>` — HTTP method used for `hangup_url`, `GET` or `POST`.
     
 </dd>
 </dl>

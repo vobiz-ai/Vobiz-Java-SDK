@@ -14,11 +14,13 @@ import resources.phonenumbers.requests.AssignDidToSubaccountRequest;
 import resources.phonenumbers.requests.AssignNumberToTrunkRequest;
 import resources.phonenumbers.requests.CancelNumberReleaseRequest;
 import resources.phonenumbers.requests.GetNumberHealthRequest;
+import resources.phonenumbers.requests.LinkNumberToApplicationRequest;
 import resources.phonenumbers.requests.ListInventoryNumbersRequest;
 import resources.phonenumbers.requests.ListNumbersRequest;
 import resources.phonenumbers.requests.PurchaseFromInventoryRequest;
 import resources.phonenumbers.requests.UnassignDidFromSubaccountRequest;
 import resources.phonenumbers.requests.UnassignNumberFromTrunkRequest;
+import resources.phonenumbers.requests.UnlinkNumberFromApplicationRequest;
 import resources.phonenumbers.requests.UnrentNumberRequest;
 import resources.phonenumbers.types.CancelNumberReleaseResponse;
 import resources.phonenumbers.types.GetNumberHealthResponse;
@@ -291,6 +293,75 @@ public class AsyncPhoneNumbersClient {
   public CompletableFuture<Void> unassignNumberFromTrunk(String authId, String phoneNumber,
       UnassignNumberFromTrunkRequest request, RequestOptions requestOptions) {
     return this.rawClient.unassignNumberFromTrunk(authId, phoneNumber, request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Link a phone number to a voice application. Once linked, inbound
+   * calls to that number fetch VobizXML from the application's
+   * <code>answer_url</code>. A number routes through either an application or a
+   * SIP trunk, not both: unassign the number from its trunk first
+   * (<code>DELETE /api/v1/Account/{auth_id}/numbers/{phone_number}/assign</code>).
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> linkNumberToApplication(String authId, String e164,
+      LinkNumberToApplicationRequest request) {
+    return this.rawClient.linkNumberToApplication(authId, e164, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Link a phone number to a voice application. Once linked, inbound
+   * calls to that number fetch VobizXML from the application's
+   * <code>answer_url</code>. A number routes through either an application or a
+   * SIP trunk, not both: unassign the number from its trunk first
+   * (<code>DELETE /api/v1/Account/{auth_id}/numbers/{phone_number}/assign</code>).
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> linkNumberToApplication(String authId, String e164,
+      LinkNumberToApplicationRequest request, RequestOptions requestOptions) {
+    return this.rawClient.linkNumberToApplication(authId, e164, request, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Remove the link between a phone number and its voice application.
+   * The number stays in your account inventory but inbound calls no
+   * longer fetch VobizXML from that application.
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> unlinkNumberFromApplication(String authId, String e164) {
+    return this.rawClient.unlinkNumberFromApplication(authId, e164).thenApply(response -> response.body());
+  }
+
+  /**
+   * Remove the link between a phone number and its voice application.
+   * The number stays in your account inventory but inbound calls no
+   * longer fetch VobizXML from that application.
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> unlinkNumberFromApplication(String authId, String e164,
+      RequestOptions requestOptions) {
+    return this.rawClient.unlinkNumberFromApplication(authId, e164, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Remove the link between a phone number and its voice application.
+   * The number stays in your account inventory but inbound calls no
+   * longer fetch VobizXML from that application.
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> unlinkNumberFromApplication(String authId, String e164,
+      UnlinkNumberFromApplicationRequest request) {
+    return this.rawClient.unlinkNumberFromApplication(authId, e164, request).thenApply(response -> response.body());
+  }
+
+  /**
+   * Remove the link between a phone number and its voice application.
+   * The number stays in your account inventory but inbound calls no
+   * longer fetch VobizXML from that application.
+   * URL-encode the phone number (use <code>%2B</code> instead of <code>+</code>).
+   */
+  public CompletableFuture<Void> unlinkNumberFromApplication(String authId, String e164,
+      UnlinkNumberFromApplicationRequest request, RequestOptions requestOptions) {
+    return this.rawClient.unlinkNumberFromApplication(authId, e164, request, requestOptions).thenApply(response -> response.body());
   }
 
   /**
