@@ -10,13 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -30,15 +33,19 @@ public final class CreateEndpointRequest {
 
   private final String alias;
 
-  private final int application;
+  private final Optional<String> appId;
+
+  private final Optional<Integer> application;
 
   private final Map<String, Object> additionalProperties;
 
-  private CreateEndpointRequest(String username, String password, String alias, int application,
+  private CreateEndpointRequest(String username, String password, String alias,
+      Optional<String> appId, Optional<Integer> application,
       Map<String, Object> additionalProperties) {
     this.username = username;
     this.password = password;
     this.alias = alias;
+    this.appId = appId;
     this.application = application;
     this.additionalProperties = additionalProperties;
   }
@@ -58,8 +65,19 @@ public final class CreateEndpointRequest {
     return alias;
   }
 
+  /**
+   * @return ID of the application that handles calls from this endpoint. Application IDs are 17-digit strings; send them as JSON strings.
+   */
+  @JsonProperty("app_id")
+  public Optional<String> getAppId() {
+    return appId;
+  }
+
+  /**
+   * @return Not read by the API. Application IDs exceed the range of a JSON integer, and the endpoint is created without an application. Send <code>app_id</code> instead.
+   */
   @JsonProperty("application")
-  public int getApplication() {
+  public Optional<Integer> getApplication() {
     return application;
   }
 
@@ -75,12 +93,12 @@ public final class CreateEndpointRequest {
   }
 
   private boolean equalTo(CreateEndpointRequest other) {
-    return username.equals(other.username) && password.equals(other.password) && alias.equals(other.alias) && application == other.application;
+    return username.equals(other.username) && password.equals(other.password) && alias.equals(other.alias) && appId.equals(other.appId) && application.equals(other.application);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.username, this.password, this.alias, this.application);
+    return Objects.hash(this.username, this.password, this.alias, this.appId, this.application);
   }
 
   @java.lang.Override
@@ -103,11 +121,7 @@ public final class CreateEndpointRequest {
   }
 
   public interface AliasStage {
-    ApplicationStage alias(@NotNull String alias);
-  }
-
-  public interface ApplicationStage {
-    _FinalStage application(int application);
+    _FinalStage alias(@NotNull String alias);
   }
 
   public interface _FinalStage {
@@ -116,19 +130,35 @@ public final class CreateEndpointRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>ID of the application that handles calls from this endpoint. Application IDs are 17-digit strings; send them as JSON strings.</p>
+     */
+    _FinalStage appId(Optional<String> appId);
+
+    _FinalStage appId(String appId);
+
+    /**
+     * <p>Not read by the API. Application IDs exceed the range of a JSON integer, and the endpoint is created without an application. Send <code>app_id</code> instead.</p>
+     */
+    _FinalStage application(Optional<Integer> application);
+
+    _FinalStage application(Integer application);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements UsernameStage, PasswordStage, AliasStage, ApplicationStage, _FinalStage {
+  public static final class Builder implements UsernameStage, PasswordStage, AliasStage, _FinalStage {
     private String username;
 
     private String password;
 
     private String alias;
 
-    private int application;
+    private Optional<Integer> application = Optional.empty();
+
+    private Optional<String> appId = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -141,6 +171,7 @@ public final class CreateEndpointRequest {
       username(other.getUsername());
       password(other.getPassword());
       alias(other.getAlias());
+      appId(other.getAppId());
       application(other.getApplication());
       return this;
     }
@@ -161,21 +192,60 @@ public final class CreateEndpointRequest {
 
     @java.lang.Override
     @JsonSetter("alias")
-    public ApplicationStage alias(@NotNull String alias) {
+    public _FinalStage alias(@NotNull String alias) {
       this.alias = Objects.requireNonNull(alias, "alias must not be null");
       return this;
     }
 
+    /**
+     * <p>Not read by the API. Application IDs exceed the range of a JSON integer, and the endpoint is created without an application. Send <code>app_id</code> instead.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    @JsonSetter("application")
-    public _FinalStage application(int application) {
+    public _FinalStage application(Integer application) {
+      this.application = Optional.ofNullable(application);
+      return this;
+    }
+
+    /**
+     * <p>Not read by the API. Application IDs exceed the range of a JSON integer, and the endpoint is created without an application. Send <code>app_id</code> instead.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "application",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage application(Optional<Integer> application) {
       this.application = application;
+      return this;
+    }
+
+    /**
+     * <p>ID of the application that handles calls from this endpoint. Application IDs are 17-digit strings; send them as JSON strings.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage appId(String appId) {
+      this.appId = Optional.ofNullable(appId);
+      return this;
+    }
+
+    /**
+     * <p>ID of the application that handles calls from this endpoint. Application IDs are 17-digit strings; send them as JSON strings.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "app_id",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage appId(Optional<String> appId) {
+      this.appId = appId;
       return this;
     }
 
     @java.lang.Override
     public CreateEndpointRequest build() {
-      return new CreateEndpointRequest(username, password, alias, application, additionalProperties);
+      return new CreateEndpointRequest(username, password, alias, appId, application, additionalProperties);
     }
 
     @java.lang.Override

@@ -85,6 +85,22 @@ public class AsyncOriginationUriClient {
    * Update an existing origination URI.
    */
   public CompletableFuture<UpdateOriginationUriResponse> updateOriginationUri(String authId,
+      String uriId) {
+    return this.rawClient.updateOriginationUri(authId, uriId).thenApply(response -> response.body());
+  }
+
+  /**
+   * Update an existing origination URI.
+   */
+  public CompletableFuture<UpdateOriginationUriResponse> updateOriginationUri(String authId,
+      String uriId, RequestOptions requestOptions) {
+    return this.rawClient.updateOriginationUri(authId, uriId, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Update an existing origination URI.
+   */
+  public CompletableFuture<UpdateOriginationUriResponse> updateOriginationUri(String authId,
       String uriId, UpdateOriginationUriRequest request) {
     return this.rawClient.updateOriginationUri(authId, uriId, request).thenApply(response -> response.body());
   }

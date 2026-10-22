@@ -157,6 +157,9 @@ public class AsyncRawEndpointsClient {
      * Create a new SIP endpoint that can be used to make and receive calls
      * through IP phones, softphones, or SIP clients. Each endpoint is
      * assigned a unique SIP URI and endpoint ID.
+     * <p>The API appends digits to the <code>username</code> you request (for example,
+     * <code>acme01</code> can become <code>acme0125672327435497</code>). Configure your SIP client
+     * with the <code>username</code> returned in the response.</p>
      */
     public CompletableFuture<VobizApiHttpResponse<CreateEndpointResponse>> createEndpoint(
         String authId, CreateEndpointRequest request) {
@@ -167,6 +170,9 @@ public class AsyncRawEndpointsClient {
      * Create a new SIP endpoint that can be used to make and receive calls
      * through IP phones, softphones, or SIP clients. Each endpoint is
      * assigned a unique SIP URI and endpoint ID.
+     * <p>The API appends digits to the <code>username</code> you request (for example,
+     * <code>acme01</code> can become <code>acme0125672327435497</code>). Configure your SIP client
+     * with the <code>username</code> returned in the response.</p>
      */
     public CompletableFuture<VobizApiHttpResponse<CreateEndpointResponse>> createEndpoint(
         String authId, CreateEndpointRequest request, RequestOptions requestOptions) {

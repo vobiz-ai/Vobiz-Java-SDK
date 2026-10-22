@@ -123,6 +123,24 @@ public class AsyncApplicationsClient {
    * Modify an application using this API. You can update any subset of
    * fields (partial update). Fields not provided will remain unchanged.
    */
+  public CompletableFuture<UpdateApplicationResponse> updateApplication(String authId,
+      String appId) {
+    return this.rawClient.updateApplication(authId, appId).thenApply(response -> response.body());
+  }
+
+  /**
+   * Modify an application using this API. You can update any subset of
+   * fields (partial update). Fields not provided will remain unchanged.
+   */
+  public CompletableFuture<UpdateApplicationResponse> updateApplication(String authId, String appId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateApplication(authId, appId, requestOptions).thenApply(response -> response.body());
+  }
+
+  /**
+   * Modify an application using this API. You can update any subset of
+   * fields (partial update). Fields not provided will remain unchanged.
+   */
   public CompletableFuture<UpdateApplicationResponse> updateApplication(String authId, String appId,
       UpdateApplicationRequest request) {
     return this.rawClient.updateApplication(authId, appId, request).thenApply(response -> response.body());

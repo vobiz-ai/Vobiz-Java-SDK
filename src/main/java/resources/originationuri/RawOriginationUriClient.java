@@ -159,6 +159,22 @@ public class RawOriginationUriClient {
        * Update an existing origination URI.
        */
       public VobizApiHttpResponse<UpdateOriginationUriResponse> updateOriginationUri(String authId,
+          String uriId) {
+        return updateOriginationUri(authId,uriId,UpdateOriginationUriRequest.builder().build());
+      }
+
+      /**
+       * Update an existing origination URI.
+       */
+      public VobizApiHttpResponse<UpdateOriginationUriResponse> updateOriginationUri(String authId,
+          String uriId, RequestOptions requestOptions) {
+        return updateOriginationUri(authId,uriId,UpdateOriginationUriRequest.builder().build(),requestOptions);
+      }
+
+      /**
+       * Update an existing origination URI.
+       */
+      public VobizApiHttpResponse<UpdateOriginationUriResponse> updateOriginationUri(String authId,
           String uriId, UpdateOriginationUriRequest request) {
         return updateOriginationUri(authId,uriId,request,null);
       }

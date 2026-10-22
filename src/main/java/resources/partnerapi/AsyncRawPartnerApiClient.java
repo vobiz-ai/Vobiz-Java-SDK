@@ -17,6 +17,7 @@ import errors.BadRequestError;
 import errors.ConflictError;
 import errors.NotFoundError;
 import errors.TooManyRequestsError;
+import errors.UnauthorizedError;
 import errors.UnprocessableEntityError;
 import java.io.IOException;
 import java.lang.Object;
@@ -99,6 +100,15 @@ public class AsyncRawPartnerApiClient {
               future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPartnerProfileResponse.class), response));
               return;
             }
+            try {
+              if (response.code() == 401) {
+                future.completeExceptionally(new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                return;
+              }
+            }
+            catch (JsonProcessingException ignored) {
+              // unable to map error response, throwing generic error
+            }
             Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
             future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));
             return;
@@ -157,6 +167,15 @@ public class AsyncRawPartnerApiClient {
               if (response.isSuccessful()) {
                 future.complete(new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPartnerDashboardResponse.class), response));
                 return;
+              }
+              try {
+                if (response.code() == 401) {
+                  future.completeExceptionally(new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response));
+                  return;
+                }
+              }
+              catch (JsonProcessingException ignored) {
+                // unable to map error response, throwing generic error
               }
               Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
               future.completeExceptionally(new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response));

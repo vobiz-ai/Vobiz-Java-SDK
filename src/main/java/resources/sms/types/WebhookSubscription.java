@@ -106,7 +106,7 @@ public final class WebhookSubscription {
   }
 
   /**
-   * @return When the subscription was created (ISO 8601). Read it from <code>GET /webhooks/{id}</code> or <code>GET /webhooks</code>.
+   * @return When the subscription was created (ISO 8601). The create response can return the zero value <code>0001-01-01T00:00:00Z</code>; read the stored time from <code>GET /webhooks/{id}</code> or <code>GET /webhooks</code>.
    */
   @JsonProperty("createdAt")
   public Optional<OffsetDateTime> getCreatedAt() {
@@ -280,7 +280,7 @@ public final class WebhookSubscription {
     }
 
     /**
-     * <p>When the subscription was created (ISO 8601). Read it from <code>GET /webhooks/{id}</code> or <code>GET /webhooks</code>.</p>
+     * <p>When the subscription was created (ISO 8601). The create response can return the zero value <code>0001-01-01T00:00:00Z</code>; read the stored time from <code>GET /webhooks/{id}</code> or <code>GET /webhooks</code>.</p>
      */
     @JsonSetter(
         value = "createdAt",

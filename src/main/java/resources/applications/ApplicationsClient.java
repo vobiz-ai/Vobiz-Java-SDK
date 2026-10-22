@@ -119,6 +119,23 @@ public class ApplicationsClient {
    * Modify an application using this API. You can update any subset of
    * fields (partial update). Fields not provided will remain unchanged.
    */
+  public UpdateApplicationResponse updateApplication(String authId, String appId) {
+    return this.rawClient.updateApplication(authId, appId).body();
+  }
+
+  /**
+   * Modify an application using this API. You can update any subset of
+   * fields (partial update). Fields not provided will remain unchanged.
+   */
+  public UpdateApplicationResponse updateApplication(String authId, String appId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateApplication(authId, appId, requestOptions).body();
+  }
+
+  /**
+   * Modify an application using this API. You can update any subset of
+   * fields (partial update). Fields not provided will remain unchanged.
+   */
   public UpdateApplicationResponse updateApplication(String authId, String appId,
       UpdateApplicationRequest request) {
     return this.rawClient.updateApplication(authId, appId, request).body();

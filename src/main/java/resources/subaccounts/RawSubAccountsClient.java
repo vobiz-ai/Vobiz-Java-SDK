@@ -238,6 +238,10 @@ public class RawSubAccountsClient {
 
         /**
          * Update the name or status of a sub-account, or change its <code>kyc_mode</code>.
+         * <p>Set <code>is_active</code> to <code>false</code> to deactivate a sub-account. A deactivated
+         * sub-account no longer appears in the list, and retrieve, update and
+         * delete requests for it return <code>404</code>. The <code>enabled</code> field is accepted
+         * but has no effect.</p>
          * <p>Promoting an existing sub-account to <code>customer_use</code> requires the
          * sub-account to already have an <code>email</code> (otherwise <code>400</code>). On any
          * <code>kyc_mode</code> change, <code>kyc_calls_blocked</code> is re-derived from the
@@ -250,6 +254,10 @@ public class RawSubAccountsClient {
 
         /**
          * Update the name or status of a sub-account, or change its <code>kyc_mode</code>.
+         * <p>Set <code>is_active</code> to <code>false</code> to deactivate a sub-account. A deactivated
+         * sub-account no longer appears in the list, and retrieve, update and
+         * delete requests for it return <code>404</code>. The <code>enabled</code> field is accepted
+         * but has no effect.</p>
          * <p>Promoting an existing sub-account to <code>customer_use</code> requires the
          * sub-account to already have an <code>email</code> (otherwise <code>400</code>). On any
          * <code>kyc_mode</code> change, <code>kyc_calls_blocked</code> is re-derived from the
@@ -262,6 +270,10 @@ public class RawSubAccountsClient {
 
         /**
          * Update the name or status of a sub-account, or change its <code>kyc_mode</code>.
+         * <p>Set <code>is_active</code> to <code>false</code> to deactivate a sub-account. A deactivated
+         * sub-account no longer appears in the list, and retrieve, update and
+         * delete requests for it return <code>404</code>. The <code>enabled</code> field is accepted
+         * but has no effect.</p>
          * <p>Promoting an existing sub-account to <code>customer_use</code> requires the
          * sub-account to already have an <code>email</code> (otherwise <code>400</code>). On any
          * <code>kyc_mode</code> change, <code>kyc_calls_blocked</code> is re-derived from the
@@ -274,6 +286,10 @@ public class RawSubAccountsClient {
 
         /**
          * Update the name or status of a sub-account, or change its <code>kyc_mode</code>.
+         * <p>Set <code>is_active</code> to <code>false</code> to deactivate a sub-account. A deactivated
+         * sub-account no longer appears in the list, and retrieve, update and
+         * delete requests for it return <code>404</code>. The <code>enabled</code> field is accepted
+         * but has no effect.</p>
          * <p>Promoting an existing sub-account to <code>customer_use</code> requires the
          * sub-account to already have an <code>email</code> (otherwise <code>400</code>). On any
          * <code>kyc_mode</code> change, <code>kyc_calls_blocked</code> is re-derived from the

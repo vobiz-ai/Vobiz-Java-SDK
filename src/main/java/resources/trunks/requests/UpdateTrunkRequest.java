@@ -124,6 +124,9 @@ public final class UpdateTrunkRequest {
     return trunkDirection;
   }
 
+  /**
+   * @return Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.
+   */
   @JsonProperty("trunk_status")
   public Optional<UpdateTrunkRequestTrunkStatus> getTrunkStatus() {
     return trunkStatus;
@@ -359,6 +362,9 @@ public final class UpdateTrunkRequest {
       return this;
     }
 
+    /**
+     * <p>Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.</p>
+     */
     @JsonSetter(
         value = "trunk_status",
         nulls = Nulls.SKIP

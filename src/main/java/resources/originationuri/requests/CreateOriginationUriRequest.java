@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
 import java.lang.Object;
@@ -17,6 +18,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -24,35 +26,66 @@ import org.jetbrains.annotations.NotNull;
     builder = CreateOriginationUriRequest.Builder.class
 )
 public final class CreateOriginationUriRequest {
-  private final String name;
+  private final String uri;
 
-  private final String sipUri;
+  private final Optional<String> description;
 
   private final int priority;
 
+  private final Optional<String> sipUri;
+
+  private final Optional<String> name;
+
   private final Map<String, Object> additionalProperties;
 
-  private CreateOriginationUriRequest(String name, String sipUri, int priority,
-      Map<String, Object> additionalProperties) {
-    this.name = name;
-    this.sipUri = sipUri;
+  private CreateOriginationUriRequest(String uri, Optional<String> description, int priority,
+      Optional<String> sipUri, Optional<String> name, Map<String, Object> additionalProperties) {
+    this.uri = uri;
+    this.description = description;
     this.priority = priority;
+    this.sipUri = sipUri;
+    this.name = name;
     this.additionalProperties = additionalProperties;
   }
 
-  @JsonProperty("name")
-  public String getName() {
-    return name;
+  /**
+   * @return SIP URI of your inbound destination, for example <code>sip:sbc.example.com</code>.
+   */
+  @JsonProperty("uri")
+  public String getUri() {
+    return uri;
   }
 
-  @JsonProperty("sip_uri")
-  public String getSipUri() {
-    return sipUri;
+  /**
+   * @return Label for the origination URI.
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
   }
 
+  /**
+   * @return Routing priority. Lower values are tried first.
+   */
   @JsonProperty("priority")
   public int getPriority() {
     return priority;
+  }
+
+  /**
+   * @return Not read by the API. The API accepts the request but stores an empty <code>uri</code>. Send <code>uri</code> instead.
+   */
+  @JsonProperty("sip_uri")
+  public Optional<String> getSipUri() {
+    return sipUri;
+  }
+
+  /**
+   * @return Not read by the API. Send <code>description</code> instead.
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
   }
 
   @java.lang.Override
@@ -67,12 +100,12 @@ public final class CreateOriginationUriRequest {
   }
 
   private boolean equalTo(CreateOriginationUriRequest other) {
-    return name.equals(other.name) && sipUri.equals(other.sipUri) && priority == other.priority;
+    return uri.equals(other.uri) && description.equals(other.description) && priority == other.priority && sipUri.equals(other.sipUri) && name.equals(other.name);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.sipUri, this.priority);
+    return Objects.hash(this.uri, this.description, this.priority, this.sipUri, this.name);
   }
 
   @java.lang.Override
@@ -80,21 +113,23 @@ public final class CreateOriginationUriRequest {
     return ObjectMappers.stringify(this);
   }
 
-  public static NameStage builder() {
+  public static UriStage builder() {
     return new Builder();
   }
 
-  public interface NameStage {
-    SipUriStage name(@NotNull String name);
+  public interface UriStage {
+    /**
+     * <p>SIP URI of your inbound destination, for example <code>sip:sbc.example.com</code>.</p>
+     */
+    PriorityStage uri(@NotNull String uri);
 
     Builder from(CreateOriginationUriRequest other);
   }
 
-  public interface SipUriStage {
-    PriorityStage sipUri(@NotNull String sipUri);
-  }
-
   public interface PriorityStage {
+    /**
+     * <p>Routing priority. Lower values are tried first.</p>
+     */
     _FinalStage priority(int priority);
   }
 
@@ -104,17 +139,42 @@ public final class CreateOriginationUriRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>Label for the origination URI.</p>
+     */
+    _FinalStage description(Optional<String> description);
+
+    _FinalStage description(String description);
+
+    /**
+     * <p>Not read by the API. The API accepts the request but stores an empty <code>uri</code>. Send <code>uri</code> instead.</p>
+     */
+    _FinalStage sipUri(Optional<String> sipUri);
+
+    _FinalStage sipUri(String sipUri);
+
+    /**
+     * <p>Not read by the API. Send <code>description</code> instead.</p>
+     */
+    _FinalStage name(Optional<String> name);
+
+    _FinalStage name(String name);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, SipUriStage, PriorityStage, _FinalStage {
-    private String name;
-
-    private String sipUri;
+  public static final class Builder implements UriStage, PriorityStage, _FinalStage {
+    private String uri;
 
     private int priority;
+
+    private Optional<String> name = Optional.empty();
+
+    private Optional<String> sipUri = Optional.empty();
+
+    private Optional<String> description = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -124,26 +184,31 @@ public final class CreateOriginationUriRequest {
 
     @java.lang.Override
     public Builder from(CreateOriginationUriRequest other) {
-      name(other.getName());
-      sipUri(other.getSipUri());
+      uri(other.getUri());
+      description(other.getDescription());
       priority(other.getPriority());
+      sipUri(other.getSipUri());
+      name(other.getName());
       return this;
     }
 
+    /**
+     * <p>SIP URI of your inbound destination, for example <code>sip:sbc.example.com</code>.</p>
+     * <p>SIP URI of your inbound destination, for example <code>sip:sbc.example.com</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
-    @JsonSetter("name")
-    public SipUriStage name(@NotNull String name) {
-      this.name = Objects.requireNonNull(name, "name must not be null");
+    @JsonSetter("uri")
+    public PriorityStage uri(@NotNull String uri) {
+      this.uri = Objects.requireNonNull(uri, "uri must not be null");
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("sip_uri")
-    public PriorityStage sipUri(@NotNull String sipUri) {
-      this.sipUri = Objects.requireNonNull(sipUri, "sipUri must not be null");
-      return this;
-    }
-
+    /**
+     * <p>Routing priority. Lower values are tried first.</p>
+     * <p>Routing priority. Lower values are tried first.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("priority")
     public _FinalStage priority(int priority) {
@@ -151,9 +216,78 @@ public final class CreateOriginationUriRequest {
       return this;
     }
 
+    /**
+     * <p>Not read by the API. Send <code>description</code> instead.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
+    }
+
+    /**
+     * <p>Not read by the API. Send <code>description</code> instead.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "name",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    /**
+     * <p>Not read by the API. The API accepts the request but stores an empty <code>uri</code>. Send <code>uri</code> instead.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage sipUri(String sipUri) {
+      this.sipUri = Optional.ofNullable(sipUri);
+      return this;
+    }
+
+    /**
+     * <p>Not read by the API. The API accepts the request but stores an empty <code>uri</code>. Send <code>uri</code> instead.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "sip_uri",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage sipUri(Optional<String> sipUri) {
+      this.sipUri = sipUri;
+      return this;
+    }
+
+    /**
+     * <p>Label for the origination URI.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    /**
+     * <p>Label for the origination URI.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "description",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
     @java.lang.Override
     public CreateOriginationUriRequest build() {
-      return new CreateOriginationUriRequest(name, sipUri, priority, additionalProperties);
+      return new CreateOriginationUriRequest(uri, description, priority, sipUri, name, additionalProperties);
     }
 
     @java.lang.Override

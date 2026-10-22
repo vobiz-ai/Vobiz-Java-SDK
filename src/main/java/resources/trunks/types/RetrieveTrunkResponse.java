@@ -32,7 +32,7 @@ public final class RetrieveTrunkResponse {
 
   private final String trunkDomain;
 
-  private final String trunkStatus;
+  private final RetrieveTrunkResponseTrunkStatus trunkStatus;
 
   private final boolean secure;
 
@@ -63,9 +63,9 @@ public final class RetrieveTrunkResponse {
   private final Map<String, Object> additionalProperties;
 
   private RetrieveTrunkResponse(String trunkId, String accountId, String name, String trunkDomain,
-      String trunkStatus, boolean secure, String trunkDirection, int concurrentCallsLimit,
-      int cpsLimit, String description, String transport, boolean recording,
-      boolean enableTranscription, boolean piiRedaction, String webhookMethod,
+      RetrieveTrunkResponseTrunkStatus trunkStatus, boolean secure, String trunkDirection,
+      int concurrentCallsLimit, int cpsLimit, String description, String transport,
+      boolean recording, boolean enableTranscription, boolean piiRedaction, String webhookMethod,
       boolean recordingWebhookEnabled, String createdAt, String updatedAt,
       Map<String, Object> additionalProperties) {
     this.trunkId = trunkId;
@@ -109,8 +109,11 @@ public final class RetrieveTrunkResponse {
     return trunkDomain;
   }
 
+  /**
+   * @return Trunk state as reported in responses - <code>active</code> or <code>suspended</code>. Requests set it with <code>enabled</code> (reported as <code>active</code>) or <code>disabled</code> (reported as <code>suspended</code>).
+   */
   @JsonProperty("trunk_status")
-  public String getTrunkStatus() {
+  public RetrieveTrunkResponseTrunkStatus getTrunkStatus() {
     return trunkStatus;
   }
 
@@ -227,7 +230,10 @@ public final class RetrieveTrunkResponse {
   }
 
   public interface TrunkStatusStage {
-    SecureStage trunkStatus(@NotNull String trunkStatus);
+    /**
+     * <p>Trunk state as reported in responses - <code>active</code> or <code>suspended</code>. Requests set it with <code>enabled</code> (reported as <code>active</code>) or <code>disabled</code> (reported as <code>suspended</code>).</p>
+     */
+    SecureStage trunkStatus(@NotNull RetrieveTrunkResponseTrunkStatus trunkStatus);
   }
 
   public interface SecureStage {
@@ -302,7 +308,7 @@ public final class RetrieveTrunkResponse {
 
     private String trunkDomain;
 
-    private String trunkStatus;
+    private RetrieveTrunkResponseTrunkStatus trunkStatus;
 
     private boolean secure;
 
@@ -387,9 +393,14 @@ public final class RetrieveTrunkResponse {
       return this;
     }
 
+    /**
+     * <p>Trunk state as reported in responses - <code>active</code> or <code>suspended</code>. Requests set it with <code>enabled</code> (reported as <code>active</code>) or <code>disabled</code> (reported as <code>suspended</code>).</p>
+     * <p>Trunk state as reported in responses - <code>active</code> or <code>suspended</code>. Requests set it with <code>enabled</code> (reported as <code>active</code>) or <code>disabled</code> (reported as <code>suspended</code>).</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("trunk_status")
-    public SecureStage trunkStatus(@NotNull String trunkStatus) {
+    public SecureStage trunkStatus(@NotNull RetrieveTrunkResponseTrunkStatus trunkStatus) {
       this.trunkStatus = Objects.requireNonNull(trunkStatus, "trunkStatus must not be null");
       return this;
     }

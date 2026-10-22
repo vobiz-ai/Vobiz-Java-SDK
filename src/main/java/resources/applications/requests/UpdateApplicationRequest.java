@@ -13,22 +13,22 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Boolean;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = UpdateApplicationRequest.Builder.class
 )
 public final class UpdateApplicationRequest {
-  private final String appName;
+  private final Optional<String> appName;
 
-  private final boolean defaultNumberApp;
+  private final Optional<Boolean> defaultNumberApp;
 
   private final Optional<String> answerUrl;
 
@@ -40,7 +40,7 @@ public final class UpdateApplicationRequest {
 
   private final Map<String, Object> additionalProperties;
 
-  private UpdateApplicationRequest(String appName, boolean defaultNumberApp,
+  private UpdateApplicationRequest(Optional<String> appName, Optional<Boolean> defaultNumberApp,
       Optional<String> answerUrl, Optional<String> answerMethod, Optional<String> hangupUrl,
       Optional<String> hangupMethod, Map<String, Object> additionalProperties) {
     this.appName = appName;
@@ -53,12 +53,12 @@ public final class UpdateApplicationRequest {
   }
 
   @JsonProperty("app_name")
-  public String getAppName() {
+  public Optional<String> getAppName() {
     return appName;
   }
 
   @JsonProperty("default_number_app")
-  public boolean getDefaultNumberApp() {
+  public Optional<Boolean> getDefaultNumberApp() {
     return defaultNumberApp;
   }
 
@@ -106,7 +106,7 @@ public final class UpdateApplicationRequest {
   }
 
   private boolean equalTo(UpdateApplicationRequest other) {
-    return appName.equals(other.appName) && defaultNumberApp == other.defaultNumberApp && answerUrl.equals(other.answerUrl) && answerMethod.equals(other.answerMethod) && hangupUrl.equals(other.hangupUrl) && hangupMethod.equals(other.hangupMethod);
+    return appName.equals(other.appName) && defaultNumberApp.equals(other.defaultNumberApp) && answerUrl.equals(other.answerUrl) && answerMethod.equals(other.answerMethod) && hangupUrl.equals(other.hangupUrl) && hangupMethod.equals(other.hangupMethod);
   }
 
   @java.lang.Override
@@ -119,71 +119,25 @@ public final class UpdateApplicationRequest {
     return ObjectMappers.stringify(this);
   }
 
-  public static AppNameStage builder() {
+  public static Builder builder() {
     return new Builder();
-  }
-
-  public interface AppNameStage {
-    DefaultNumberAppStage appName(@NotNull String appName);
-
-    Builder from(UpdateApplicationRequest other);
-  }
-
-  public interface DefaultNumberAppStage {
-    _FinalStage defaultNumberApp(boolean defaultNumberApp);
-  }
-
-  public interface _FinalStage {
-    UpdateApplicationRequest build();
-
-    _FinalStage additionalProperty(String key, Object value);
-
-    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
-
-    /**
-     * <p>URL Vobiz fetches VobizXML from when a call reaches a number or endpoint linked to this application.</p>
-     */
-    _FinalStage answerUrl(Optional<String> answerUrl);
-
-    _FinalStage answerUrl(String answerUrl);
-
-    /**
-     * <p>HTTP method used for <code>answer_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     */
-    _FinalStage answerMethod(Optional<String> answerMethod);
-
-    _FinalStage answerMethod(String answerMethod);
-
-    /**
-     * <p>URL Vobiz notifies when a call on this application ends.</p>
-     */
-    _FinalStage hangupUrl(Optional<String> hangupUrl);
-
-    _FinalStage hangupUrl(String hangupUrl);
-
-    /**
-     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     */
-    _FinalStage hangupMethod(Optional<String> hangupMethod);
-
-    _FinalStage hangupMethod(String hangupMethod);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements AppNameStage, DefaultNumberAppStage, _FinalStage {
-    private String appName;
+  public static final class Builder {
+    private Optional<String> appName = Optional.empty();
 
-    private boolean defaultNumberApp;
+    private Optional<Boolean> defaultNumberApp = Optional.empty();
 
-    private Optional<String> hangupMethod = Optional.empty();
-
-    private Optional<String> hangupUrl = Optional.empty();
+    private Optional<String> answerUrl = Optional.empty();
 
     private Optional<String> answerMethod = Optional.empty();
 
-    private Optional<String> answerUrl = Optional.empty();
+    private Optional<String> hangupUrl = Optional.empty();
+
+    private Optional<String> hangupMethod = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -191,7 +145,6 @@ public final class UpdateApplicationRequest {
     private Builder() {
     }
 
-    @java.lang.Override
     public Builder from(UpdateApplicationRequest other) {
       appName(other.getAppName());
       defaultNumberApp(other.getDefaultNumberApp());
@@ -202,124 +155,111 @@ public final class UpdateApplicationRequest {
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("app_name")
-    public DefaultNumberAppStage appName(@NotNull String appName) {
-      this.appName = Objects.requireNonNull(appName, "appName must not be null");
+    @JsonSetter(
+        value = "app_name",
+        nulls = Nulls.SKIP
+    )
+    public Builder appName(Optional<String> appName) {
+      this.appName = appName;
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("default_number_app")
-    public _FinalStage defaultNumberApp(boolean defaultNumberApp) {
+    public Builder appName(String appName) {
+      this.appName = Optional.ofNullable(appName);
+      return this;
+    }
+
+    @JsonSetter(
+        value = "default_number_app",
+        nulls = Nulls.SKIP
+    )
+    public Builder defaultNumberApp(Optional<Boolean> defaultNumberApp) {
       this.defaultNumberApp = defaultNumberApp;
       return this;
     }
 
-    /**
-     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage hangupMethod(String hangupMethod) {
-      this.hangupMethod = Optional.ofNullable(hangupMethod);
-      return this;
-    }
-
-    /**
-     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     */
-    @java.lang.Override
-    @JsonSetter(
-        value = "hangup_method",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage hangupMethod(Optional<String> hangupMethod) {
-      this.hangupMethod = hangupMethod;
-      return this;
-    }
-
-    /**
-     * <p>URL Vobiz notifies when a call on this application ends.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage hangupUrl(String hangupUrl) {
-      this.hangupUrl = Optional.ofNullable(hangupUrl);
-      return this;
-    }
-
-    /**
-     * <p>URL Vobiz notifies when a call on this application ends.</p>
-     */
-    @java.lang.Override
-    @JsonSetter(
-        value = "hangup_url",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage hangupUrl(Optional<String> hangupUrl) {
-      this.hangupUrl = hangupUrl;
-      return this;
-    }
-
-    /**
-     * <p>HTTP method used for <code>answer_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
-     */
-    @java.lang.Override
-    public _FinalStage answerMethod(String answerMethod) {
-      this.answerMethod = Optional.ofNullable(answerMethod);
-      return this;
-    }
-
-    /**
-     * <p>HTTP method used for <code>answer_url</code>, <code>GET</code> or <code>POST</code>.</p>
-     */
-    @java.lang.Override
-    @JsonSetter(
-        value = "answer_method",
-        nulls = Nulls.SKIP
-    )
-    public _FinalStage answerMethod(Optional<String> answerMethod) {
-      this.answerMethod = answerMethod;
+    public Builder defaultNumberApp(Boolean defaultNumberApp) {
+      this.defaultNumberApp = Optional.ofNullable(defaultNumberApp);
       return this;
     }
 
     /**
      * <p>URL Vobiz fetches VobizXML from when a call reaches a number or endpoint linked to this application.</p>
-     * @return Reference to {@code this} so that method calls can be chained together.
      */
-    @java.lang.Override
-    public _FinalStage answerUrl(String answerUrl) {
+    @JsonSetter(
+        value = "answer_url",
+        nulls = Nulls.SKIP
+    )
+    public Builder answerUrl(Optional<String> answerUrl) {
+      this.answerUrl = answerUrl;
+      return this;
+    }
+
+    public Builder answerUrl(String answerUrl) {
       this.answerUrl = Optional.ofNullable(answerUrl);
       return this;
     }
 
     /**
-     * <p>URL Vobiz fetches VobizXML from when a call reaches a number or endpoint linked to this application.</p>
+     * <p>HTTP method used for <code>answer_url</code>, <code>GET</code> or <code>POST</code>.</p>
      */
-    @java.lang.Override
     @JsonSetter(
-        value = "answer_url",
+        value = "answer_method",
         nulls = Nulls.SKIP
     )
-    public _FinalStage answerUrl(Optional<String> answerUrl) {
-      this.answerUrl = answerUrl;
+    public Builder answerMethod(Optional<String> answerMethod) {
+      this.answerMethod = answerMethod;
       return this;
     }
 
-    @java.lang.Override
+    public Builder answerMethod(String answerMethod) {
+      this.answerMethod = Optional.ofNullable(answerMethod);
+      return this;
+    }
+
+    /**
+     * <p>URL Vobiz notifies when a call on this application ends.</p>
+     */
+    @JsonSetter(
+        value = "hangup_url",
+        nulls = Nulls.SKIP
+    )
+    public Builder hangupUrl(Optional<String> hangupUrl) {
+      this.hangupUrl = hangupUrl;
+      return this;
+    }
+
+    public Builder hangupUrl(String hangupUrl) {
+      this.hangupUrl = Optional.ofNullable(hangupUrl);
+      return this;
+    }
+
+    /**
+     * <p>HTTP method used for <code>hangup_url</code>, <code>GET</code> or <code>POST</code>.</p>
+     */
+    @JsonSetter(
+        value = "hangup_method",
+        nulls = Nulls.SKIP
+    )
+    public Builder hangupMethod(Optional<String> hangupMethod) {
+      this.hangupMethod = hangupMethod;
+      return this;
+    }
+
+    public Builder hangupMethod(String hangupMethod) {
+      this.hangupMethod = Optional.ofNullable(hangupMethod);
+      return this;
+    }
+
     public UpdateApplicationRequest build() {
       return new UpdateApplicationRequest(appName, defaultNumberApp, answerUrl, answerMethod, hangupUrl, hangupMethod, additionalProperties);
     }
 
-    @java.lang.Override
     public Builder additionalProperty(String key, Object value) {
       this.additionalProperties.put(key, value);
       return this;
     }
 
-    @java.lang.Override
     public Builder additionalProperties(Map<String, Object> additionalProperties) {
       this.additionalProperties.putAll(additionalProperties);
       return this;

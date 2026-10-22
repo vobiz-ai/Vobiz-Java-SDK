@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
 import java.lang.Object;
@@ -17,6 +18,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
@@ -28,12 +30,15 @@ public final class UpdateEndpointRequest {
 
   private final String password;
 
+  private final Optional<String> appId;
+
   private final Map<String, Object> additionalProperties;
 
-  private UpdateEndpointRequest(String alias, String password,
+  private UpdateEndpointRequest(String alias, String password, Optional<String> appId,
       Map<String, Object> additionalProperties) {
     this.alias = alias;
     this.password = password;
+    this.appId = appId;
     this.additionalProperties = additionalProperties;
   }
 
@@ -45,6 +50,14 @@ public final class UpdateEndpointRequest {
   @JsonProperty("password")
   public String getPassword() {
     return password;
+  }
+
+  /**
+   * @return ID of the application to attach to this endpoint, as a string.
+   */
+  @JsonProperty("app_id")
+  public Optional<String> getAppId() {
+    return appId;
   }
 
   @java.lang.Override
@@ -59,12 +72,12 @@ public final class UpdateEndpointRequest {
   }
 
   private boolean equalTo(UpdateEndpointRequest other) {
-    return alias.equals(other.alias) && password.equals(other.password);
+    return alias.equals(other.alias) && password.equals(other.password) && appId.equals(other.appId);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.alias, this.password);
+    return Objects.hash(this.alias, this.password, this.appId);
   }
 
   @java.lang.Override
@@ -92,6 +105,13 @@ public final class UpdateEndpointRequest {
     _FinalStage additionalProperty(String key, Object value);
 
     _FinalStage additionalProperties(Map<String, Object> additionalProperties);
+
+    /**
+     * <p>ID of the application to attach to this endpoint, as a string.</p>
+     */
+    _FinalStage appId(Optional<String> appId);
+
+    _FinalStage appId(String appId);
   }
 
   @JsonIgnoreProperties(
@@ -101,6 +121,8 @@ public final class UpdateEndpointRequest {
     private String alias;
 
     private String password;
+
+    private Optional<String> appId = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -112,6 +134,7 @@ public final class UpdateEndpointRequest {
     public Builder from(UpdateEndpointRequest other) {
       alias(other.getAlias());
       password(other.getPassword());
+      appId(other.getAppId());
       return this;
     }
 
@@ -129,9 +152,32 @@ public final class UpdateEndpointRequest {
       return this;
     }
 
+    /**
+     * <p>ID of the application to attach to this endpoint, as a string.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
+    @java.lang.Override
+    public _FinalStage appId(String appId) {
+      this.appId = Optional.ofNullable(appId);
+      return this;
+    }
+
+    /**
+     * <p>ID of the application to attach to this endpoint, as a string.</p>
+     */
+    @java.lang.Override
+    @JsonSetter(
+        value = "app_id",
+        nulls = Nulls.SKIP
+    )
+    public _FinalStage appId(Optional<String> appId) {
+      this.appId = appId;
+      return this;
+    }
+
     @java.lang.Override
     public UpdateEndpointRequest build() {
-      return new UpdateEndpointRequest(alias, password, additionalProperties);
+      return new UpdateEndpointRequest(alias, password, appId, additionalProperties);
     }
 
     @java.lang.Override

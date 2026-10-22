@@ -29,15 +29,19 @@ import resources.subaccounts.types.UpdateSubaccountRequestKycMode;
 public final class UpdateSubaccountRequest {
   private final Optional<String> name;
 
+  private final Optional<Boolean> isActive;
+
   private final Optional<Boolean> enabled;
 
   private final Optional<UpdateSubaccountRequestKycMode> kycMode;
 
   private final Map<String, Object> additionalProperties;
 
-  private UpdateSubaccountRequest(Optional<String> name, Optional<Boolean> enabled,
-      Optional<UpdateSubaccountRequestKycMode> kycMode, Map<String, Object> additionalProperties) {
+  private UpdateSubaccountRequest(Optional<String> name, Optional<Boolean> isActive,
+      Optional<Boolean> enabled, Optional<UpdateSubaccountRequestKycMode> kycMode,
+      Map<String, Object> additionalProperties) {
     this.name = name;
+    this.isActive = isActive;
     this.enabled = enabled;
     this.kycMode = kycMode;
     this.additionalProperties = additionalProperties;
@@ -48,6 +52,17 @@ public final class UpdateSubaccountRequest {
     return name;
   }
 
+  /**
+   * @return Set to <code>false</code> to deactivate the sub-account. A deactivated sub-account no longer appears in list, retrieve, update or delete requests (<code>404</code>).
+   */
+  @JsonProperty("is_active")
+  public Optional<Boolean> getIsActive() {
+    return isActive;
+  }
+
+  /**
+   * @return Accepted but has no effect. Use <code>is_active</code> instead.
+   */
   @JsonProperty("enabled")
   public Optional<Boolean> getEnabled() {
     return enabled;
@@ -73,12 +88,12 @@ public final class UpdateSubaccountRequest {
   }
 
   private boolean equalTo(UpdateSubaccountRequest other) {
-    return name.equals(other.name) && enabled.equals(other.enabled) && kycMode.equals(other.kycMode);
+    return name.equals(other.name) && isActive.equals(other.isActive) && enabled.equals(other.enabled) && kycMode.equals(other.kycMode);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.enabled, this.kycMode);
+    return Objects.hash(this.name, this.isActive, this.enabled, this.kycMode);
   }
 
   @java.lang.Override
@@ -96,6 +111,8 @@ public final class UpdateSubaccountRequest {
   public static final class Builder {
     private Optional<String> name = Optional.empty();
 
+    private Optional<Boolean> isActive = Optional.empty();
+
     private Optional<Boolean> enabled = Optional.empty();
 
     private Optional<UpdateSubaccountRequestKycMode> kycMode = Optional.empty();
@@ -108,6 +125,7 @@ public final class UpdateSubaccountRequest {
 
     public Builder from(UpdateSubaccountRequest other) {
       name(other.getName());
+      isActive(other.getIsActive());
       enabled(other.getEnabled());
       kycMode(other.getKycMode());
       return this;
@@ -127,6 +145,26 @@ public final class UpdateSubaccountRequest {
       return this;
     }
 
+    /**
+     * <p>Set to <code>false</code> to deactivate the sub-account. A deactivated sub-account no longer appears in list, retrieve, update or delete requests (<code>404</code>).</p>
+     */
+    @JsonSetter(
+        value = "is_active",
+        nulls = Nulls.SKIP
+    )
+    public Builder isActive(Optional<Boolean> isActive) {
+      this.isActive = isActive;
+      return this;
+    }
+
+    public Builder isActive(Boolean isActive) {
+      this.isActive = Optional.ofNullable(isActive);
+      return this;
+    }
+
+    /**
+     * <p>Accepted but has no effect. Use <code>is_active</code> instead.</p>
+     */
     @JsonSetter(
         value = "enabled",
         nulls = Nulls.SKIP
@@ -159,7 +197,7 @@ public final class UpdateSubaccountRequest {
     }
 
     public UpdateSubaccountRequest build() {
-      return new UpdateSubaccountRequest(name, enabled, kycMode, additionalProperties);
+      return new UpdateSubaccountRequest(name, isActive, enabled, kycMode, additionalProperties);
     }
 
     public Builder additionalProperty(String key, Object value) {

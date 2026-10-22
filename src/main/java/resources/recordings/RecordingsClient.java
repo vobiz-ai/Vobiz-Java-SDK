@@ -61,6 +61,10 @@ public class RecordingsClient {
 
   /**
    * Get details and download URL for a specific recording.
+   * <p><code>recording_url</code> points at <code>media.vobiz.ai</code>. Download it with the same
+   * <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers you use for the API; the media
+   * host returns <code>401</code> without them. The file is WAV, although the media
+   * host may label it <code>Content-Type: audio/mpeg</code>.</p>
    */
   public GetRecordingResponse getRecording(String authId, String recordingId) {
     return this.rawClient.getRecording(authId, recordingId).body();
@@ -68,6 +72,10 @@ public class RecordingsClient {
 
   /**
    * Get details and download URL for a specific recording.
+   * <p><code>recording_url</code> points at <code>media.vobiz.ai</code>. Download it with the same
+   * <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers you use for the API; the media
+   * host returns <code>401</code> without them. The file is WAV, although the media
+   * host may label it <code>Content-Type: audio/mpeg</code>.</p>
    */
   public GetRecordingResponse getRecording(String authId, String recordingId,
       RequestOptions requestOptions) {
@@ -76,6 +84,10 @@ public class RecordingsClient {
 
   /**
    * Get details and download URL for a specific recording.
+   * <p><code>recording_url</code> points at <code>media.vobiz.ai</code>. Download it with the same
+   * <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers you use for the API; the media
+   * host returns <code>401</code> without them. The file is WAV, although the media
+   * host may label it <code>Content-Type: audio/mpeg</code>.</p>
    */
   public GetRecordingResponse getRecording(String authId, String recordingId,
       GetRecordingRequest request) {
@@ -84,6 +96,10 @@ public class RecordingsClient {
 
   /**
    * Get details and download URL for a specific recording.
+   * <p><code>recording_url</code> points at <code>media.vobiz.ai</code>. Download it with the same
+   * <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers you use for the API; the media
+   * host returns <code>401</code> without them. The file is WAV, although the media
+   * host may label it <code>Content-Type: audio/mpeg</code>.</p>
    */
   public GetRecordingResponse getRecording(String authId, String recordingId,
       GetRecordingRequest request, RequestOptions requestOptions) {

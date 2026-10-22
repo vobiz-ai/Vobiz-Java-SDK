@@ -83,6 +83,21 @@ public class OriginationUriClient {
   /**
    * Update an existing origination URI.
    */
+  public UpdateOriginationUriResponse updateOriginationUri(String authId, String uriId) {
+    return this.rawClient.updateOriginationUri(authId, uriId).body();
+  }
+
+  /**
+   * Update an existing origination URI.
+   */
+  public UpdateOriginationUriResponse updateOriginationUri(String authId, String uriId,
+      RequestOptions requestOptions) {
+    return this.rawClient.updateOriginationUri(authId, uriId, requestOptions).body();
+  }
+
+  /**
+   * Update an existing origination URI.
+   */
   public UpdateOriginationUriResponse updateOriginationUri(String authId, String uriId,
       UpdateOriginationUriRequest request) {
     return this.rawClient.updateOriginationUri(authId, uriId, request).body();

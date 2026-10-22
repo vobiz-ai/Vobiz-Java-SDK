@@ -165,6 +165,9 @@ public final class ListRecordingsResponseObjectsItem {
     return recordingType;
   }
 
+  /**
+   * @return Download URL for the audio, on <code>media.vobiz.ai</code>. Send the same <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers as for API requests; without them the media host returns <code>401</code>. The body is WAV (RIFF/WAVE PCM), although the response may carry <code>Content-Type: audio/mpeg</code>.
+   */
   @JsonProperty("recording_url")
   public String getRecordingUrl() {
     return recordingUrl;
@@ -284,6 +287,9 @@ public final class ListRecordingsResponseObjectsItem {
   }
 
   public interface RecordingUrlStage {
+    /**
+     * <p>Download URL for the audio, on <code>media.vobiz.ai</code>. Send the same <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers as for API requests; without them the media host returns <code>401</code>. The body is WAV (RIFF/WAVE PCM), although the response may carry <code>Content-Type: audio/mpeg</code>.</p>
+     */
     ResourceUriStage recordingUrl(@NotNull String recordingUrl);
   }
 
@@ -462,6 +468,11 @@ public final class ListRecordingsResponseObjectsItem {
       return this;
     }
 
+    /**
+     * <p>Download URL for the audio, on <code>media.vobiz.ai</code>. Send the same <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers as for API requests; without them the media host returns <code>401</code>. The body is WAV (RIFF/WAVE PCM), although the response may carry <code>Content-Type: audio/mpeg</code>.</p>
+     * <p>Download URL for the audio, on <code>media.vobiz.ai</code>. Send the same <code>X-Auth-ID</code> and <code>X-Auth-Token</code> headers as for API requests; without them the media host returns <code>401</code>. The body is WAV (RIFF/WAVE PCM), although the response may carry <code>Content-Type: audio/mpeg</code>.</p>
+     * @return Reference to {@code this} so that method calls can be chained together.
+     */
     @java.lang.Override
     @JsonSetter("recording_url")
     public ResourceUriStage recordingUrl(@NotNull String recordingUrl) {

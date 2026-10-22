@@ -10,41 +10,71 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import core.ObjectMappers;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
 @JsonDeserialize(
     builder = UpdateOriginationUriRequest.Builder.class
 )
 public final class UpdateOriginationUriRequest {
-  private final String name;
+  private final Optional<String> uri;
 
-  private final int priority;
+  private final Optional<String> description;
+
+  private final Optional<Integer> priority;
+
+  private final Optional<String> name;
 
   private final Map<String, Object> additionalProperties;
 
-  private UpdateOriginationUriRequest(String name, int priority,
-      Map<String, Object> additionalProperties) {
-    this.name = name;
+  private UpdateOriginationUriRequest(Optional<String> uri, Optional<String> description,
+      Optional<Integer> priority, Optional<String> name, Map<String, Object> additionalProperties) {
+    this.uri = uri;
+    this.description = description;
     this.priority = priority;
+    this.name = name;
     this.additionalProperties = additionalProperties;
   }
 
-  @JsonProperty("name")
-  public String getName() {
-    return name;
+  /**
+   * @return SIP URI of your inbound destination.
+   */
+  @JsonProperty("uri")
+  public Optional<String> getUri() {
+    return uri;
   }
 
+  /**
+   * @return Label for the origination URI.
+   */
+  @JsonProperty("description")
+  public Optional<String> getDescription() {
+    return description;
+  }
+
+  /**
+   * @return Routing priority. Lower values are tried first.
+   */
   @JsonProperty("priority")
-  public int getPriority() {
+  public Optional<Integer> getPriority() {
     return priority;
+  }
+
+  /**
+   * @return Not read by the API. Send <code>description</code> instead.
+   */
+  @JsonProperty("name")
+  public Optional<String> getName() {
+    return name;
   }
 
   @java.lang.Override
@@ -59,12 +89,12 @@ public final class UpdateOriginationUriRequest {
   }
 
   private boolean equalTo(UpdateOriginationUriRequest other) {
-    return name.equals(other.name) && priority == other.priority;
+    return uri.equals(other.uri) && description.equals(other.description) && priority.equals(other.priority) && name.equals(other.name);
   }
 
   @java.lang.Override
   public int hashCode() {
-    return Objects.hash(this.name, this.priority);
+    return Objects.hash(this.uri, this.description, this.priority, this.name);
   }
 
   @java.lang.Override
@@ -72,35 +102,21 @@ public final class UpdateOriginationUriRequest {
     return ObjectMappers.stringify(this);
   }
 
-  public static NameStage builder() {
+  public static Builder builder() {
     return new Builder();
-  }
-
-  public interface NameStage {
-    PriorityStage name(@NotNull String name);
-
-    Builder from(UpdateOriginationUriRequest other);
-  }
-
-  public interface PriorityStage {
-    _FinalStage priority(int priority);
-  }
-
-  public interface _FinalStage {
-    UpdateOriginationUriRequest build();
-
-    _FinalStage additionalProperty(String key, Object value);
-
-    _FinalStage additionalProperties(Map<String, Object> additionalProperties);
   }
 
   @JsonIgnoreProperties(
       ignoreUnknown = true
   )
-  public static final class Builder implements NameStage, PriorityStage, _FinalStage {
-    private String name;
+  public static final class Builder {
+    private Optional<String> uri = Optional.empty();
 
-    private int priority;
+    private Optional<String> description = Optional.empty();
+
+    private Optional<Integer> priority = Optional.empty();
+
+    private Optional<String> name = Optional.empty();
 
     @JsonAnySetter
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -108,39 +124,91 @@ public final class UpdateOriginationUriRequest {
     private Builder() {
     }
 
-    @java.lang.Override
     public Builder from(UpdateOriginationUriRequest other) {
-      name(other.getName());
+      uri(other.getUri());
+      description(other.getDescription());
       priority(other.getPriority());
+      name(other.getName());
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("name")
-    public PriorityStage name(@NotNull String name) {
-      this.name = Objects.requireNonNull(name, "name must not be null");
+    /**
+     * <p>SIP URI of your inbound destination.</p>
+     */
+    @JsonSetter(
+        value = "uri",
+        nulls = Nulls.SKIP
+    )
+    public Builder uri(Optional<String> uri) {
+      this.uri = uri;
       return this;
     }
 
-    @java.lang.Override
-    @JsonSetter("priority")
-    public _FinalStage priority(int priority) {
+    public Builder uri(String uri) {
+      this.uri = Optional.ofNullable(uri);
+      return this;
+    }
+
+    /**
+     * <p>Label for the origination URI.</p>
+     */
+    @JsonSetter(
+        value = "description",
+        nulls = Nulls.SKIP
+    )
+    public Builder description(Optional<String> description) {
+      this.description = description;
+      return this;
+    }
+
+    public Builder description(String description) {
+      this.description = Optional.ofNullable(description);
+      return this;
+    }
+
+    /**
+     * <p>Routing priority. Lower values are tried first.</p>
+     */
+    @JsonSetter(
+        value = "priority",
+        nulls = Nulls.SKIP
+    )
+    public Builder priority(Optional<Integer> priority) {
       this.priority = priority;
       return this;
     }
 
-    @java.lang.Override
-    public UpdateOriginationUriRequest build() {
-      return new UpdateOriginationUriRequest(name, priority, additionalProperties);
+    public Builder priority(Integer priority) {
+      this.priority = Optional.ofNullable(priority);
+      return this;
     }
 
-    @java.lang.Override
+    /**
+     * <p>Not read by the API. Send <code>description</code> instead.</p>
+     */
+    @JsonSetter(
+        value = "name",
+        nulls = Nulls.SKIP
+    )
+    public Builder name(Optional<String> name) {
+      this.name = name;
+      return this;
+    }
+
+    public Builder name(String name) {
+      this.name = Optional.ofNullable(name);
+      return this;
+    }
+
+    public UpdateOriginationUriRequest build() {
+      return new UpdateOriginationUriRequest(uri, description, priority, name, additionalProperties);
+    }
+
     public Builder additionalProperty(String key, Object value) {
       this.additionalProperties.put(key, value);
       return this;
     }
 
-    @java.lang.Override
     public Builder additionalProperties(Map<String, Object> additionalProperties) {
       this.additionalProperties.putAll(additionalProperties);
       return this;

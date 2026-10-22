@@ -140,7 +140,7 @@ public final class CreateTrunkRequest {
   }
 
   /**
-   * @return Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).
+   * @return Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.
    */
   @JsonProperty("trunk_status")
   public Optional<CreateTrunkRequestTrunkStatus> getTrunkStatus() {
@@ -359,7 +359,7 @@ public final class CreateTrunkRequest {
     _FinalStage trunkDirection(CreateTrunkRequestTrunkDirection trunkDirection);
 
     /**
-     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.</p>
      */
     _FinalStage trunkStatus(Optional<CreateTrunkRequestTrunkStatus> trunkStatus);
 
@@ -1065,7 +1065,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.</p>
      * @return Reference to {@code this} so that method calls can be chained together.
      */
     @java.lang.Override
@@ -1075,7 +1075,7 @@ public final class CreateTrunkRequest {
     }
 
     /**
-     * <p>Trunk status - <code>enabled</code> or <code>disabled</code> (note: not <code>active</code>).</p>
+     * <p>Trunk status to set - <code>enabled</code> or <code>disabled</code>. Responses report <code>enabled</code> as <code>active</code> and <code>disabled</code> as <code>suspended</code>.</p>
      */
     @java.lang.Override
     @JsonSetter(

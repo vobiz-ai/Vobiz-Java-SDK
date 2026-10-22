@@ -46,6 +46,9 @@ public class AsyncRawIpAccessControlListClient {
 
   /**
    * Add an IP access control rule to restrict SIP trunk access.
+   * <p>Use the public IP address or CIDR range of your own SBC or PBX. The API
+   * rejects documentation-only ranges such as <code>203.0.113.0/24</code> with <code>400</code>.
+   * Responses return the rule's label in <code>description</code>.</p>
    */
   public CompletableFuture<VobizApiHttpResponse<CreateIpAclResponse>> createIpAcl(String authId,
       CreateIpAclRequest request) {
@@ -54,6 +57,9 @@ public class AsyncRawIpAccessControlListClient {
 
   /**
    * Add an IP access control rule to restrict SIP trunk access.
+   * <p>Use the public IP address or CIDR range of your own SBC or PBX. The API
+   * rejects documentation-only ranges such as <code>203.0.113.0/24</code> with <code>400</code>.
+   * Responses return the rule's label in <code>description</code>.</p>
    */
   public CompletableFuture<VobizApiHttpResponse<CreateIpAclResponse>> createIpAcl(String authId,
       CreateIpAclRequest request, RequestOptions requestOptions) {

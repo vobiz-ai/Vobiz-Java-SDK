@@ -264,6 +264,24 @@ public class RawApplicationsClient {
          * fields (partial update). Fields not provided will remain unchanged.
          */
         public VobizApiHttpResponse<UpdateApplicationResponse> updateApplication(String authId,
+            String appId) {
+          return updateApplication(authId,appId,UpdateApplicationRequest.builder().build());
+        }
+
+        /**
+         * Modify an application using this API. You can update any subset of
+         * fields (partial update). Fields not provided will remain unchanged.
+         */
+        public VobizApiHttpResponse<UpdateApplicationResponse> updateApplication(String authId,
+            String appId, RequestOptions requestOptions) {
+          return updateApplication(authId,appId,UpdateApplicationRequest.builder().build(),requestOptions);
+        }
+
+        /**
+         * Modify an application using this API. You can update any subset of
+         * fields (partial update). Fields not provided will remain unchanged.
+         */
+        public VobizApiHttpResponse<UpdateApplicationResponse> updateApplication(String authId,
             String appId, UpdateApplicationRequest request) {
           return updateApplication(authId,appId,request,null);
         }

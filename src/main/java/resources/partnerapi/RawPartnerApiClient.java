@@ -17,6 +17,7 @@ import errors.BadRequestError;
 import errors.ConflictError;
 import errors.NotFoundError;
 import errors.TooManyRequestsError;
+import errors.UnauthorizedError;
 import errors.UnprocessableEntityError;
 import java.io.IOException;
 import java.lang.Object;
@@ -90,6 +91,14 @@ public class RawPartnerApiClient {
         if (response.isSuccessful()) {
           return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPartnerProfileResponse.class), response);
         }
+        try {
+          if (response.code() == 401) {
+            throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+          }
+        }
+        catch (JsonProcessingException ignored) {
+          // unable to map error response, throwing generic error
+        }
         Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
         throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
       }
@@ -134,6 +143,14 @@ public class RawPartnerApiClient {
           String responseBodyString = responseBody != null ? responseBody.string() : "{}";
           if (response.isSuccessful()) {
             return new VobizApiHttpResponse<>(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, GetPartnerDashboardResponse.class), response);
+          }
+          try {
+            if (response.code() == 401) {
+              throw new UnauthorizedError(ObjectMappers.JSON_MAPPER.readValue(responseBodyString, Object.class), response);
+            }
+          }
+          catch (JsonProcessingException ignored) {
+            // unable to map error response, throwing generic error
           }
           Object errorBody = ObjectMappers.parseErrorBody(responseBodyString);
           throw new VobizApiApiException("Error with status code " + response.code(), response.code(), errorBody, response);
