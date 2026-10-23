@@ -9267,7 +9267,7 @@ wallet. Both legs are recorded in each account's ledger. Transfers are
 
 ```java
 client.partnerApi().partnerTransferBalance(
-    "MA_ZKITB8Z2",
+    "MA_XXXXXXXX",
     PartnerTransferBalanceRequest
         .builder()
         .amount(500.0)
@@ -9742,7 +9742,7 @@ companies). No document uploads required.
 client.partnerApi().createKycSession(
     CreateKycSessionRequest
         .builder()
-        .accountAuthId("MA_ZKITB8Z2")
+        .accountAuthId("MA_XXXXXXXX")
         .build()
 );
 ```
