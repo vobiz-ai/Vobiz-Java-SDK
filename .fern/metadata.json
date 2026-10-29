@@ -4,9 +4,10 @@
   "generatorVersion": "4.10.15",
   "generatorConfig": {
     "group-id": "ai.vobiz",
-    "artifact-id": "vobiz-java"
+    "artifact-id": "vobiz-java",
+    "package-prefix": "com.vobiz.api"
   },
-  "originGitCommit": "6e3665af08f784cccde2b9a7637b82d691b30325",
+  "originGitCommit": "2857b1b6b3ed078df96a65950c82980fdfe6ac4c",
   "originGitCommitIsDirty": true,
   "invokedBy": "ci",
   "ciProvider": "github"

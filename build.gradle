@@ -10,9 +10,7 @@
 //   Jackson (annotations/core/databind + jdk8 + jsr310), OkHttp3, JetBrains
 //   annotations; JUnit 5 for the generated tests.
 //
-// ⚠️ Versions below are conventional/recent and were NOT compile-verified in this
-// environment (no local JDK). Run `gradle build` once before the first publish and
-// bump any that the generated source disagrees with.
+// Verified: `./gradlew build` and `./gradlew publishToMavenLocal` pass on JDK 17 and 25.
 //
 // Publish:  gradle publishAndReleaseToMavenCentral -PsdkVersion=1.2.3
 //   (the publish-java.yml workflow passes -PsdkVersion from the java-v* tag and
@@ -63,14 +61,18 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
-    signAllPublications()
+    // Sign only when CI supplies a key, so `gradle publishToMavenLocal` works from a
+    // fresh clone without GPG setup. Maven Central uploads always run with the key.
+    if (project.findProperty('signingInMemoryKey')) {
+        signAllPublications()
+    }
 
     coordinates(group.toString(), 'vobiz-java', version.toString())
 
     pom {
         name = 'Vobiz Java SDK'
         description = 'Official Java SDK for the Vobiz voice/telephony API.'
-        url = 'https://github.com/vobiz-ai/vobiz-java'
+        url = 'https://github.com/vobiz-ai/Vobiz-Java-SDK'
         licenses {
             license {
                 name = 'MIT License'
@@ -85,9 +87,9 @@ mavenPublishing {
             }
         }
         scm {
-            connection = 'scm:git:git://github.com/vobiz-ai/vobiz-java.git'
-            developerConnection = 'scm:git:ssh://github.com/vobiz-ai/vobiz-java.git'
-            url = 'https://github.com/vobiz-ai/vobiz-java'
+            connection = 'scm:git:git://github.com/vobiz-ai/Vobiz-Java-SDK.git'
+            developerConnection = 'scm:git:ssh://github.com/vobiz-ai/Vobiz-Java-SDK.git'
+            url = 'https://github.com/vobiz-ai/Vobiz-Java-SDK'
         }
     }
 }
